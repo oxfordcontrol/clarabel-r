@@ -1,10 +1,12 @@
 # Clarabel
 
-R interface to the Interior Point Conic Optimization Solver from the
-[Oxford Control
-Group](https://oxfordcontrol.github.io/ClarabelDocs/stable/).
+R interface to the
+[Clarabel](https://oxfordcontrol.github.io/ClarabelDocs/stable/)
+interior point conic optimization solver from the [Oxford Control
+Group](https://github.com/oxfordcontrol).
 
-Until this gets on CRAN, you can install via:
+Until this gets on CRAN, where binaries will be provided for
+various platforms, one can install via:
 
 ```
 ## Install remotes packages if not available
@@ -13,6 +15,9 @@ if (! "remotes" %in% installed.packages()[, 1] ) {
 }
 remotes::install_github("bnaras/clarabel")
 ```
+
+The above code assumes availabiliy of the Cargo/Rust infrastructure
+and R compilation tools to install from source, all freely available.
 
 Examples code to run (for now) may be found
 [here](https://bnaras.github.io/clarabel/articles/clarabel.html).
