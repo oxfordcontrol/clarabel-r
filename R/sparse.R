@@ -38,7 +38,7 @@ make_csc_matrix.simple_triplet_matrix <- function(x) {
 
 ## Added by @bnaras for sparse symmetric matrix.
 
-make_csc_symm_matrix <- function(x) UseMethod("make_csc_symm_matrix")
+make_csc_symm_matrix <- function(m) UseMethod("make_csc_symm_matrix")
 
 make_csc_symm_matrix.matrix  <- function(m) {
   ind <- which(m!=0 ,arr.ind = TRUE)
