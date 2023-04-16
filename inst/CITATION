@@ -1,0 +1,8 @@
+bibentry(bibtype = "Misc",
+         title        = "Clarabel: A Library for Optimization and Control",
+         author       = c(person(given = "Paul", family = "Goulart"),
+                          person(given = "Yuwen", family = "Chen")),
+         year         = "2021",
+         url          = "https://oxfordcontrol.github.io/ClarabelDocs/stable/",
+         header       = "To cite Clarabel in publications use:"
+)
