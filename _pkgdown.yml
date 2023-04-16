@@ -1,4 +1,8 @@
-url: ~
-template:
-  bootstrap: 5
+destination: docs
+authors:
+  Balasubramanian Narasimhan:
+    href: https://naras.su.domains/
+  Paul Goulart:
+    href: https://users.ox.ac.uk/~engs1373/
+  Yuwen Chen:
 

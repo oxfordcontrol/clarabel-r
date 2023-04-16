@@ -1,4 +1,4 @@
-# Clarabel
+# clarabel <img src="man/figures/logo.png" width="100" align="right" />
 
 R interface to the
 [Clarabel](https://oxfordcontrol.github.io/ClarabelDocs/stable/)
@@ -16,7 +16,7 @@ if (! "remotes" %in% installed.packages()[, 1] ) {
 remotes::install_github("bnaras/clarabel")
 ```
 
-The above code assumes availabiliy of the Cargo/Rust infrastructure
+The above code assumes availability of the Cargo/Rust infrastructure
 and R compilation tools to install from source, all freely available.
 
 Examples code to run (for now) may be found
