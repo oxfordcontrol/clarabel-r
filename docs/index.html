@@ -52,6 +52,9 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -75,15 +78,16 @@
 <div class="section level1">
 <div class="page-header"><h1 id="clarabel-">clarabel <img src="reference/figures/logo.png" width="100" align="right"><a class="anchor" aria-label="anchor" href="#clarabel-"></a>
 </h1></div>
+<p><a href="https://cran.r-project.org/package=clarabel" class="external-link"><img src="https://www.r-pkg.org/badges/version/clarabel" alt="CRAN_Status_Badge"></a></p>
 <p>R interface to the <a href="https://oxfordcontrol.github.io/ClarabelDocs/stable/" class="external-link">Clarabel</a> interior point conic optimization solver from the <a href="https://github.com/oxfordcontrol" class="external-link">Oxford Control Group</a>.</p>
-<p>Until this gets on CRAN, where binaries will be provided for various platforms, one can install via:</p>
+<p>Stable versions can be installed from CRAN as usual. Development versions from this repo can be installed via:</p>
 <pre><code><span><span class="co">## Install remotes packages if not available</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span> <span class="st">"remotes"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span>, repository <span class="op">=</span> <span class="st">"https://cran.r-project.org"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bnaras/clarabel"</span><span class="op">)</span></span></code></pre>
 <p>The above code assumes availability of the Cargo/Rust infrastructure and R compilation tools to install from source, all freely available.</p>
-<p>Examples code to run (for now) may be found <a href="https://bnaras.github.io/clarabel/articles/clarabel.html" class="external-link">here</a>.</p>
+<p>Vignettes are provided and may be perused at the <a href="https://bnaras.github.io/clarabel/articles/clarabel.html" class="external-link">clarabel package site</a>.</p>
 </div>
   </div>
 
