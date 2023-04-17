@@ -1,3 +1,3 @@
-# clarabel 0.1.0
+# clarabel 0.3.0
 
 - First public release
