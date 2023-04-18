@@ -118,6 +118,7 @@ first, rows corresponding to <em>non-negative cones</em> second, rows
 corresponding to <em>second-order cone</em> third, rows corresponding to
 <em>exponential cones</em> fourth and rows corresponding to
 <em>power cones</em> at last.</p>
+<p>When the parameter <code>strict_cone_order</code> is <code>FALSE</code>, one can specify the cones in any order and even repeat them in the order they appear in the <code>A</code> matrix. See below.</p>
 <div class="section">
 <h3 id="clarabel-can-solve">Clarabel can solve<a class="anchor" aria-label="anchor" href="#clarabel-can-solve"></a></h3>
 <p></p><ol><li><p>linear programs
@@ -136,10 +137,18 @@ listed in “Cone Parameters” below</p></li>
 <p>The table below shows the cone parameter specifications</p><table class="table table"><tr><td></td><td><b>Parameter</b></td><td><b>Type</b></td><td><b>Length</b></td><td><b>Description</b></td></tr><tr><td></td><td><code>z</code></td><td>integer</td><td>\(1\)</td><td>number of primal zero cones (dual free cones),</td></tr><tr><td></td><td></td><td></td><td></td><td>which corresponds to the primal equality constraints</td></tr><tr><td></td><td><code>l</code></td><td>integer</td><td>\(1\)</td><td>number of linear cones (non-negative cones)</td></tr><tr><td></td><td><code>q</code></td><td>integer</td><td>\(\geq1\)</td><td>vector of second-order cone sizes</td></tr><tr><td></td><td><code>ep</code></td><td>integer</td><td>\(1\)</td><td>number of primal exponential cones</td></tr><tr><td></td><td><code>p</code></td><td>numeric</td><td>\(\geq1\)</td><td>vector of primal power cone parameters</td></tr></table><p></p>
 </div>
 
+<p>When the parameter <code>strict_cone_order</code> is <code>FALSE</code>, one can specify
+the cones in the order they appear in the <code>A</code> matrix. The <code>cones</code>
+argument in such a case should be a named list with names matching
+<code>^z*</code> indicating primal zero cones, <code>^l*</code> indicating linear cones,
+and so on. For example, the following would be valid: <code>list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)</code>, indicating three zero
+cones, followed by two linear cones, followed by two second-order
+cones, followed by two zero cones, and finally 3 second-order
+cones.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>clarabel_control</p></div>
+    <div class="dont-index"><p><code><a href="clarabel_control.html">clarabel_control()</a></code></p></div>
     </div>
 
     <div id="ref-examples">
@@ -166,7 +175,7 @@ listed in “Cone Parameters” below</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $solve_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.1625e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8.1649e-05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $iterations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>

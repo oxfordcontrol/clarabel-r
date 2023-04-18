@@ -17,7 +17,7 @@
 #' @param control a list giving specific control parameters to use in place of default values, with an empty list indicating the default control parameters. Specified parameters should be correctly named and typed to avoid Rust system panics as no sanitization is done for efficiency reasons
 #' @param strict_cone_order a logical flag, default `TRUE` for forcing order of cones described below. If `FALSE` cones can be specified in any order and even repeated and directly passed to the solver without type and length checks
 #' @return named list of solution vectors x, y, s and information about run
-#' @seealso clarabel_control
+#' @seealso [clarabel_control()]
 #' @export clarabel
 #'
 #' @details
@@ -29,6 +29,8 @@
 #' corresponding to \emph{second-order cone} third, rows corresponding to
 #' \emph{exponential cones} fourth and rows corresponding to
 #' \emph{power cones} at last.
+#'
+#' When the parameter `strict_cone_order` is `FALSE`, one can specify the cones in any order and even repeat them in the order they appear in the `A` matrix. See below.
 #'
 #' \subsection{Clarabel can solve}{ \enumerate{ \item linear programs
 #' (LPs) \item second-order cone programs (SOCPs) \item exponential
@@ -47,6 +49,16 @@
 #'    \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
 #'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
 #' } }
+#'
+#' When the parameter `strict_cone_order` is `FALSE`, one can specify
+#' the cones in the order they appear in the `A` matrix. The `cones`
+#' argument in such a case should be a named list with names matching
+#' `^z*` indicating primal zero cones, `^l*` indicating linear cones,
+#' and so on. For example, the following would be valid: `list(z1 =
+#' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating three zero
+#' cones, followed by two linear cones, followed by two second-order
+#' cones, followed by two zero cones, and finally 3 second-order
+#' cones.
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)

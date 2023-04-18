@@ -44,6 +44,8 @@ corresponding to \emph{second-order cone} third, rows corresponding to
 \emph{exponential cones} fourth and rows corresponding to
 \emph{power cones} at last.
 
+When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify the cones in any order and even repeat them in the order they appear in the \code{A} matrix. See below.
+
 \subsection{Clarabel can solve}{ \enumerate{ \item linear programs
 (LPs) \item second-order cone programs (SOCPs) \item exponential
 cone programs (ECPs) \item power cone programs (PCPs) \item
@@ -61,6 +63,15 @@ The table below shows the cone parameter specifications
 \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
 \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
 } }
+
+When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
+the cones in the order they appear in the \code{A} matrix. The \code{cones}
+argument in such a case should be a named list with names matching
+\verb{^z*} indicating primal zero cones, \verb{^l*} indicating linear cones,
+and so on. For example, the following would be valid: \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating three zero
+cones, followed by two linear cones, followed by two second-order
+cones, followed by two zero cones, and finally 3 second-order
+cones.
 }
 \examples{
 A <- matrix(c(1, 1), ncol = 1)
@@ -72,5 +83,5 @@ clarabel(A = A, b = b, q = obj, cones = cone, control = control)
 
 }
 \seealso{
-clarabel_control
+\code{\link[=clarabel_control]{clarabel_control()}}
 }
