@@ -5,6 +5,8 @@ LIBDIR = $(TARGET_DIR)/$(TARGET)/release
 STATLIB = $(LIBDIR)/libclarabel.a
 PKG_LIBS = -L$(LIBDIR) -lclarabel -lws2_32 -ladvapi32 -luserenv -lbcrypt
 
+CARGO_HOME=./.cargo
+
 all: C_clean
 
 $(SHLIB): $(STATLIB)
@@ -23,6 +25,7 @@ $(STATLIB):
 	export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(CARGO_LINKER)" && \
 		export LIBRARY_PATH="$${LIBRARY_PATH};$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
 		cargo build --target=$(TARGET) --lib --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
+	rm -Rf $(CARGO_HOME)
 
 C_clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
