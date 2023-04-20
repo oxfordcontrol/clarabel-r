@@ -4,3 +4,4 @@
 ^docs$
 ^pkgdown$
 ^inst/misc
+^src/rust/target$

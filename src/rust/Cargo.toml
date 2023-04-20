@@ -1,6 +1,6 @@
 [package]
 name = 'clarabel'
-version = '0.1.0'
+version = '0.4.1'
 edition = '2021'
 
 [lib]
@@ -8,7 +8,7 @@ crate-type = [ 'staticlib' ]
 name = 'clarabel'
 
 [dependencies]
-extendr-api = '*'
-clarabel = '*'
-lazy_static = "*"
-regex = "*"
+extendr-api = '0.4.0'
+clarabel = '0.4.1'
+lazy_static = "1.4.0"
+regex = "1.7.3"
