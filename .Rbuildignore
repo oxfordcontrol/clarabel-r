@@ -5,3 +5,4 @@
 ^pkgdown$
 ^inst/misc
 ^src/rust/target$
+^update_authors.R$

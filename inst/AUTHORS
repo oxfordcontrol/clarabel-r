@@ -1,0 +1,129 @@
+The authors of the dependency Rust crates:
+
+aho-corasick (version 1.0.0):
+  Andrew Gallant
+
+amd (version 0.2.2):
+  
+
+autocfg (version 1.1.0):
+  Josh Stone
+
+clarabel (version 0.4.1):
+  Paul Goulart
+
+darling_core (version 0.14.4):
+  Ted Driggs
+
+darling_macro (version 0.14.4):
+  Ted Driggs
+
+darling (version 0.14.4):
+  Ted Driggs
+
+derive_builder_core (version 0.11.2):
+  Colin Kiegel
+  Pascal Hertleif
+  Jan-Erik Rediger
+  Ted Driggs
+
+derive_builder_macro (version 0.11.2):
+  Colin Kiegel
+  Pascal Hertleif
+  Jan-Erik Rediger
+  Ted Driggs
+
+derive_builder (version 0.11.2):
+  Colin Kiegel
+  Pascal Hertleif
+  Jan-Erik Rediger
+  Ted Driggs
+
+enum_dispatch (version 0.3.11):
+  Anton Lazarev
+
+extendr-api (version 0.4.0):
+  andy-thomason
+  Thomas Down
+  Mossa Merhi Reimert
+  Claus O. Wilke
+  Hiroaki Yutani
+  Ilia A. Kosenkov
+  Michael Milton
+
+extendr-engine (version 0.4.0):
+  andy-thomason
+  Thomas Down
+  Mossa Merhi Reimert
+  Claus O. Wilke
+  Hiroaki Yutani
+  Ilia A. Kosenkov
+
+extendr-macros (version 0.4.0):
+  andy-thomason
+  Thomas Down
+  Mossa Merhi Reimert
+  Claus O. Wilke
+  Hiroaki Yutani
+  Ilia A. Kosenkov
+
+fnv (version 1.0.7):
+  Alex Crichton
+
+ident_case (version 1.0.1):
+  Ted Driggs
+
+lazy_static (version 1.4.0):
+  Marvin Löbel
+
+libR-sys (version 0.4.0):
+  andy-thomason
+  Thomas Down
+  Mossa Merhi Reimert
+  Claus O. Wilke
+  Ilia A. Kosenkov
+  Hiroaki Yutani
+
+memchr (version 2.5.0):
+  Andrew Gallant
+  bluss
+
+num-traits (version 0.2.15):
+  The Rust Project Developers
+
+once_cell (version 1.17.1):
+  Aleksey Kladov
+
+paste (version 1.0.12):
+  David Tolnay
+
+proc-macro2 (version 1.0.56):
+  David Tolnay
+  Alex Crichton
+
+quote (version 1.0.26):
+  David Tolnay
+
+regex-syntax (version 0.7.0):
+  The Rust Project Developers
+
+regex (version 1.8.0):
+  The Rust Project Developers
+
+strsim (version 0.10.0):
+  Danny Guo
+
+syn (version 1.0.109):
+  David Tolnay
+
+syn (version 2.0.15):
+  David Tolnay
+
+thiserror-impl (version 1.0.40):
+  David Tolnay
+
+thiserror (version 1.0.40):
+  David Tolnay
+
+unicode-ident (version 1.0.8):
+  David Tolnay
