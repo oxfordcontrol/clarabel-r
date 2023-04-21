@@ -15,12 +15,12 @@ versions from this repo can be installed via:
 if (! "remotes" %in% installed.packages()[, 1] ) {
 	install.packages("remotes", repository = "https://cran.r-project.org")
 }
-remotes::install_github("bnaras/clarabel")
+remotes::install_github("oxfordcontrol/clarabel-r")
 ```
 
 The above code assumes availability of the Cargo/Rust infrastructure
 and R compilation tools to install from source, all freely available.
 
 Vignettes are provided and may be perused at the [clarabel package
-site](https://bnaras.github.io/clarabel/articles/clarabel.html).
+site](https://oxfordcontrol.github.io/clarabel-r/articles/clarabel.html).
 
