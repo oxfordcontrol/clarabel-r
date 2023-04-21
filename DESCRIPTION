@@ -18,7 +18,7 @@ Roxygen: list(markdown = TRUE)
 Config/rextendr/version: 0.2.0.9000
 RoxygenNote: 7.2.3
 URL: https://oxfordcontrol.github.io/clarabel-r/
-BugReports: https:///github.com/oxfordcontrol/clarabel-r/issues
+BugReports: https://github.com/oxfordcontrol/clarabel-r/issues
 Suggests: 
     knitr,
     Matrix,
