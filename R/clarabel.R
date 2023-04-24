@@ -1,4 +1,4 @@
-#' @title Clarabel - Interior point conic solver
+#' @title Interface to 'Clarabel', an interior point conic solver
 #'
 #' @description Solves convex cone programs using an interior point
 #'   method. The specific problem solved is: Minimize
@@ -54,7 +54,8 @@
 #' the cones in the order they appear in the `A` matrix. The `cones`
 #' argument in such a case should be a named list with names matching
 #' `^z*` indicating primal zero cones, `^l*` indicating linear cones,
-#' and so on. For example, the following would be valid: `list(z1 =
+#' and so on. For example, either of the following would be valid: `list(z =
+#' 2L, l = 2L, q = 2L, z = 3L, q = 3L)`, or, `list(z1 =
 #' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating three zero
 #' cones, followed by two linear cones, followed by two second-order
 #' cones, followed by two zero cones, and finally 3 second-order
@@ -69,7 +70,8 @@
 #' clarabel(A = A, b = b, q = obj, cones = cone, control = control)
 #' 
 #  ---------------------------------------------------------
-clarabel <- function(A, b, q, P = NULL, cones, control = list(), strict_cone_order = TRUE) {
+clarabel <- function(A, b, q, P = NULL, cones, control = list(),
+                     strict_cone_order = TRUE) {
 
   ## TBD check box cone parameters, bsize > 0  & bl, bu have lengths bsize - 1
 
@@ -117,7 +119,7 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(), strict_cone_ord
   clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
 }
 
-#' Clarabel control parameters with default values and types in parenthesis
+#' Control parameters with default values and types in parenthesis
 #'
 #' @param max_iter maximum number of iterations (`200L`)		 
 #' @param time_limit maximum run time (seconds) (`Inf`)			 
@@ -216,7 +218,7 @@ clarabel_control <- function(
 
   int_params <- c("max_iter", "equilibrate_max_iter", "iterative_refinement_max_iter")
 
-  string_params <- "direct_solve_method"
+  string_params <- "direct_solve_method" # Might need to uncomment character coercion below, if length > 1
   
   if (any(sapply(params, length) != 1L)) stop("clarabel_control: arguments should be scalars!")
   if (any(unlist(params[int_params]) < 0)) stop("clarabel_control: integer arguments should be >= 0!")
@@ -230,9 +232,10 @@ clarabel_control <- function(
   for (x in int_params) {
     params[[x]] <- as.integer(params[[x]])
   }
-  for (x in string_params) {
-    params[[x]] <- as.character(params[[x]])
-  }
+  ## Not needed since match.arg takes care of this for the single string param
+  ## for (x in string_params) {
+  ##   params[[x]] <- as.character(params[[x]])
+  ## }
   for (x in float_params) {
     params[[x]] <- as.numeric(params[[x]])
   }

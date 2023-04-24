@@ -2,7 +2,7 @@
 % Please edit documentation in R/clarabel.R
 \name{clarabel}
 \alias{clarabel}
-\title{Clarabel - Interior point conic solver}
+\title{Interface to 'Clarabel', an interior point conic solver}
 \usage{
 clarabel(A, b, q, P = NULL, cones, control = list(), strict_cone_order = TRUE)
 }
@@ -68,7 +68,7 @@ When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
 the cones in the order they appear in the \code{A} matrix. The \code{cones}
 argument in such a case should be a named list with names matching
 \verb{^z*} indicating primal zero cones, \verb{^l*} indicating linear cones,
-and so on. For example, the following would be valid: \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating three zero
+and so on. For example, either of the following would be valid: \code{list(z = 2L, l = 2L, q = 2L, z = 3L, q = 3L)}, or, \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating three zero
 cones, followed by two linear cones, followed by two second-order
 cones, followed by two zero cones, and finally 3 second-order
 cones.

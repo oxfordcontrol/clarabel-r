@@ -2,7 +2,7 @@
 % Please edit documentation in R/clarabel.R
 \name{clarabel_control}
 \alias{clarabel_control}
-\title{Clarabel control parameters with default values and types in parenthesis}
+\title{Control parameters with default values and types in parenthesis}
 \usage{
 clarabel_control(
   max_iter = 200L,
@@ -123,5 +123,5 @@ clarabel_control(
 a list containing the control parameters.
 }
 \description{
-Clarabel control parameters with default values and types in parenthesis
+Control parameters with default values and types in parenthesis
 }
