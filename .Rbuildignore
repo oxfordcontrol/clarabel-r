@@ -5,6 +5,10 @@
 ^pkgdown$
 ^inst/stuff
 ^src/rust/target$
+^src/rust/modified_files.csv
+^src/rust/vendor.sh
+^src/rust/fix_hash.R
+^src/rust/Cargo.lock
 ^src/*.o
 ^src/*.so
 ^update_authors.R$
