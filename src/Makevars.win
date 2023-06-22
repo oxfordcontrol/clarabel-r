@@ -4,7 +4,7 @@ TARGET = $(subst 64,x86_64,$(subst 32,i686,$(WIN)))-pc-windows-gnu
 TARGET_DIR = ./rust/target
 LIBDIR = $(TARGET_DIR)/$(TARGET)/release
 STATLIB = $(LIBDIR)/libclarabel.a
-PKG_LIBS = -L$(LIBDIR) -lclarabel -lws2_32 -ladvapi32 -luserenv -lbcrypt
+PKG_LIBS = -L$(LIBDIR) -lclarabel -lntdll -lws2_32 -ladvapi32 -luserenv -lbcrypt $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 all: C_clean
 

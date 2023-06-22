@@ -3,6 +3,8 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^inst/misc
+^inst/stuff
 ^src/rust/target$
+^src/*.o
+^src/*.so
 ^update_authors.R$

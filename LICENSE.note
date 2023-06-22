@@ -36,6 +36,34 @@ License: Apache-2.0 OR MIT
 
 ------------------------------
 
+Name:    blas-src
+Files:   vendor/blas-src/*
+Authors: Balasubramanian Narasimhan, Ivan Ukhov, Jed Brown, Stefan Kroboth, Toshiki Teramura, bluss
+License: Apache-2.0/MIT
+
+------------------------------
+
+Name:    blas-sys
+Files:   vendor/blas-sys/*
+Authors: Andrew Straw, Corey Richardson, Ivan Ukhov, bluss
+License: Apache-2.0/MIT
+
+------------------------------
+
+Name:    blas
+Files:   vendor/blas/*
+Authors: Andrew Straw, Corey Richardson, Ivan Ukhov, Mason Smith, Toshiki Teramura
+License: Apache-2.0/MIT
+
+------------------------------
+
+Name:    cfg-if
+Files:   vendor/cfg-if/*
+Authors: Alex Crichton
+License: MIT/Apache-2.0
+
+------------------------------
+
 Name:    clarabel
 Files:   vendor/clarabel/*
 Authors: Paul Goulart
@@ -127,10 +155,38 @@ License: MIT/Apache-2.0
 
 ------------------------------
 
+Name:    lapack-src
+Files:   vendor/lapack-src/*
+Authors: Balasubramanian Narasimhan, Ivan Ukhov, Mitsutoshi Aoe, Stefan Kroboth, Toshiki Teramura
+License: Apache-2.0/MIT
+
+------------------------------
+
+Name:    lapack-sys
+Files:   vendor/lapack-sys/*
+Authors: Andrew Straw, Corey Richardson, Ivan Ukhov, Toshiki Teramura
+License: Apache-2.0/MIT
+
+------------------------------
+
+Name:    lapack
+Files:   vendor/lapack/*
+Authors: Andrew Straw, Crozet Sébastien, David Greenberg, Ivan Ukhov, Pavel Potocek, Selvavignesh Vedamanickam, Toshiki Teramura
+License: Apache-2.0/MIT
+
+------------------------------
+
 Name:    lazy_static
 Files:   vendor/lazy_static/*
 Authors: Marvin Löbel
 License: MIT/Apache-2.0
+
+------------------------------
+
+Name:    libc
+Files:   vendor/libc/*
+Authors: The Rust Project Developers
+License: MIT OR Apache-2.0
 
 ------------------------------
 
@@ -145,6 +201,13 @@ Name:    memchr
 Files:   vendor/memchr/*
 Authors: Andrew Gallant, bluss
 License: Unlicense/MIT
+
+------------------------------
+
+Name:    num-complex
+Files:   vendor/num-complex/*
+Authors: The Rust Project Developers
+License: MIT OR Apache-2.0
 
 ------------------------------
 
@@ -180,6 +243,13 @@ Name:    quote
 Files:   vendor/quote/*
 Authors: David Tolnay
 License: MIT OR Apache-2.0
+
+------------------------------
+
+Name:    r-src
+Files:   vendor/r-src/*
+Authors: Balasubramanian Narasimhan
+License: MIT
 
 ------------------------------
 

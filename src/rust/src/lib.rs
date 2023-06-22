@@ -28,9 +28,11 @@ fn clarabel_solve(m: i32, n: i32, Ai: &[i32], Ap: &[i32], Ax: &[f64], b: &[f64],
             Px.to_vec(),   // nzval
 	)
     } else {
-	CscMatrix::spalloc(n as usize, n as usize, 0) // For P = 0
+	CscMatrix::zeros((n as usize, n as usize)) // For P = 0
     };
 
+    // println!("P: {:?}", P);
+    
     // assert!(P.check_format().is_ok());    
 
     let A = {
@@ -52,7 +54,11 @@ fn clarabel_solve(m: i32, n: i32, Ai: &[i32], Ap: &[i32], Ax: &[f64], b: &[f64],
 	)
     };
 
+    // println!("A: {:?}", A);
     // assert!(A.check_format().is_ok());
+    
+    // println!("b: {:?}", b);
+    // println!("q: {:?}", q);    
     
     // Handle cones
     lazy_static! {
@@ -61,10 +67,10 @@ fn clarabel_solve(m: i32, n: i32, Ai: &[i32], Ap: &[i32], Ax: &[f64], b: &[f64],
 	static ref SOC: Regex = Regex::new("^q").unwrap(); // Second Order Cone
 	static ref EPC: Regex = Regex::new("^ep").unwrap(); // Exponential Cone
 	static ref PC: Regex = Regex::new("^p").unwrap();  // Power Cone
+	static ref PSDTC: Regex = Regex::new("^s").unwrap();  // PSD Triangle Cone
     }
 
     let mut cones: Vec::<SupportedConeT<f64>> = Vec::new();
-    
     for (key, value) in cone_spec.iter() {
 	if ZC.is_match(key.as_ref()) {
 	    cones.push(ZeroConeT(value.as_integer().expect("Positive integer expected") as usize));
@@ -76,13 +82,16 @@ fn clarabel_solve(m: i32, n: i32, Ai: &[i32], Ap: &[i32], Ax: &[f64], b: &[f64],
 	    for _i in 0..value.as_integer().expect("Positive integer expected") {
 		cones.push(ExponentialConeT());
 	    }
+	} else if PSDTC.is_match(key.as_ref()) {
+	    cones.push(PSDTriangleConeT(value.as_integer().expect("Positive integer expected") as usize));	    
 	} else if PC.is_match(key.as_ref()) {
 	    cones.push(PowerConeT(value.as_real().expect("Positive real value expected")));	
         } else {
 	    println!("Unknown cone {}; ignoring", &key);
 	}
     }
-    
+
+    // println!("cones: {:?}", cones);    
     // Update default settings with specified R settings for use below
     let settings = update_settings(r_settings);
     

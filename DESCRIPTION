@@ -1,7 +1,7 @@
 Package: clarabel
 Type: Package
 Title: Interior Point Conic Optimization Solver
-Version: 0.4.1
+Version: 0.5.1
 Authors@R: c(person("Balasubramanian", "Narasimhan", role=c("aut", "cre"),
 	   	   email = "naras@stanford.edu"),
 	     person("Paul", "Goulart", role=c("aut", "cph")),
@@ -15,7 +15,7 @@ License: Apache License (== 2.0)
 SystemRequirements: Cargo (rustc package manager)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Config/rextendr/version: 0.2.0.9000
+Config/rextendr/version: 0.3.1
 RoxygenNote: 7.2.3
 URL: https://oxfordcontrol.github.io/clarabel-r/
 BugReports: https://github.com/oxfordcontrol/clarabel-r/issues

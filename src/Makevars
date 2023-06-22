@@ -4,7 +4,7 @@ VENDOR_SRC = ./rust/vendor.tar.xz
 TARGET_DIR = ./rust/target
 LIBDIR = $(TARGET_DIR)/release
 STATLIB = $(LIBDIR)/libclarabel.a
-PKG_LIBS = -L$(LIBDIR) -lclarabel
+PKG_LIBS = -L$(LIBDIR) -lclarabel $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 all: C_clean
 
@@ -24,7 +24,7 @@ $(STATLIB):
 		cargo build --lib --release --offline --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR); \
 	fi && \
 	if [ "$(VENDORING)" = "no" ]; then \
-		cargo build --lib --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR); \
+		cargo build --lib --verbose --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR); \
 	fi
 	rm -Rf $(CARGOTMP)
 	rm -Rf $(LIBDIR)/build

@@ -19,19 +19,30 @@ clarabel(A, b, q, P = NULL, cones, control = list(), strict_cone_order = TRUE)
 \item{cones}{a named list giving the cone sizes, see \dQuote{Cone
 Parameters} below for specification}
 
-\item{control}{a list giving specific control parameters to use in place of default values, with an empty list indicating the default control parameters. Specified parameters should be correctly named and typed to avoid Rust system panics as no sanitization is done for efficiency reasons}
+\item{control}{a list giving specific control parameters to use in
+place of default values, with an empty list indicating the
+default control parameters. Specified parameters should be
+correctly named and typed to avoid Rust system panics as no
+sanitization is done for efficiency reasons}
 
-\item{strict_cone_order}{a logical flag, default \code{TRUE} for forcing order of cones described below. If \code{FALSE} cones can be specified in any order and even repeated and directly passed to the solver without type and length checks}
+\item{strict_cone_order}{a logical flag, default \code{TRUE} for forcing
+order of cones described below. If \code{FALSE} cones can be specified
+in any order and even repeated and directly passed to the solver
+without type and length checks}
 }
 \value{
-named list of solution vectors x, y, s and information about run
+named list of solution vectors x, y, s and information
+about run
 }
 \description{
-Solves convex cone programs using an interior point
-method. The specific problem solved is: Minimize
-\deqn{\frac{1}{2}x^TPx + q^Tx} subject to \deqn{Ax + s = b}
-\deqn{s \in K} where \eqn{x \in R^n}, \eqn{s \in R^m}, \eqn{P =
-  P^T} and nonnegative-definite, \eqn{q \in R^n}, \eqn{A \in
+Clarabel solves linear programs (LPs), quadratic programs (QPs),
+second-order cone programs (SOCPs) and semidefinite programs
+(SDPs). It also solves problems with exponential and power cone
+constraints. The specific problem solved is:
+
+Minimize \deqn{\frac{1}{2}x^TPx + q^Tx} subject to \deqn{Ax + s =
+  b} \deqn{s \in K} where \eqn{x \in R^n}, \eqn{s \in R^m}, \eqn{P
+  = P^T} and nonnegative-definite, \eqn{q \in R^n}, \eqn{A \in
   R^{m\times n}}, and \eqn{b \in R^m}. The set \eqn{K} is a
 composition of convex cones.
 }
@@ -39,12 +50,15 @@ composition of convex cones.
 The order of the rows in matrix \eqn{A} has to correspond to the
 order given in the table \dQuote{Cone Parameters}, which means
 means rows corresponding to \emph{primal zero cones} should be
-first, rows corresponding to \emph{non-negative cones} second, rows
-corresponding to \emph{second-order cone} third, rows corresponding to
-\emph{exponential cones} fourth and rows corresponding to
-\emph{power cones} at last.
+first, rows corresponding to \emph{non-negative cones} second,
+rows corresponding to \emph{second-order cone} third, rows
+corresponding to \emph{positive semidefinite cones} fourth, rows
+corresponding to \emph{exponential cones} fifth and rows
+corresponding to \emph{power cones} at last.
 
-When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify the cones in any order and even repeat them in the order they appear in the \code{A} matrix. See below.
+When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
+the cones in any order and even repeat them in the order they
+appear in the \code{A} matrix. See below.
 
 \subsection{Clarabel can solve}{ \enumerate{ \item linear programs
 (LPs) \item second-order cone programs (SOCPs) \item exponential
@@ -60,6 +74,7 @@ The table below shows the cone parameter specifications
 \tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
 \tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
 \tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
+\tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
 \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
 \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
 } }
@@ -68,10 +83,10 @@ When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
 the cones in the order they appear in the \code{A} matrix. The \code{cones}
 argument in such a case should be a named list with names matching
 \verb{^z*} indicating primal zero cones, \verb{^l*} indicating linear cones,
-and so on. For example, either of the following would be valid: \code{list(z = 2L, l = 2L, q = 2L, z = 3L, q = 3L)}, or, \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating three zero
-cones, followed by two linear cones, followed by two second-order
-cones, followed by two zero cones, and finally 3 second-order
-cones.
+and so on. For example, either of the following would be valid: \code{list(z = 2L, l = 2L, q = 2L, z = 3L, q = 3L)}, or, \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating a zero
+cone of size 2, followed by a linear cone of size 2, followed by a second-order
+cone of size 2, followed by a zero cone of size 3, and finally a second-order
+cone of size 3.
 }
 \examples{
 A <- matrix(c(1, 1), ncol = 1)
