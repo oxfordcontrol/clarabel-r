@@ -22,5 +22,6 @@ BugReports: https://github.com/oxfordcontrol/clarabel-r/issues
 Suggests: 
     knitr,
     Matrix,
-    rmarkdown
+    rmarkdown,
+    tinytest
 VignetteBuilder: knitr
