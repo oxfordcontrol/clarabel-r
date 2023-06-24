@@ -89,7 +89,7 @@ cat(sprintf("Solution status, description: = (%d, %s)\n",
 cat(sprintf("Solution: (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
 ```
 
-### 2. Basic Second-order Cone Programming Example
+## 2. Basic Second-order Cone Programming Example
 
 We want to solve the following 2-dimensional optimization problem:
 
@@ -140,7 +140,7 @@ cat(sprintf("Solution status, description: = (%d, %s)\n",
 cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
 ```
 
-## 3. Semidefinite Cone Programming Example
+## 3. Semidefinite Cone Programming
 
 Semidefinite cones have to be specified in a particular form. We
 borrow from the [documentation for the SCS
