@@ -1,12 +1,18 @@
 #' @title Interface to 'Clarabel', an interior point conic solver
 #'
-#' @description Solves convex cone programs using an interior point
-#'   method. The specific problem solved is: Minimize
-#'   \deqn{\frac{1}{2}x^TPx + q^Tx} subject to \deqn{Ax + s = b}
-#'   \deqn{s \in K} where \eqn{x \in R^n}, \eqn{s \in R^m}, \eqn{P =
-#'   P^T} and nonnegative-definite, \eqn{q \in R^n}, \eqn{A \in
+#' @description
+#'
+#' Clarabel solves linear programs (LPs), quadratic programs (QPs),
+#'   second-order cone programs (SOCPs) and semidefinite programs
+#'   (SDPs). It also solves problems with exponential and power cone
+#'   constraints. The specific problem solved is:
+#'
+#' Minimize \deqn{\frac{1}{2}x^TPx + q^Tx} subject to \deqn{Ax + s =
+#'   b} \deqn{s \in K} where \eqn{x \in R^n}, \eqn{s \in R^m}, \eqn{P
+#'   = P^T} and nonnegative-definite, \eqn{q \in R^n}, \eqn{A \in
 #'   R^{m\times n}}, and \eqn{b \in R^m}. The set \eqn{K} is a
 #'   composition of convex cones.
+#'
 #' @param A a matrix of constraint coefficients.
 #' @param b a numeric vector giving the primal constraints
 #' @param q a numeric vector giving the primal objective
@@ -14,23 +20,34 @@
 #'   \code{NULL}
 #' @param cones a named list giving the cone sizes, see \dQuote{Cone
 #'   Parameters} below for specification
-#' @param control a list giving specific control parameters to use in place of default values, with an empty list indicating the default control parameters. Specified parameters should be correctly named and typed to avoid Rust system panics as no sanitization is done for efficiency reasons
-#' @param strict_cone_order a logical flag, default `TRUE` for forcing order of cones described below. If `FALSE` cones can be specified in any order and even repeated and directly passed to the solver without type and length checks
-#' @return named list of solution vectors x, y, s and information about run
+#' @param control a list giving specific control parameters to use in
+#'   place of default values, with an empty list indicating the
+#'   default control parameters. Specified parameters should be
+#'   correctly named and typed to avoid Rust system panics as no
+#'   sanitization is done for efficiency reasons
+#' @param strict_cone_order a logical flag, default `TRUE` for forcing
+#'   order of cones described below. If `FALSE` cones can be specified
+#'   in any order and even repeated and directly passed to the solver
+#'   without type and length checks
+#' @return named list of solution vectors x, y, s and information
+#'   about run
 #' @seealso [clarabel_control()]
 #' @export clarabel
 #'
 #' @details
 #'
 #' The order of the rows in matrix \eqn{A} has to correspond to the
-#' order given in the table \dQuote{Cone Parameters}, which means
-#' means rows corresponding to \emph{primal zero cones} should be
-#' first, rows corresponding to \emph{non-negative cones} second, rows
-#' corresponding to \emph{second-order cone} third, rows corresponding to
-#' \emph{exponential cones} fourth and rows corresponding to
-#' \emph{power cones} at last.
+#'   order given in the table \dQuote{Cone Parameters}, which means
+#'   means rows corresponding to \emph{primal zero cones} should be
+#'   first, rows corresponding to \emph{non-negative cones} second,
+#'   rows corresponding to \emph{second-order cone} third, rows
+#'   corresponding to \emph{positive semidefinite cones} fourth, rows
+#'   corresponding to \emph{exponential cones} fifth and rows
+#'   corresponding to \emph{power cones} at last.
 #'
-#' When the parameter `strict_cone_order` is `FALSE`, one can specify the cones in any order and even repeat them in the order they appear in the `A` matrix. See below.
+#' When the parameter `strict_cone_order` is `FALSE`, one can specify
+#' the cones in any order and even repeat them in the order they
+#' appear in the `A` matrix. See below.
 #'
 #' \subsection{Clarabel can solve}{ \enumerate{ \item linear programs
 #' (LPs) \item second-order cone programs (SOCPs) \item exponential
@@ -46,6 +63,7 @@
 #'    \tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
 #'    \tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
 #'    \tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
+#'    \tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
 #'    \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
 #'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
 #' } }
@@ -56,10 +74,10 @@
 #' `^z*` indicating primal zero cones, `^l*` indicating linear cones,
 #' and so on. For example, either of the following would be valid: `list(z =
 #' 2L, l = 2L, q = 2L, z = 3L, q = 3L)`, or, `list(z1 =
-#' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating three zero
-#' cones, followed by two linear cones, followed by two second-order
-#' cones, followed by two zero cones, and finally 3 second-order
-#' cones.
+#' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating a zero
+#' cone of size 2, followed by a linear cone of size 2, followed by a second-order
+#' cone of size 2, followed by a zero cone of size 3, and finally a second-order
+#' cone of size 3.
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)
@@ -267,34 +285,50 @@ solver_status_descriptions <- function() {
 ### @param cone_spec a list of cone specifications
 ### @return sanitized cone specifications
 sanitize_cone_spec <- function(cone_spec) {
-  result <- list()
   cone_names <- names(cone_spec)
-  if (length(intersect(cone_names, c("z", "l", "q", "ep", "p"))) != length(cone_spec)) {
-    stop("sanitize_cone_spec: unspecified cone parameters")
+
+  ## Simple sanity checks
+  if ((nc <- length(cone_names)) == 0L) {
+    stop("sanitize_cone_spec: no cone parameters specified")    
+  } 
+  if (length(intersect(cone_names, c("z", "l", "q", "s", "ep", "p"))) != nc) {
+    stop("sanitize_cone_spec: unknown cone parameters specified")
   }
+
+  ## Check lengths as noted cone parameters table for ?clarabel
+  ## First, scalars
+  z <- as.integer(cone_spec[["z"]]); zl <- length(z)
+  l <- as.integer(cone_spec[["l"]]); ll <- length(l)
+  ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep)
+  if (zl > 1 || ll > 1 || epl > 1) {
+    stop("sanitize_cone_spec: z, l, ep should be scalars")
+  }
+  if (any(c(z, l, ep) < 0L)) {
+    stop("sanitize_cone_spec: z, l, ep should be scalars > 0")
+  }
+
+  ## Now the others
+  ## SOC 
+  q <- as.integer(cone_spec[["q"]]); ql <- length(q)
+  if (any(q <= 0L)) stop("sanitize_cone_spec: SOC dimensions should be > 0")
+  q <- as.list(q); names(q) <- rep("q", ql);
+
+  ## PSD 
+  s <- as.integer(cone_spec[["s"]]); sl <- length(s)
+  if (any(s <= 0L)) stop("sanitize_cone_spec: PSD dimensions should be > 0")
+  s <- as.list(s); names(s) <- rep("s", sl);
+
+  ## Power Cone
+  p <- as.numeric(cone_spec[["p"]]); pl <- length(p)
+  if (any(p <= 0)) stop("sanitize_cone_spec: Power cone parameter should be > 0")
+  p <- as.list(p); names(p) <- rep("p", pl);  
   
-  for (name in cone_names) {
-    value <- cone_spec[[name]]    
-    if (grepl("^z|^l|^ep", name)) {
-      if (length(value) != 1L || value <= 0) {
-        stop("sanitize_cone_spec: z, l, ep should be scalars > 0")
-      }
-      result[[name]] <- as.integer(value)
-    } else if (grepl("^q", name)) {
-      value <- as.integer(value)
-      qnames <- paste0("q", seq_along(value))
-      for (i in seq_along(value)) {
-        result[[qnames[i]]] <- value[i]
-      }
-    } else { ## must be "p", power cone
-      if (any(value <= 0.0 | value >= 1.0)) {
-        stop("sanitize_cone_spec: Power cone parameter should be in (0, 1)")
-      }
-      pnames <- paste0("p", seq_along(value))
-      for (i in seq_along(value)) {
-        result[[pnames[i]]] <- value[i]
-      }
-    }
-  }
-  result
+  c(
+    if (zl > 0) list(z = z),
+    if (ll > 0) list(l = l),
+    if (ql > 0) q,
+    if (sl > 0) s,
+    if (epl > 0) list(ep = ep),
+    if (pl > 0) p
+  )
 }

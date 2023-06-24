@@ -1,10 +1,13 @@
 #!/bin/sh -e
 
 ## Author: Hiroaki Yutani in the string2path package
+## Modifications: naras@stanford
 
 cargo vendor
 
 # c.f. https://reproducible-builds.org/docs/archives/
+echo
+echo "Tarring up files"
 gtar \
   --sort=name \
   --mtime='1970-01-01 00:00:00Z' \
@@ -18,8 +21,9 @@ gtar \
 
 echo
 echo
-echo "#############################################"
-echo "#                                           #"
-echo "#  UPDATE src/cargo_vendor_config.toml !!!  #"
-echo "#                                           #"
-echo "#############################################"
+echo "##############################################"
+echo "#                                            #"
+echo "#  UPDATE src/cargo_vendor_config.toml !!!   #"
+echo "#                                            #"
+echo "##############################################"
+echo

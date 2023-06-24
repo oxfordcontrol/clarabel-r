@@ -1,6 +1,6 @@
 The authors of the dependency Rust crates:
 
-aho-corasick (version 1.0.0):
+aho-corasick (version 1.0.2):
   Andrew Gallant
 
 amd (version 0.2.2):
@@ -9,7 +9,31 @@ amd (version 0.2.2):
 autocfg (version 1.1.0):
   Josh Stone
 
-clarabel (version 0.4.1):
+blas-src (version 0.9.0):
+  Balasubramanian Narasimhan
+  Ivan Ukhov
+  Jed Brown
+  Stefan Kroboth
+  Toshiki Teramura
+  bluss
+
+blas-sys (version 0.7.1):
+  Andrew Straw
+  Corey Richardson
+  Ivan Ukhov
+  bluss
+
+blas (version 0.22.0):
+  Andrew Straw
+  Corey Richardson
+  Ivan Ukhov
+  Mason Smith
+  Toshiki Teramura
+
+cfg-if (version 1.0.0):
+  Alex Crichton
+
+clarabel (version 0.5.1):
   Paul Goulart
 
 darling_core (version 0.14.4):
@@ -73,8 +97,33 @@ fnv (version 1.0.7):
 ident_case (version 1.0.1):
   Ted Driggs
 
+lapack-src (version 0.9.0):
+  Balasubramanian Narasimhan
+  Ivan Ukhov
+  Mitsutoshi Aoe
+  Stefan Kroboth
+  Toshiki Teramura
+
+lapack-sys (version 0.14.0):
+  Andrew Straw
+  Corey Richardson
+  Ivan Ukhov
+  Toshiki Teramura
+
+lapack (version 0.19.0):
+  Andrew Straw
+  Crozet Sébastien
+  David Greenberg
+  Ivan Ukhov
+  Pavel Potocek
+  Selvavignesh Vedamanickam
+  Toshiki Teramura
+
 lazy_static (version 1.4.0):
   Marvin Löbel
+
+libc (version 0.2.146):
+  The Rust Project Developers
 
 libR-sys (version 0.4.0):
   andy-thomason
@@ -88,26 +137,32 @@ memchr (version 2.5.0):
   Andrew Gallant
   bluss
 
+num-complex (version 0.4.3):
+  The Rust Project Developers
+
 num-traits (version 0.2.15):
   The Rust Project Developers
 
-once_cell (version 1.17.1):
+once_cell (version 1.18.0):
   Aleksey Kladov
 
 paste (version 1.0.12):
   David Tolnay
 
-proc-macro2 (version 1.0.56):
+proc-macro2 (version 1.0.60):
   David Tolnay
   Alex Crichton
 
-quote (version 1.0.26):
+quote (version 1.0.28):
   David Tolnay
 
-regex-syntax (version 0.7.0):
+r-src (version 0.1.0):
+  Balasubramanian Narasimhan
+
+regex-syntax (version 0.7.2):
   The Rust Project Developers
 
-regex (version 1.8.0):
+regex (version 1.8.4):
   The Rust Project Developers
 
 strsim (version 0.10.0):
@@ -116,7 +171,7 @@ strsim (version 0.10.0):
 syn (version 1.0.109):
   David Tolnay
 
-syn (version 2.0.15):
+syn (version 2.0.18):
   David Tolnay
 
 thiserror-impl (version 1.0.40):
@@ -125,5 +180,5 @@ thiserror-impl (version 1.0.40):
 thiserror (version 1.0.40):
   David Tolnay
 
-unicode-ident (version 1.0.8):
+unicode-ident (version 1.0.9):
   David Tolnay

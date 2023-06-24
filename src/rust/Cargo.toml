@@ -1,6 +1,6 @@
 [package]
 name = 'clarabel'
-version = '0.4.1'
+version = '0.5.1'
 edition = '2021'
 
 [lib]
@@ -9,6 +9,6 @@ name = 'clarabel'
 
 [dependencies]
 extendr-api = '0.4.0'
-clarabel = '0.4.1'
+clarabel = {version = '0.5.1', features = [ 'sdp-r' ]}
 lazy_static = "1.4.0"
-regex = "1.7.3"
+regex = "1.8.4"

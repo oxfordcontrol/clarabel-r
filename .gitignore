@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Github stuff
+.github/
+
+# My stuff
+inst/stuff
