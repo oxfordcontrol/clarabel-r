@@ -21,6 +21,7 @@ remotes::install_github("oxfordcontrol/clarabel-r")
 The above code assumes availability of the Cargo/Rust infrastructure
 and R compilation tools to install from source, all freely available.
 
-Vignettes are provided and may be perused at the [clarabel package
-site](https://oxfordcontrol.github.io/clarabel-r/articles/clarabel.html).
+The [clarabel package
+site](https://oxfordcontrol.github.io/clarabel-r/articles/clarabel.html)
+has further package details including a vignette.
 
