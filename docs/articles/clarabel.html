@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clarabel</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -86,13 +86,11 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://oxfordcontrol.github.io/clarabel-r/" class="external-link">clarabel</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>These examples are from the original <a href="https://github.com/oxfordcontrol/ClarabelDocs" class="external-link">Clarabel
-documentation</a>.</p>
+<p>The first two examples are from the original <a href="https://github.com/oxfordcontrol/ClarabelDocs" class="external-link">Clarabel
+documentation</a> and the third is from <a href="https://www.cvxgrp.org/scs/" class="external-link">SCS</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="basic-quadratic-program-example">1. Basic Quadratic Program Example<a class="anchor" aria-label="anchor" href="#basic-quadratic-program-example"></a>
@@ -146,13 +144,13 @@ so.</p>
 <div class="section level3">
 <h3 id="solution">1.3. Solution<a class="anchor" aria-label="anchor" href="#solution"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span>  <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">4</span><span class="op">)</span></span>
 <span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>z <span class="op">=</span> <span class="fl">1L</span>, l <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span>  <span class="co">## 1 equality and 4 inequalities, in order</span></span>
+<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z <span class="op">=</span> <span class="fl">1L</span>, l <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span>  <span class="co">## 1 equality and 4 inequalities, in order</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -161,7 +159,7 @@ so.</p>
 <span><span class="co">#&gt; Solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="basic-socp-example">2. Basic SOCP Example<a class="anchor" aria-label="anchor" href="#basic-socp-example"></a>
+<h3 id="basic-second-order-cone-programming-example">2. Basic Second-order Cone Programming Example<a class="anchor" aria-label="anchor" href="#basic-second-order-cone-programming-example"></a>
 </h3>
 <p>We want to solve the following 2-dimensional optimization
 problem:</p>
@@ -204,13 +202,13 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 <div class="section level3">
 <h3 id="solution-1">2.3. Solution<a class="anchor" aria-label="anchor" href="#solution-1"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">2.0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1.0</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>q <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -220,26 +218,224 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="control-parameters">3. Control parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
+<h2 id="semidefinite-cone-programming-example">3. Semidefinite Cone Programming Example<a class="anchor" aria-label="anchor" href="#semidefinite-cone-programming-example"></a>
+</h2>
+<p>Semidefinite cones have to be specified in a particular form. We
+borrow from the <a href="https://www.cvxgrp.org/scs/api/cones.html#sdcone" class="external-link">documentation
+for the SCS solver</a> which has similar calling conventions.</p>
+<p>The symmetric positive semidefinite cone of matrices is the set</p>
+<p><span class="math display">\[
+\{S \in \mathbf{R}^{k \times k} \mid  S = S^\top,  x^\top S x \geq 0 \
+\forall x \in \mathbb{R}^k \}
+\]</span></p>
+<p>and for short, we use <span class="math inline">\(S \succeq
+0\)</span> to denote membership. Clarabel vectorizes this cone in a
+special way which we detail here.</p>
+<p>Clarabel assumes that the input data corresponding to semidefinite
+cones have been vectorized by scaling the off-diagonal entries by <span class="math inline">\(\sqrt{2}\)</span> and stacking the upper
+triangular elements column-wise. (<a href="https://www.cvxgrp.org/scs/index.html" class="external-link">SCS</a> uses the lower
+triangular elements.) For a <span class="math inline">\(k \times
+k\)</span> matrix variable (or data matrix) this operation would create
+a vector of length <span class="math inline">\(k(k+1)/2\)</span>.
+Scaling by <span class="math inline">\(\sqrt{2}\)</span> is required to
+preserve the inner-product.</p>
+<p><em>This must be done for the rows of both <span class="math inline">\(A\)</span> and <span class="math inline">\(b\)</span> that correspond to semidefinite cones
+and must be done independently for each semidefinite cone.</em></p>
+<p>More explicitly, we want to express <span class="math inline">\(\text{Trace}(Y S)\)</span> as <span class="math inline">\(\text{vec}(Y)^\top \text{vec}(S)\)</span>, where
+the <span class="math inline">\(\text{vec}\)</span> operation takes the
+(assumed to be symmetric) <span class="math inline">\(k \times
+k\)</span> matrix</p>
+<p><span class="math display">\[
+\begin{aligned}
+S =  \begin{bmatrix}
+        S_{11} &amp; S_{12} &amp; \ldots &amp; S_{1k}  \\
+        S_{21} &amp; S_{22} &amp; \ldots &amp; S_{2k}  \\
+        \vdots &amp; \vdots &amp; \ddots &amp; \vdots  \\
+        S_{k1} &amp; S_{k2} &amp; \ldots &amp; S_{kk}  \\
+      \end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>and produces a vector consisting of the upper triangular elements
+scaled and arranged as</p>
+<p><span class="math display">\[
+\text{vec}(S) = (S_{11}, \sqrt{2} S_{12}, S_{22}, \sqrt{2}S_{13},
+\ldots, \sqrt{2}
+S_{1k}, \sqrt{2}S_{2k}, \sqrt{2}S_{3k}, \dots, \sqrt{2}S_{k-1,k},
+S_{kk}) \in
+\mathbb{R}^{k(k+1)/2}.
+\]</span></p>
+<p>To recover the matrix solution this operation must be inverted on the
+components of the vectors returned by Clarabel corresponding to each
+semidefinite cone. That is, the off-diagonal entries must be scaled by
+<span class="math inline">\(1/\sqrt{2}\)</span> and the upper triangular
+entries are filled in by copying the values of lower triangular entries.
+Explicitly, the inverse operation takes vector <span class="math inline">\(s \in \mathbb{R}^{k(k+1)/2}\)</span> and produces
+the matrix</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{mat}(s) =  \begin{bmatrix}
+s_{1} &amp; s_{2} / \sqrt{2} &amp; \ldots &amp; s_{k(k-1)/2-1} /
+\sqrt{2}  \\
+s_{2} / \sqrt{2} &amp; s_{3} &amp; \ldots &amp; s_{k(k-1)/2} /
+\sqrt{2}  \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots  \\
+s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots
+&amp; s_{k(k+1) / 2}  \\
+\end{bmatrix}
+\in \mathbb{R}^{k \times k}.
+\end{aligned}
+\]</span></p>
+<p>So the cone definition that Clarabel uses is</p>
+<p><span class="math display">\[
+\mathcal{S}_+^k = \{ \text{vec}(S) \mid S \succeq 0\} = \{s \in
+\mathbb{R}^{k(k+1)/2} \mid \text{mat}(s) \succeq 0 \}.
+\]</span></p>
+<p>Below are two functions to implement both <span class="math inline">\(\text{vec}\)</span> and <span class="math inline">\(\text{mat}\)</span>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' Return an vectorization of symmetric matrix using the upper triangular part,</span></span>
+<span><span class="co">#' still in column order.</span></span>
+<span><span class="co">#' @param S a symmetric matrix</span></span>
+<span><span class="co">#' @return vector of values</span></span>
+<span><span class="va">vec</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">S</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></span>
+<span>  <span class="va">sqrt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2.0</span><span class="op">)</span></span>
+<span>  <span class="va">upper_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">S</span>, diag <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">S</span><span class="op">[</span><span class="va">upper_tri</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">S</span><span class="op">[</span><span class="va">upper_tri</span><span class="op">]</span> <span class="op">*</span> <span class="va">sqrt2</span></span>
+<span>  <span class="va">S</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">S</span>, diag <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">#' Return the symmetric matrix from the [vec] vectorization</span></span>
+<span><span class="co">#' @param v a vector</span></span>
+<span><span class="co">#' @return a symmetric matrix</span></span>
+<span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">8</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span>  <span class="va">sqrt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2.0</span><span class="op">)</span></span>
+<span>  <span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n</span>, <span class="va">n</span><span class="op">)</span></span>
+<span>  <span class="va">upper_tri</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">S</span>, diag <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">S</span><span class="op">[</span><span class="va">upper_tri</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">v</span> <span class="op">/</span> <span class="va">sqrt2</span></span>
+<span>  <span class="va">S</span> <span class="op">&lt;-</span> <span class="va">S</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="va">S</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="example">3.1. Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h3>
+<p>Consider the problem:</p>
+<p><span class="math display">\[
+\begin{array}{ll} \text{minimize} &amp;  x_1 - x_2 + x_3\\
+\text{subject to} &amp; B_1 - A_{11}x_1 - A_{12}x_2 - A_{13}x_3 \succeq
+0\\
+                  &amp; B_2 - A_{21}x_1 - A_{22}x_2 - A_{23}x_3 \succeq
+0
+\end{array}
+\]</span> where <span class="math display">\[
+A_{11}=\begin{bmatrix} -7 &amp; -11 \\ -11 &amp; 3\end{bmatrix}\mbox{, }
+A_{12}=\begin{bmatrix} 7 &amp; -18 \\ -18 &amp; 8\end{bmatrix}\mbox{, }
+A_{13}=\begin{bmatrix} -2 &amp; -8 \\ -8 &amp; 1\end{bmatrix},
+\]</span></p>
+<p><span class="math display">\[
+A_{21}=\begin{bmatrix} -21 &amp; -11 &amp; 0\\ -11 &amp; 10 &amp; 8\\ 0
+&amp; 8 &amp;
+5\end{bmatrix}\mbox{, }
+A_{22}=\begin{bmatrix} 0 &amp; 10 &amp; 16\\ 10 &amp; -10 &amp; -10\\ 16
+&amp; -10 &amp;
+3\end{bmatrix}\mbox{, }
+A_{23}=\begin{bmatrix} -5 &amp; 2 &amp; -17\\ 2 &amp; -6 &amp; 8\\ -17
+&amp; 8 &amp;
+6\end{bmatrix},
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+B_1=\begin{bmatrix} 33 &amp; -9 \\ -9 &amp; 26\end{bmatrix}\mbox{, }
+B_2=\begin{bmatrix} 14 &amp; 9 &amp; 40\\ 9 &amp; 91 &amp; 10\\ 40 &amp;
+10 &amp;
+15\end{bmatrix}.
+\]</span></p>
+<p>The constraints involve symmetric positive semidefinite cones over
+variables <span class="math inline">\(x \in \mathbb{R}^n\)</span> and
+<span class="math inline">\(S \in \mathbb{R}^{k \times k}\)</span></p>
+<p><span class="math display">\[
+B - \sum_{i=1}^n \mathcal{A}_i x_i = S \succeq 0
+\]</span></p>
+<p>where data <span class="math inline">\(B, \mathcal{A}_1, \ldots,
+\mathcal{A}_n \in \mathbb{R}^{k \times k}\)</span> are symmetric. We can
+write this in the canonical form over a new variable <span class="math inline">\(s \in \mathcal{S}_+^k\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\begin{align}
+s &amp;= \text{vec}(S)\\
+&amp;= \text{vec}(B - \sum_{i=1}^n \mathcal{A}_i x_i) \\
+&amp;= \text{vec}(B) - \sum_{i=1}^n \text{vec}(\mathcal{A}_i) x_i \\
+&amp;= b - Ax
+\end{align}
+\end{aligned}
+\]</span></p>
+<p>using the fact that <span class="math inline">\(\text{vec}\)</span>
+is linear, where <span class="math inline">\(b = \text{vec}(B)\)</span>
+and</p>
+<p><span class="math display">\[
+A =
+\begin{bmatrix}
+\text{vec}(\mathcal{A}_1) &amp; \text{vec}(\mathcal{A}_2) &amp; \cdots
+&amp; \text{vec}(\mathcal{A}_n)
+\end{bmatrix}
+\]</span></p>
+<p>i.e., the vectors <span class="math inline">\(\text{vec}(\mathcal{A}_i)\)</span> stacked
+columnwise. This is in a form that we can input into Clarabel. To
+recover the matrix solution from the optimal solution returned by
+Clarabel, we simply use <span class="math inline">\(S^\star =
+\text{mat}(s^\star)\)</span>.</p>
+<p>We have two such constraints and will therefore construct the vectors
+for both cones in order and specify the appropriate dimensions, 2 and 3,
+respectively.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># objective: x_1 - x2 + x_3</span></span>
+<span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">A13</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">8</span>, <span class="op">-</span><span class="fl">8</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">A21</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">21</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">10</span>, <span class="fl">8</span>, <span class="fl">0</span>, <span class="fl">8</span>, <span class="fl">5</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">A22</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span>, <span class="fl">16</span>, <span class="fl">10</span>, <span class="op">-</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">10</span>, <span class="fl">16</span>, <span class="op">-</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">A23</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">2</span>, <span class="op">-</span><span class="fl">17</span>, <span class="fl">2</span>, <span class="op">-</span><span class="fl">6</span>, <span class="fl">8</span>, <span class="op">-</span><span class="fl">17</span>, <span class="fl">8</span>, <span class="fl">6</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">B1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">33</span>, <span class="op">-</span><span class="fl">9</span>, <span class="op">-</span><span class="fl">9</span>, <span class="fl">26</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">B2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">9</span>, <span class="fl">40</span>, <span class="fl">9</span>, <span class="fl">91</span>, <span class="fl">10</span>, <span class="fl">40</span>, <span class="fl">10</span>, <span class="fl">15</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">A11</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">A12</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">A13</span><span class="op">)</span><span class="op">)</span>, <span class="co"># first psd constraint</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">A21</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">A22</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">A23</span><span class="op">)</span><span class="op">)</span>  <span class="co"># second psd constraint</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">B1</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">B2</span><span class="op">)</span><span class="op">)</span> <span class="co"># stack both psd constraints</span></span>
+<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co"># cone dimensions</span></span>
+<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, cone <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
+<span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution (x1, x2, x3) = (-0.367752, 1.898333, -0.887460)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="control-parameters">4. Control parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
 </h2>
 <p>Clarabel has a number of parameters that control its behavior,
 including verbosity, time limits, and tolerances; see help on
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code>. As an example, in the last problem, we
 can reduce the number of iterations.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">2.0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1.0</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>q <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>q <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span>,</span>
 <span>              control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_iter <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co">## Reduced number of iterations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -0.999999)</span></span></code></pre></div>
+<span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -0.999998)</span></span></code></pre></div>
 <p>Note the different status, which should always be checked in
 code.</p>
 </div>
