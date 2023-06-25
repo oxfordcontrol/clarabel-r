@@ -2,6 +2,7 @@
 
 [![R-CMD-check](https://github.com/oxfordcontrol/clarabel-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/oxfordcontrol/clarabel-r/actions/workflows/R-CMD-check.yaml)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/clarabel)](https://cran.r-project.org/package=clarabel)
+[![](https://cranlogs.r-pkg.org/badges/clarabel)](https://CRAN.R-project.org/package=clarabel)
 
 R interface to the
 [Clarabel](https://oxfordcontrol.github.io/ClarabelDocs/stable/)
