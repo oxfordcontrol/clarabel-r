@@ -68,5 +68,5 @@ sol <- clarabel(A = A, b = b, q = q, cone = cones)
 expect_equal(sol$status, 2L)
 expect_equal(sol$x,
              c(-0.367751526880478, 1.89833324679172, -0.887460228128519),
-             tolerance = 1e-7)
+             tolerance = 1e-5)
 

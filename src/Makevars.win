@@ -22,7 +22,7 @@ $(STATLIB):
 	# https://github.com/r-windows/rtools-packages/blob/2407b23f1e0925bbb20a4162c963600105236318/mingw-w64-gcc/PKGBUILD#L313-L316
 	mkdir -p $(TARGET_DIR)/libgcc_mock
 	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a
-	$(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust 
+	$(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust
 	export CARGO_HOME="$(CARGOTMP)"; \
 	export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(CARGO_LINKER)";  \
 	export LIBRARY_PATH="$${LIBRARY_PATH};$(CURDIR)/$(TARGET_DIR)/libgcc_mock";  \
