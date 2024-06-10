@@ -77,17 +77,23 @@ where
 {
     match std::panic::catch_unwind(f) {
         Ok(res) => res,
-        Err(_) => unsafe { libR_sys::Rf_error(err_str.as_ptr() as *const std::os::raw::c_char) },
+        Err(_) => {
+            unsafe {
+                libR_sys::Rf_error(err_str.as_ptr() as *const std::os::raw::c_char);
+            }
+            unreachable!("handle_panic unreachable")
+        }
     }
 }
 
 static mut R_ERROR_BUF: Option<std::ffi::CString> = None;
 
-pub fn throw_r_error<S: AsRef<str>>(s: S) -> ! {
+pub fn throw_r_error<S: AsRef<str>>(s: S) {
     let s = s.as_ref();
     unsafe {
         R_ERROR_BUF = Some(std::ffi::CString::new(s).unwrap());
         libR_sys::Rf_error(R_ERROR_BUF.as_ref().unwrap().as_ptr());
+        unreachable!("Rf_error does not return");
     };
 }
 
@@ -130,8 +136,8 @@ where
         let x = false;
         let fun = std::mem::transmute(fun_ptr);
         let cleanfun = std::mem::transmute(clean_ptr);
-        let data = &f as *const _ as _;
-        let cleandata = &x as *const _ as _;
+        let data = std::mem::transmute(&f);
+        let cleandata = std::mem::transmute(&x);
         let cont = R_MakeUnwindCont();
         Rf_protect(cont);
 

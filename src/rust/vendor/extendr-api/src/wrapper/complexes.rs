@@ -50,7 +50,7 @@ impl Complexes {
 impl Deref for Complexes {
     type Target = [Rcplx];
 
-    /// Treat Complexes as if it is a slice, like `Vec<Rcplx>`
+    /// Treat Complexes as if it is a slice, like Vec<Rcplx>
     fn deref(&self) -> &Self::Target {
         unsafe {
             let ptr = DATAPTR_RO(self.get()) as *const Rcplx;
@@ -60,7 +60,7 @@ impl Deref for Complexes {
 }
 
 impl DerefMut for Complexes {
-    /// Treat Complexes as if it is a mutable slice, like `Vec<Rcplx>`
+    /// Treat Complexes as if it is a mutable slice, like Vec<Rcplx>
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe {
             let ptr = DATAPTR(self.get()) as *mut Rcplx;
@@ -75,31 +75,6 @@ impl std::fmt::Debug for Complexes {
             write!(f, "{:?}", self.elt(0))
         } else {
             f.debug_list().entries(self.iter()).finish()
-        }
-    }
-}
-
-impl TryFrom<Vec<c64>> for Complexes {
-    type Error = Error;
-
-    fn try_from(value: Vec<c64>) -> std::result::Result<Self, Self::Error> {
-        Ok(Self {
-            robj: <Robj>::try_from(value)?,
-        })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_try_from_vec_c64_conversion() {
-        test! {
-            let vec = vec![c64::new(0., 0.), c64::new(1., 1.), c64::new(0., 1.)];
-            let vec_rob: Complexes = vec.clone().try_into().unwrap();
-            let vec_rob_slice: &[c64] = vec_rob.robj.as_typed_slice().unwrap();
-            assert_eq!(vec_rob_slice, vec.as_slice());
         }
     }
 }

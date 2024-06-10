@@ -49,7 +49,7 @@ impl Pairlist {
             let res = Pairlist {
                 robj: Robj::from_sexp(res),
             };
-            Rf_unprotect(num_protects);
+            Rf_unprotect(num_protects as i32);
             res
         })
     }

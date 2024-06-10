@@ -1,8 +1,5 @@
 use super::*;
-use crate::scalar::Scalar;
 use crate::single_threaded;
-
-mod repeat_into_robj;
 
 pub(crate) fn str_to_character(s: &str) -> SEXP {
     unsafe {
@@ -28,22 +25,10 @@ impl From<()> for Robj {
     }
 }
 
-/// Convert a Result to an Robj.
+/// Convert a Result to an Robj. This is used to allow
+/// functions to use the ? operator and return [Result<T>].
 ///
 /// Panics if there is an error.
-///
-/// To use the ?-operator, an extendr-function must return either extendr_api::result::Result<T> or `std::result::Result<T,E>`.
-/// Use of panic! in extendr is discouraged due to memory leakage.
-///
-/// Alternative behaviors enabled by feature toggles:
-/// extendr-api supports different conversions from `Result<T,E>` into `Robj`.
-/// Below, `x_ok` represents an R variable on R side which was returned from rust via `T::into_robj()` or similar.
-/// Likewise, `x_err` was returned to R side from rust via `E::into_robj()` or similar.
-/// extendr-api
-/// * `result_list`: `Ok(T)` is encoded as `list(ok = x_ok, err = NULL)` and `Err` as `list(ok = NULL, err = e_err)`.
-/// * `result_condition'`: `Ok(T)` is encoded as `x_ok` and `Err(E)` as `condition(msg="extendr_error", value = x_err, class=c("extendr_error", "error", "condition"))`
-/// * More than one enabled feature: Only one feature gate will take effect, the current order of precedence is [`result_list`, `result_condition`, ... ].
-/// * Neither of the above (default): `Ok(T)` is encoded as `x_ok`and `Err(E)` will trigger `throw_r_error()`, which is discouraged.
 /// ```
 /// use extendr_api::prelude::*;
 /// fn my_func() -> Result<f64> {
@@ -54,134 +39,13 @@ impl From<()> for Robj {
 ///     assert_eq!(r!(my_func()), r!(1.0));
 /// }
 /// ```
-#[cfg(not(any(feature = "result_list", feature = "result_condition")))]
-impl<T, E> From<std::result::Result<T, E>> for Robj
+impl<T> From<Result<T>> for Robj
 where
     T: Into<Robj>,
-    E: std::fmt::Debug,
 {
-    fn from(res: std::result::Result<T, E>) -> Self {
+    fn from(res: Result<T>) -> Self {
+        // Force a panic on error.
         res.unwrap().into()
-    }
-}
-
-/// Convert a Result to an Robj. Return either Ok value or Err value wrapped in an
-/// error condition. This allows using ? operator in functions
-/// and returning [Result<T>] without panicking on Err. T must implement IntoRobj.
-///
-/// Returns Ok value as is. Returns Err wrapped in an R error condition. The Err is placed in
-/// $value field of the condition, and its message is set to 'extendr_err'
-/// ```
-/// use extendr_api::prelude::*;
-/// fn my_func() -> Result<f64> {
-///     Ok(1.0)
-/// }
-///
-/// test! {
-///     assert_eq!(r!(my_func()), r!(1.0));
-/// }
-///
-/// //ok and err type is any IntoRobj
-/// fn my_err_f() -> std::result::Result<f64, f64> {
-///     Err(42.0) // return err float
-/// }
-///
-/// test! {
-///     assert_eq!(
-///         r!(my_err_f()),
-///         R!(
-/// "structure(list(message = 'extendr_err',
-/// value = 42.0), class = c('extendr_error', 'error', 'condition'))"
-///         ).unwrap()
-///     );
-/// }
-///
-/// ```
-#[cfg(all(feature = "result_condition", not(feature = "result_list")))]
-impl<T, E> From<std::result::Result<T, E>> for Robj
-where
-    T: Into<Robj>,
-    E: Into<Robj>,
-{
-    fn from(res: std::result::Result<T, E>) -> Self {
-        match res {
-            Ok(x) => x.into(),
-            Err(x) => { list!(message = "extendr_err", value = x) }
-                // can only imagine this would ever fail due to memory allocation error, but then panicking is the right choice
-                .expect("internal error: failed to create an R list")
-                .set_class(["extendr_error", "error", "condition"])
-                .expect("internal error: failed to set class"),
-        }
-    }
-}
-
-/// Convert a Result to an R `List` with an `ok` and `err` elements.
-/// This allows using ? operator in functions
-/// and returning [std::result::Result<T,E> or extendr_api::result::Result<T>]
-/// without panicking on Err.
-///
-///
-/// ```
-/// use extendr_api::prelude::*;
-/// fn my_err_f() -> std::result::Result<f64, String> {
-///     Err("We have water in the engine room!".to_string())
-/// }
-/// fn my_ok_f() -> std::result::Result<f64, String> {
-///     Ok(123.123)
-/// }
-///
-/// test! {
-///     assert_eq!(
-///         r!(my_err_f()),
-///         R!("x=list(ok=NULL, err='We have water in the engine room!')
-///             class(x)='extendr_result'
-///             x"
-///         ).unwrap()
-///     );
-///     assert_eq!(
-///         r!(my_ok_f()),
-///         R!("x = list(ok=123.123, err=NULL)
-///             class(x)='extendr_result'
-///             x"
-///         ).unwrap()
-///     );
-/// }
-///
-/// ```
-#[cfg(feature = "result_list")]
-impl<T, E> From<std::result::Result<T, E>> for Robj
-where
-    T: Into<Robj>,
-    E: Into<Robj>,
-{
-    fn from(res: std::result::Result<T, E>) -> Self {
-        match res {
-            Ok(x) => list!(ok = x, err = NULL),
-            Err(x) => {
-                let err_robj = x.into_robj();
-                if err_robj.is_null() {
-                    panic!("Internal error: result_list not allowed to return NULL as err-value")
-                }
-                list!(ok = NULL, err = err_robj)
-            }
-        }
-        // can only imagine this would ever fail due to memory allocation error, but then panicking is the right choice
-        .expect("Internal error: failed to create an R list")
-        .set_class(&["extendr_result"])
-        .expect("Internal error: failed to set class")
-        .into()
-    }
-}
-
-// string conversions from Error trait to Robj and String
-impl From<Error> for Robj {
-    fn from(res: Error) -> Self {
-        res.to_string().into()
-    }
-}
-impl From<Error> for String {
-    fn from(res: Error) -> Self {
-        res.to_string()
     }
 }
 
@@ -383,7 +247,7 @@ impl ToVectorValue for u8 {
     }
 
     fn to_raw(&self) -> u8 {
-        *self
+        *self as u8
     }
 }
 
@@ -393,7 +257,7 @@ impl ToVectorValue for &u8 {
     }
 
     fn to_raw(&self) -> u8 {
-        **self
+        **self as u8
     }
 }
 
@@ -665,6 +529,38 @@ where
     }
 }
 
+// We would love to do a blanket IntoIterator impl.
+// But the matching rules would clash with the above.
+macro_rules! impl_from_iter {
+    ($t: ty) => {
+        impl<'a, T> From<$t> for Robj
+        where
+            Self: 'a,
+            T: Clone + 'a,
+            T: ToVectorValue,
+        {
+            fn from(val: $t) -> Self {
+                val.iter().cloned().collect_robj()
+            }
+        }
+    };
+}
+
+macro_rules! impl_from_into_iter {
+    ($t: ty) => {
+        impl<'a, T> From<$t> for Robj
+        where
+            Self: 'a,
+            T: 'a,
+            &'a T: ToVectorValue,
+        {
+            fn from(val: $t) -> Self {
+                val.into_iter().collect_robj()
+            }
+        }
+    };
+}
+
 macro_rules! impl_from_as_iterator {
     ($t: ty) => {
         impl<T> From<$t> for Robj
@@ -689,62 +585,32 @@ macro_rules! impl_from_as_iterator {
 //     fn from(val: Range<T>) -> Self {
 //         val.collect_robj()
 //     }
-// } //
+// }
 
-impl<'a, T, const N: usize> From<[T; N]> for Robj
-where
-    Self: 'a,
-    T: ToVectorValue,
-{
-    fn from(val: [T; N]) -> Self {
-        fixed_size_collect(val.into_iter(), N)
-    }
-}
+// Template constants are still unstable in rust.
+impl_from_iter! {[T; 1]}
+impl_from_iter! {[T; 2]}
+impl_from_iter! {[T; 3]}
+impl_from_iter! {[T; 4]}
+impl_from_iter! {[T; 5]}
+impl_from_iter! {[T; 6]}
+impl_from_iter! {[T; 7]}
+impl_from_iter! {[T; 8]}
+impl_from_iter! {[T; 9]}
+impl_from_iter! {[T; 10]}
+impl_from_iter! {[T; 11]}
+impl_from_iter! {[T; 12]}
+impl_from_iter! {[T; 13]}
+impl_from_iter! {[T; 14]}
+impl_from_iter! {[T; 15]}
+impl_from_iter! {[T; 16]}
+impl_from_iter! {[T; 17]}
+impl_from_iter! {[T; 18]}
+impl_from_iter! {[T; 19]}
+impl_from_iter! {Vec<T>}
+impl_from_iter! {&Vec<T>}
 
-impl<'a, T, const N: usize> From<&'a [T; N]> for Robj
-where
-    Self: 'a,
-    &'a T: ToVectorValue + 'a,
-{
-    fn from(val: &'a [T; N]) -> Self {
-        fixed_size_collect(val.into_iter(), N)
-    }
-}
-
-impl<'a, T, const N: usize> From<&'a mut [T; N]> for Robj
-where
-    Self: 'a,
-    &'a mut T: ToVectorValue + 'a,
-{
-    fn from(val: &'a mut [T; N]) -> Self {
-        fixed_size_collect(val.into_iter(), N)
-    }
-}
-
-impl<T: ToVectorValue + Clone> From<&Vec<T>> for Robj {
-    fn from(value: &Vec<T>) -> Self {
-        let len = value.len();
-        fixed_size_collect(value.iter().cloned(), len)
-    }
-}
-
-impl<T: ToVectorValue> From<Vec<T>> for Robj {
-    fn from(value: Vec<T>) -> Self {
-        let len = value.len();
-        fixed_size_collect(value.into_iter(), len)
-    }
-}
-
-impl<'a, T> From<&'a [T]> for Robj
-where
-    Self: 'a,
-    T: 'a,
-    &'a T: ToVectorValue,
-{
-    fn from(val: &'a [T]) -> Self {
-        val.into_iter().collect_robj()
-    }
-}
+impl_from_into_iter! {&'a [T]}
 
 impl_from_as_iterator! {Range<T>}
 impl_from_as_iterator! {RangeInclusive<T>}
@@ -763,24 +629,23 @@ impl From<Vec<Rstr>> for Robj {
     }
 }
 
+impl From<Vec<Rint>> for Robj {
+    /// Convert a vector of Rint into integers.
+    fn from(val: Vec<Rint>) -> Self {
+        Integers::from_values(val.into_iter()).into()
+    }
+}
+
+impl From<Vec<Rfloat>> for Robj {
+    /// Convert a vector of Rfloat into doubles.
+    fn from(val: Vec<Rfloat>) -> Self {
+        Doubles::from_values(val.into_iter()).into()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
-
-    #[test]
-    fn test_vec_rint_to_robj() {
-        test! {
-            let int_vec = vec![3,4,0,-2];
-            let int_vec_robj: Robj = int_vec.clone().into();
-            // unsafe { libR_sys::Rf_PrintValue(int_vec_robj.get())}
-            assert_eq!(int_vec_robj.as_integer_slice().unwrap(), &int_vec);
-
-            let rint_vec = vec![Rint::new(3), Rint::new(4), Rint::new(0), Rint::new(-2)];
-            let rint_vec_robj: Robj = rint_vec.into();
-            // unsafe { libR_sys::Rf_PrintValue(rint_vec_robj.get())}
-            assert_eq!(rint_vec_robj.as_integer_slice().unwrap(), &int_vec);
-        }
-    }
 
     #[test]
     fn test_collect_rarray_matrix() {
@@ -809,7 +674,7 @@ mod test {
             let rmat = (1i32..=16).collect_rarray([3, 3]);
             assert!(rmat.is_err());
             let msg = rmat.unwrap_err().to_string();
-            assert!(msg.contains('9'));
+            assert!(msg.contains("9"));
             assert!(msg.contains("dimension"));
         }
     }

@@ -1,20 +1,5 @@
 # Changelog
 
-## libR-sys 0.6.0
-
-- Drop support for 32-bit Windows, which virtually means dropping support for R < 4.2.
-- Fix failures with R installation that doesn't provide shared libraries.
-
-## libR-sys 0.5.0
-
-- Update the default precomputed bindings to R 4.3.0.
-- Remove deprecated API `VECTOR_PTR` from bindings. [[#165]](https://github.com/extendr/libR-sys/pull/165)
-- Use Rust types such as `u32` and `i16` instead of C types such as `c_uint` and `c_short` for `enum`s. [[#160]](https://github.com/extendr/libR-sys/pull/160)
-- Remove mathematical constants (e.g., `M_PI`), which are also provided by Rust's `std` (e.g., `std::f64::consts::PI`). [[#160]](https://github.com/extendr/libR-sys/pull/160)
-- Exclude "non-API" calls. [[#135]](https://github.com/extendr/libR-sys/pull/135)
-- Refactor version logging in generated bindings. [[#159]](https://github.com/extendr/libR-sys/pull/159)
-- Redefine R-devel's `Rcomplex`. [[#156]](https://github.com/extendr/libR-sys/pull/156)
-
 ## libR-sys 0.4.0
 
 - Update the default precomuted bindings to R 4.2.0.

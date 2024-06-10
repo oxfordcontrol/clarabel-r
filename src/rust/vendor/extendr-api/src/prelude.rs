@@ -41,9 +41,6 @@ pub use super::wrapper::{
     AltrepImpl, RArray, RColumn, RMatrix, RMatrix3D,
 };
 
-#[cfg(use_r_altlist)]
-pub use super::wrapper::AltListImpl;
-
 pub use super::wrapper::s4::S4;
 
 pub use super::wrapper::{Conversions, MatrixConversions};
@@ -63,6 +60,12 @@ pub use super::wrapper::{
     Primitive, Promise, Raw, Rstr, Strings, Symbol,
 };
 
+#[cfg(feature = "ndarray")]
+pub use super::robj_ndarray::*;
+
+#[cfg(feature = "ndarray")]
+pub use ndarray::*;
+
 pub use extendr_macros::{call, extendr, extendr_module, pairlist, IntoDataFrameRow, Rraw, R};
 
 pub use super::iter::StrIter;
@@ -74,11 +77,3 @@ pub use std::ops::Index;
 pub use super::scalar::*;
 
 pub use super::Nullable::*;
-
-pub use super::optional::*;
-
-#[cfg(feature = "ndarray")]
-pub use ::ndarray::*;
-
-#[cfg(feature = "either")]
-pub use ::either::*;

@@ -1,10 +1,8 @@
 use crate::scalar::Rfloat;
-use crate::scalar::Scalar;
 use crate::*;
 
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-#[repr(C)]
 pub struct c64 {
     re: f64,
     im: f64,
@@ -44,18 +42,8 @@ impl CanBeNA for c64 {
 ///
 /// Rcplx has the same footprint as R's complex value allowing us to use it in zero copy slices.
 #[derive(Clone, Copy, Default, PartialEq)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Rcplx(c64);
-
-impl Scalar<c64> for Rcplx {
-    fn inner(&self) -> c64 {
-        self.0
-    }
-
-    fn new(val: c64) -> Self {
-        Rcplx(val)
-    }
-}
 
 impl Rcplx {
     // gen_impl!(Rcplx, c64);

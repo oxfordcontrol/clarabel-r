@@ -1,4 +1,4 @@
-use super::scalar::{Rfloat, Scalar};
+use super::scalar::Rfloat;
 use super::*;
 use std::iter::FromIterator;
 
@@ -62,7 +62,7 @@ impl Doubles {
 impl Deref for Doubles {
     type Target = [Rfloat];
 
-    /// Treat Doubles as if it is a slice, like `Vec<Rfloat>`
+    /// Treat Doubles as if it is a slice, like Vec<Rfloat>
     fn deref(&self) -> &Self::Target {
         unsafe {
             let ptr = DATAPTR_RO(self.get()) as *const Rfloat;
@@ -72,7 +72,7 @@ impl Deref for Doubles {
 }
 
 impl DerefMut for Doubles {
-    /// Treat Doubles as if it is a mutable slice, like `Vec<Rfloat>`
+    /// Treat Doubles as if it is a mutable slice, like Vec<Rfloat>
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe {
             let ptr = DATAPTR(self.get()) as *mut Rfloat;
@@ -87,31 +87,6 @@ impl std::fmt::Debug for Doubles {
             write!(f, "{:?}", self.elt(0))
         } else {
             f.debug_list().entries(self.iter()).finish()
-        }
-    }
-}
-
-impl TryFrom<Vec<f64>> for Doubles {
-    type Error = Error;
-
-    fn try_from(value: Vec<f64>) -> std::result::Result<Self, Self::Error> {
-        Ok(Self {
-            robj: <Robj>::try_from(value)?,
-        })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_vec_f64_doubles_conversion() {
-        test! {
-            let test_vec = vec![0., 1., std::f64::consts::PI, -1.];
-            let test_doubles: Doubles = test_vec.clone().try_into().unwrap();
-            let test_doubles_slice = test_doubles.robj.as_real_slice().unwrap();
-            assert_eq!(test_doubles_slice, test_vec);
         }
     }
 }

@@ -1,4 +1,4 @@
-use super::scalar::{Rint, Scalar};
+use super::scalar::Rint;
 use super::*;
 use std::iter::FromIterator;
 
@@ -47,57 +47,6 @@ impl Integers {
     /// Return `TRUE` if the vector has no `NA`s, `FALSE` if any, or `NA_BOOL` if unknown.
     pub fn no_na(&self) -> Rbool {
         unsafe { INTEGER_NO_NA(self.get()).into() }
-    }
-}
-
-// TODO: this should be a trait.
-impl Integers {
-    pub fn set_elt(&mut self, index: usize, val: Rint) {
-        unsafe {
-            SET_INTEGER_ELT(self.get(), index as R_xlen_t, val.inner());
-        }
-    }
-}
-
-impl Deref for Integers {
-    type Target = [Rint];
-
-    /// Treat Integers as if it is a slice, like `Vec<Rint>`
-    fn deref(&self) -> &Self::Target {
-        unsafe {
-            let ptr = DATAPTR_RO(self.get()) as *const Rint;
-            std::slice::from_raw_parts(ptr, self.len())
-        }
-    }
-}
-
-impl DerefMut for Integers {
-    /// Treat Integers as if it is a mutable slice, like `Vec<Rint>`
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe {
-            let ptr = DATAPTR(self.get()) as *mut Rint;
-            std::slice::from_raw_parts_mut(ptr, self.len())
-        }
-    }
-}
-
-impl std::fmt::Debug for Integers {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.len() == 1 {
-            write!(f, "{:?}", self.elt(0))
-        } else {
-            f.debug_list().entries(self.iter()).finish()
-        }
-    }
-}
-
-impl TryFrom<Vec<i32>> for Integers {
-    type Error = Error;
-
-    fn try_from(value: Vec<i32>) -> std::result::Result<Self, Self::Error> {
-        Ok(Self {
-            robj: <Robj>::try_from(value)?,
-        })
     }
 }
 
@@ -164,14 +113,45 @@ mod tests {
             assert_eq!(vec.len(), 10);
         }
     }
+}
 
-    #[test]
-    fn test_vec_i32_integers_conversion() {
-        test! {
-            let int_vec = vec![3,4,0,-2];
-            let int_vec_robj: Robj = int_vec.clone().try_into().unwrap();
-            // unsafe { libR_sys::Rf_PrintValue(rint_vec_robj.get())}
-            assert_eq!(int_vec_robj.as_integer_slice().unwrap(), &int_vec);
+// TODO: this should be a trait.
+impl Integers {
+    pub fn set_elt(&mut self, index: usize, val: Rint) {
+        unsafe {
+            SET_INTEGER_ELT(self.get(), index as R_xlen_t, val.inner());
+        }
+    }
+}
+
+impl Deref for Integers {
+    type Target = [Rint];
+
+    /// Treat Integers as if it is a slice, like Vec<Rint>
+    fn deref(&self) -> &Self::Target {
+        unsafe {
+            let ptr = DATAPTR_RO(self.get()) as *const Rint;
+            std::slice::from_raw_parts(ptr, self.len())
+        }
+    }
+}
+
+impl DerefMut for Integers {
+    /// Treat Integers as if it is a mutable slice, like Vec<Rint>
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe {
+            let ptr = DATAPTR(self.get()) as *mut Rint;
+            std::slice::from_raw_parts_mut(ptr, self.len())
+        }
+    }
+}
+
+impl std::fmt::Debug for Integers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.len() == 1 {
+            write!(f, "{:?}", self.elt(0))
+        } else {
+            f.debug_list().entries(self.iter()).finish()
         }
     }
 }

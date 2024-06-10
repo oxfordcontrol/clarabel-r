@@ -5,7 +5,7 @@
 [![](https://cranlogs.r-pkg.org/badges/clarabel)](https://CRAN.R-project.org/package=clarabel)
 
 R interface to the
-[Clarabel](https://oxfordcontrol.github.io/ClarabelDocs/stable/)
+[Clarabel](https://clarabel.org/stable/)
 interior point conic optimization solver from the [Oxford Control
 Group](https://github.com/oxfordcontrol).
 

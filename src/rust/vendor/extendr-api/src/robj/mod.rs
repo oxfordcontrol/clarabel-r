@@ -322,9 +322,8 @@ pub trait Types: GetSexp {
 impl Types for Robj {}
 
 impl Robj {
-    /// Is this object is an `NA` scalar?
+    /// Is this object is an NA scalar?
     /// Works for character, integer and numeric types.
-    ///
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -370,8 +369,7 @@ impl Robj {
         self.clone().try_into().ok()
     }
 
-    /// Get a `Vec<i32>` copied from the object.
-    ///
+    /// Get a Vec<i32> copied from the object.
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -397,10 +395,9 @@ impl Robj {
         self.as_typed_slice()
     }
 
-    /// Get a `Vec<Rbool>` copied from the object
-    /// using the tri-state [`Rbool`].
-    /// Returns `None` if not a logical vector.
-    ///
+    /// Get a Vec<Rbool> copied from the object
+    /// using the tri-state [Rbool].
+    /// Returns None if not a logical vector.
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -451,7 +448,6 @@ impl Robj {
     }
 
     /// Get an iterator over real elements of this slice.
-    ///
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -469,8 +465,7 @@ impl Robj {
         self.as_real_slice().map(|slice| slice.iter())
     }
 
-    /// Get a `Vec<f64>` copied from the object.
-    ///
+    /// Get a Vec<f64> copied from the object.
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -788,6 +783,7 @@ make_typed_slice!(Rint, INTEGER, INTSXP);
 make_typed_slice!(f64, REAL, REALSXP);
 make_typed_slice!(Rfloat, REAL, REALSXP);
 make_typed_slice!(u8, RAW, RAWSXP);
+make_typed_slice!(Robj, VECTOR_PTR, VECSXP);
 make_typed_slice!(Rstr, STRING_PTR, STRSXP);
 make_typed_slice!(c64, COMPLEX, CPLXSXP);
 make_typed_slice!(Rcplx, COMPLEX, CPLXSXP);
@@ -845,6 +841,7 @@ pub trait Attributes: Types + Length {
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
+    ///
     ///    let mut robj = r!("hello").set_attrib(sym!(xyz), 1)?;
     ///    assert_eq!(robj.get_attrib(sym!(xyz)), Some(r!(1)));
     /// }
@@ -889,9 +886,8 @@ pub trait Attributes: Types + Length {
 
     /// Set the names attribute from a string iterator.
     ///
-    /// Returns `Error::NamesLengthMismatch` if the length of the names does
+    /// Returns Error::NamesLengthMismatch if the length of the names does
     /// not match the length of the object.
-    ///
     /// ```
     /// use extendr_api::prelude::*;
     /// test! {
@@ -1026,6 +1022,14 @@ pub trait Attributes: Types + Length {
 }
 
 impl Attributes for Robj {}
+
+#[doc(hidden)]
+pub unsafe fn new_owned(sexp: SEXP) -> Robj {
+    single_threaded(|| {
+        ownership::protect(sexp);
+        Robj { inner: sexp }
+    })
+}
 
 /// Compare equality with integer slices.
 impl PartialEq<[i32]> for Robj {

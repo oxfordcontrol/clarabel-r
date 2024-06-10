@@ -11,9 +11,8 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
 name = "extendr-api"
-version = "0.6.0"
+version = "0.4.0"
 authors = [
     "andy-thomason <andy@andythomason.com>",
     "Thomas Down",
@@ -27,22 +26,25 @@ description = "Safe and user friendly bindings to the R programming language."
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/extendr/extendr"
+resolver = "1"
 
 [package.metadata.docs.rs]
 features = [
-    "full-functionality",
+    "graphics",
     "libR-sys/use-bindgen",
 ]
 
-[dependencies.either]
-version = "1.8.1"
-optional = true
+[dependencies.extendr-engine]
+version = "0.4.0"
 
 [dependencies.extendr-macros]
-version = "0.6.0"
+version = "0.4.0"
+
+[dependencies.lazy_static]
+version = "1.4"
 
 [dependencies.libR-sys]
-version = "0.6.0"
+version = "0.4.0"
 
 [dependencies.libc]
 version = "0.2"
@@ -56,9 +58,6 @@ optional = true
 version = "0.4"
 optional = true
 
-[dependencies.once_cell]
-version = "1"
-
 [dependencies.paste]
 version = "1.0.5"
 
@@ -67,29 +66,17 @@ version = "1.0"
 features = ["derive"]
 optional = true
 
-[dev-dependencies.extendr-engine]
-version = "0.6.0"
-
 [dev-dependencies.rstest]
-version = "0.18.1"
+version = "0.16.0"
 
 [features]
-full-functionality = [
-    "graphics",
-    "either",
-    "ndarray",
-    "num-complex",
-    "serde",
-]
+default = []
 graphics = ["libc"]
-result_condition = []
-result_list = []
 tests = [
     "tests-minimal",
     "ndarray",
     "serde",
     "num-complex",
-    "either",
 ]
 tests-all = [
     "tests",

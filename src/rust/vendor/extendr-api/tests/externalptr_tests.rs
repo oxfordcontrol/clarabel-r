@@ -1,5 +1,5 @@
 use extendr_api::prelude::*;
-use once_cell::sync::Lazy;
+use lazy_static::lazy_static;
 
 #[test]
 fn test_externalptr() {
@@ -16,7 +16,9 @@ fn test_externalptr() {
 fn test_externalptr_drop() {
     test! {
         // This flag will get set when we do the drop.
-        static Z : Lazy<std::sync::Mutex<bool>> = Lazy::new(|| std::sync::Mutex::new(false));
+        lazy_static! {
+            static ref Z : std::sync::Mutex<bool> = std::sync::Mutex::new(false);
+        }
 
         // Dummy structure that will show if we drop correctly.
         #[derive(Debug)]

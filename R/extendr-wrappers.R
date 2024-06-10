@@ -6,7 +6,6 @@
 # This file was created with the following call:
 #   .Call("wrap__make_clarabel_wrappers", use_symbols = TRUE, package_name = "clarabel")
 
-#' @docType package
 #' @usage NULL
 #' @useDynLib clarabel, .registration = TRUE
 NULL
