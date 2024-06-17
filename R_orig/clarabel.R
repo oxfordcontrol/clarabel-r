@@ -176,10 +176,6 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param iterative_refinement_max_iter iterative refinement maximum iterations (`10L`)			 
 #' @param iterative_refinement_stop_ratio iterative refinement stalling tolerance (`5.0`)
 #' @param presolve_enable whether to enable presolvle (`TRUE`)
-#' @param chordal_decomposition_enable whether to enable chordal decomposition for SDPs (`FALSE`)
-#' @param chordal_decomposition_merge_method chordal decomposition merge method, one of `'none'`, `'parent_child'` or `'clique_graph'`, for SDPs (`'none'`)
-#' @param chordal_decomposition_compact a boolean flag for SDPs indicating whether to assemble decomposed system in _compact_ form for SDPs (`FALSE`)
-#' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs
 #' @return a list containing the control parameters.
 #' @export clarabel_control
 clarabel_control <- function(
@@ -227,30 +223,20 @@ clarabel_control <- function(
                              iterative_refinement_abstol = 1e-12,
                              iterative_refinement_max_iter = 10L,
                              iterative_refinement_stop_ratio = 5.0,
-                             presolve_enable = TRUE,
-                             chordal_decomposition_enable = FALSE,
-                             chordal_decomposition_merge_method = c('none', 'parent_child', 'clique_graph'),
-                             chordal_decomposition_compact = FALSE,
-                             chordal_decomposition_complete_dual = FALSE
-                             ) {
+                             presolve_enable = TRUE) {
 
   params <- as.list(environment())
-
-  ## Match string args to make sure it is kosher
+  ## Match string arg to make sure it is kosher
   direct_solve_method <- match.arg(direct_solve_method)
   params$direct_solve_method <- direct_solve_method
-  chordal_decomposition_merge_method <- match.arg(chordal_decomposition_merge_method)
-  params$chordal_decomposition_merge_method <- chordal_decomposition_merge_method
   
   ## Rust has strict type and length checks, so try to avoid panics
   bool_params <- c("verbose", "equilibrate_enable", "direct_kkt_solver", "static_regularization_enable",
-                   "dynamic_regularization_enable", "iterative_refinement_enable", "presolve_enable",
-                   "chordal_decomposition_enable", "chordal_decomposition_compact",
-                   "chordal_decomposition_complete_dual")
+                 "dynamic_regularization_enable", "iterative_refinement_enable", "presolve_enable")
 
   int_params <- c("max_iter", "equilibrate_max_iter", "iterative_refinement_max_iter")
 
-  string_params <- c("direct_solve_method", "chordal_decomposition_merge_method") # Might need to uncomment character coercion below, if length > 1
+  string_params <- "direct_solve_method" # Might need to uncomment character coercion below, if length > 1
   
   if (any(sapply(params, length) != 1L)) stop("clarabel_control: arguments should be scalars!")
   if (any(unlist(params[int_params]) < 0)) stop("clarabel_control: integer arguments should be >= 0!")

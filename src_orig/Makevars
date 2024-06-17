@@ -1,0 +1,36 @@
+# FLAG to indicate use of bundled source; use yes/no
+VENDORING = yes
+VENDOR_SRC = ./rust/vendor.tar.xz
+TARGET_DIR = ./rust/target
+LIBDIR = $(TARGET_DIR)/release
+STATLIB = $(LIBDIR)/libclarabel.a
+PKG_LIBS = -L$(LIBDIR) -lclarabel $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+all: C_clean
+
+$(SHLIB): $(STATLIB)
+
+CARGOTMP = $(CURDIR)/rust/.cargo
+
+$(STATLIB):
+	# vendoring (Note: to avoid NOTE of "Found the following hidden files and
+	# directories", .cargo needs to be created here)
+	if [ "$(VENDORING)" = "yes" ]; then \
+		mkdir -p $(CARGOTMP);  \
+		cp ./rust/cargo_vendor_config.toml $(CARGOTMP)/config.toml;  \
+		$(TAR) --extract --xz -f $(VENDOR_SRC) -C ./rust ;  \
+		export CARGO_HOME=$(CARGOTMP);  \
+		export PATH="$(PATH):$(HOME)/.cargo/bin";  \
+		cargo build --lib --release --offline --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR); \
+	fi && \
+	if [ "$(VENDORING)" = "no" ]; then \
+		cargo build --lib --verbose --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR); \
+	fi
+	rm -Rf $(CARGOTMP)
+	rm -Rf $(LIBDIR)/build
+
+C_clean:
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
+
+clean:
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(CARGOTMP) $(TARGET_DIR) rust/vendor rust/Cargo.lock
