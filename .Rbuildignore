@@ -16,6 +16,4 @@
 ^update_authors.R$
 
 ^src/rust/.cargo$
-^src_orig$
-^man_orig$
-^DESCRIPTION_orig$
+^src/Makevars$

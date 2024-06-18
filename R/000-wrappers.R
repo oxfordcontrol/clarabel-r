@@ -23,7 +23,7 @@ NULL
   }
 }
 
-#' @export
+
 clarabel_solve <- function(m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings) {
   .Call(savvy_clarabel_solve__impl, m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings)
 }

@@ -2,7 +2,6 @@
 
 export(clarabel)
 export(clarabel_control)
-export(clarabel_solve)
 export(solver_status_descriptions)
 useDynLib(clarabel)
 useDynLib(clarabel, .registration = TRUE)

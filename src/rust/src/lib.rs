@@ -27,7 +27,6 @@ use regex::Regex;
 // }
 
 // Solve using Clarabel Rust solver.
-/// @export
 #[savvy]
 fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp, b: RealSexp, q: RealSexp, Pi: IntegerSexp, Pp: IntegerSexp, Px: RealSexp, cone_spec: ListSexp, r_settings: ListSexp) -> savvy::Result<savvy::Sexp> {
     // QP Example
@@ -162,236 +161,219 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
     // unsuccessful so far, so a directly generated implementation
     for (key, value) in r_settings.iter() {
 	let typed_value = value.into_typed();
+	// auto-generated, see: inst/misc/code-gen.R
 	match key.as_ref() {
 	    "max_iter" => 
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.max_iter = i.as_slice()[0] as u32,
-		    _ => settings.max_iter = settings.max_iter,
+		    _ => (),
 		},
 	    "time_limit" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.time_limit = f.as_slice()[0],
-		    _ => settings.time_limit = settings.time_limit,
+		    _ => (),
 		},
 	    "verbose" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.verbose = b.as_slice_raw()[0] != 0,
-		    _ => settings.verbose = settings.verbose,
+		    _ => (),
 		},
 	    "max_step_fraction" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.max_step_fraction = f.as_slice()[0],
-		    _ => settings.max_step_fraction = settings.max_step_fraction,
+		    _ => (),
 		},
 	    "tol_gap_abs" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_gap_abs = f.as_slice()[0],
-		    _ => settings.tol_gap_abs = settings.tol_gap_abs,
+		    _ => (),
 		},
 	    "tol_gap_rel" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_gap_rel = f.as_slice()[0],
-		    _ => settings.tol_gap_rel = settings.tol_gap_rel,
+		    _ => (),
 		},
 	    "tol_feas" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_feas = f.as_slice()[0],
-		    _ => settings.tol_feas = settings.tol_feas,
+		    _ => (),
 		},
 	    "tol_infeas_abs" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_infeas_abs = f.as_slice()[0],
-		    _ => settings.tol_infeas_abs = settings.tol_infeas_abs,
+		    _ => (),
 		},
 	    "tol_infeas_rel" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_infeas_rel = f.as_slice()[0],
-		    _ => settings.tol_infeas_rel = settings.tol_infeas_rel,
+		    _ => (),
 		},
 	    "tol_ktratio" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_ktratio = f.as_slice()[0],
-		    _ => settings.tol_ktratio = settings.tol_ktratio,
+		    _ => (),
 		},
 	    "reduced_tol_gap_abs" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_gap_abs = f.as_slice()[0],
-		    _ => settings.reduced_tol_gap_abs = settings.reduced_tol_gap_abs,
+		    _ => (),
 		},
 	    "reduced_tol_gap_rel" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_gap_rel = f.as_slice()[0],
-		    _ => settings.reduced_tol_gap_rel = settings.reduced_tol_gap_rel,
+		    _ => (),
 		},
 	    "reduced_tol_feas" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_feas = f.as_slice()[0],
-		    _ => settings.reduced_tol_feas = settings.reduced_tol_feas,
+		    _ => (),
 		},
 	    "reduced_tol_infeas_abs" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_infeas_abs = f.as_slice()[0],
-		    _ => settings.reduced_tol_infeas_abs = settings.reduced_tol_infeas_abs,
+		    _ => (),
 		},
 	    "reduced_tol_infeas_rel" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_infeas_rel = f.as_slice()[0],
-		    _ => settings.reduced_tol_infeas_rel = settings.reduced_tol_infeas_rel,
+		    _ => (),
 		},
 	    "reduced_tol_ktratio" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_ktratio = f.as_slice()[0],
-		    _ => settings.reduced_tol_ktratio = settings.reduced_tol_ktratio,
+		    _ => (),
 		},
 	    "equilibrate_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.equilibrate_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.equilibrate_enable = settings.equilibrate_enable,
+		    _ => (),
 		},
 	    "equilibrate_max_iter" => 
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.equilibrate_max_iter = i.as_slice()[0] as u32,
-		    _ => settings.equilibrate_max_iter = settings.equilibrate_max_iter,
+		    _ => (),
 		},
 	    "equilibrate_min_scaling" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.equilibrate_min_scaling = f.as_slice()[0],
-		    _ => settings.equilibrate_min_scaling = settings.equilibrate_min_scaling,
+		    _ => (),
 		},
 	    "equilibrate_max_scaling" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.equilibrate_max_scaling = f.as_slice()[0],
-		    _ => settings.equilibrate_max_scaling = settings.equilibrate_max_scaling,
+		    _ => (),
 		},
 	    "linesearch_backtrack_step" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.linesearch_backtrack_step = f.as_slice()[0],
-		    _ => settings.linesearch_backtrack_step = settings.linesearch_backtrack_step,
+		    _ => (),
 		},
 	    "min_switch_step_length" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.min_switch_step_length = f.as_slice()[0],
-		    _ => settings.min_switch_step_length = settings.min_switch_step_length,
+		    _ => (),
 		},
 	    "min_terminate_step_length" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.min_terminate_step_length = f.as_slice()[0],
-		    _ => settings.min_terminate_step_length = settings.min_terminate_step_length,
+		    _ => (),
 		},
 	    "direct_kkt_solver" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.direct_kkt_solver = b.as_slice_raw()[0] != 0,
-		    _ => settings.direct_kkt_solver = settings.direct_kkt_solver,
+		    _ => (),
 		},
 	    "direct_solve_method" => 
 		match typed_value {
 		    TypedSexp::String(s) => if let Some(result) = s.to_vec().get(0) {
 			settings.direct_solve_method = result.to_string();
 		    },
-		    _ => settings.direct_solve_method = settings.direct_solve_method,
+		    _ => (),
 		},
 	    "static_regularization_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.static_regularization_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.static_regularization_enable = settings.static_regularization_enable,
+		    _ => (),
 		},
 	    "static_regularization_constant" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.static_regularization_constant = f.as_slice()[0],
-		    _ => settings.static_regularization_constant = settings.static_regularization_constant,
+		    _ => (),
 		},
 	    "static_regularization_proportional" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.static_regularization_proportional = f.as_slice()[0],
-		    _ => settings.static_regularization_proportional = settings.static_regularization_proportional,
+		    _ => (),
 		},
 	    "dynamic_regularization_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.dynamic_regularization_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.dynamic_regularization_enable = settings.dynamic_regularization_enable,
+		    _ => (),
 		},
 	    "dynamic_regularization_eps" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.dynamic_regularization_eps = f.as_slice()[0],
-		    _ => settings.dynamic_regularization_eps = settings.dynamic_regularization_eps,
+		    _ => (),
 		},
 	    "dynamic_regularization_delta" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.dynamic_regularization_delta = f.as_slice()[0],
-		    _ => settings.dynamic_regularization_delta = settings.dynamic_regularization_delta,
+		    _ => (),
 		},
 	    "iterative_refinement_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.iterative_refinement_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.iterative_refinement_enable = settings.iterative_refinement_enable,
+		    _ => (),
 		},
 	    "iterative_refinement_reltol" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_reltol = f.as_slice()[0],
-		    _ => settings.iterative_refinement_reltol = settings.iterative_refinement_reltol,
+		    _ => (),
 		},
 	    "iterative_refinement_abstol" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_abstol = f.as_slice()[0],
-		    _ => settings.iterative_refinement_abstol = settings.iterative_refinement_abstol,
+		    _ => (),
 		},
 	    "iterative_refinement_max_iter" => 
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.iterative_refinement_max_iter = i.as_slice()[0] as u32,
-		    _ => settings.iterative_refinement_max_iter = settings.iterative_refinement_max_iter,
+		    _ => (),
 		},
 	    "iterative_refinement_stop_ratio" => 
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_stop_ratio = f.as_slice()[0],
-		    _ => settings.iterative_refinement_stop_ratio = settings.iterative_refinement_stop_ratio,
+		    _ => (),
 		},
 	    "presolve_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.presolve_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.presolve_enable = settings.presolve_enable,
+		    _ => (),
 		},
 	    "chordal_decomposition_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_enable = b.as_slice_raw()[0] != 0,
-		    _ => settings.chordal_decomposition_enable = settings.chordal_decomposition_enable,
+		    _ => (),
 		},
 	    "chordal_decomposition_merge_method" => 
 		match typed_value {
 		    TypedSexp::String(s) => if let Some(result) = s.to_vec().get(0) {
 			settings.chordal_decomposition_merge_method = result.to_string();
 		    },
-		    _ => settings.chordal_decomposition_merge_method = settings.chordal_decomposition_merge_method,
+		    _ => (),
 		},
 	    "chordal_decomposition_compact" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_compact = b.as_slice_raw()[0] != 0,
-		    _ => settings.chordal_decomposition_compact = settings.chordal_decomposition_compact,
+		    _ => (),
 		},
 	    "chordal_decomposition_complete_dual" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_complete_dual = b.as_slice_raw()[0] != 0,
-		    _ => settings.chordal_decomposition_complete_dual = settings.chordal_decomposition_complete_dual,
+		    _ => (),
 		},
 	    _ => (),
 	}
     }
-    
     settings
 }
-// if let Some(result) = s.to_vec().get(0) {
-//     result.to_string()
-// } else {
-//     settings.direct_solve_method
-// }
-
-
-	// "direct_solve_method" => 
-	//     match typed_value {
-	// 	TypedSexp::String(s) => settings.direct_solve_method = (s.to_vec().get(0)).to_string(),
-	//         _ => settings.direct_solve_method = settings.direct_solve_method,
-	//     },
-	// "chordal_decomposition_merge_method" => 
-	//     match typed_value {
-	// 	TypedSexp::String(s) => settings.chordal_decomposition_merge_method = (s.to_vec().get(0)).to_string(),
-	// 	_ => settings.chordal_decomposition_merge_method = settings.chordal_decomposition_merge_method,
-	//     },

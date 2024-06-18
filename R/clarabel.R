@@ -134,7 +134,10 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
   # Sanitize control parameters
   control <- do.call(clarabel_control, control)
   if (strict_cone_order) cones <- sanitize_cone_spec(cones)
-  clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
+  ##.Call(savvy_clarabel_solve__impl, m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings)
+  .Call(savvy_clarabel_solve__impl, n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control, PACKAGE = "clarabel")
+
+  ## clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
 }
 
 #' Control parameters with default values and types in parenthesis

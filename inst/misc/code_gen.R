@@ -16,9 +16,10 @@ f <- function(name, type = c("integer", "double", "logical", "character")) {
            integer = sprintf('       TypedSexp::Integer(i) => settings.%s = i.as_slice()[0],', name),
            double = sprintf('       TypedSexp::Real(f) => settings.%s = f.as_slice()[0],', name),
            logical = sprintf('       TypedSexp::Logical(b) => settings.%s = b.as_slice_raw()[0] != 0,', name),
-           character = sprintf('       TypedSexp::String(s) => settings.%s = String::from(s.to_vec().get(0)),', name)
+           character = sprintf('       TypedSexp::String(s) => if let Some(result) = s.to_vec().get(0) {\\n
+			settings.%s = result.to_string();\\n		    },\\n		    _ => (),', name)
            ),
-    sprintf("_ => settings.%s = settings.%s,", name, name),
+    "_ => (),"
     "},"
     )
 }
@@ -33,21 +34,4 @@ sn <- c(names(s),
 st <- c(sapply(s, typeof),
         "logical", "character", "logical", "logical")
 out <- lapply(seq_along(st), function(i) f(sn[i], st[i]))
-writeLines(unlist(out), "junk.rs")
-
-
-function(name, type) {
-  c(
-    sprintf('"%s" => ', name),
-    sprintf('   match typed_value() {'),
-    if(type == "integer") {
-      c(sprintf('       TypedSexp::Integer(i) => settings.%s = i.as_slice()[0],', name),
-        sprintf('       _ => savvy::io::r_warn("%s should be scalar integer")', name),
-        "},")
-    } else {
-      c(sprintf('       TypedSexp::Real(f) => settings.%s = f.as_slice()[0],', name),
-        sprintf('       _ => savvy::io::r_warn("%s should be scalar double")', name),
-        "},")
-    }
-  )
-}
+writeLines(unlist(out), "update_settings.rs")
