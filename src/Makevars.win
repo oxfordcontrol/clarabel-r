@@ -1,5 +1,7 @@
 TARGET = x86_64-pc-windows-gnu
 
+VENDOR_DIR = ./rust/vendor
+
 # catch DEBUG envvar, which is passed from pkgbuild::compile_dll()
 PROFILE = $(subst x,release,$(subst truex,dev,$(DEBUG)x))
 
@@ -31,6 +33,7 @@ $(STATLIB):
 	  export LIBRARY_PATH="$${LIBRARY_PATH};$(LIBDIR)/libgcc_mock" && \
 	  cargo build --target $(TARGET) --lib --offline --release --manifest-path ./rust/Cargo.toml --target-dir $(TARGET_DIR)
 	rm -Rf $(CARGOTMP)
+	rm -Rf $(VENDOR_DIR)
 	rm -Rf $(LIBDIR)/build
 
 C_clean:

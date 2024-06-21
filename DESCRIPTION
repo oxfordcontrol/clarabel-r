@@ -25,3 +25,5 @@ Suggests:
     tinytest
 VignetteBuilder: knitr
 SystemRequirements: Cargo (Rust package manager), rustc and GNU Make
+Imports: 
+    methods

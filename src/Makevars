@@ -1,4 +1,4 @@
-TARGET = @TARGET@
+TARGET = 
 VENDORING = yes
 VENDOR_SRC = ./rust/vendor.tar.xz
 VENDOR_DIR = ./rust/vendor

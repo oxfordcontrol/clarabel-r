@@ -65,3 +65,12 @@ make_csc_symm_matrix.simple_triplet_matrix  <- function(m) {
        values = values)
 }
 
+#' @method make_csc_symm_matrix dgCMatrix
+#' @importFrom methods as
+make_csc_symm_matrix.dgCMatrix  <- function(m) {
+  x <- as(m, "symmetricMatrix")
+  list(matbeg = x@p,
+       matind = x@i,
+       values = x@x)
+}
+

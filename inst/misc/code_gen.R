@@ -1,10 +1,3 @@
-## TypedSexp::String(s) => settings.direct_solve_method = if let Some(result) = s.to_vec().get(0) {
-##     result.to_string()
-## } else {
-##     settings.direct_solve_method
-## }
-
-
 library(clarabel)
 # Function to match on types using savvy
 f <- function(name, type = c("integer", "double", "logical", "character")) {
@@ -24,14 +17,8 @@ f <- function(name, type = c("integer", "double", "logical", "character")) {
     )
 }
 
-
 s <- clarabel_control()
-sn <- c(names(s),
-        "chordal_decomposition_enable",
-        "chordal_decomposition_merge_method",
-        "chordal_decomposition_compact",
-        "chordal_decomposition_complete_dual")
-st <- c(sapply(s, typeof),
-        "logical", "character", "logical", "logical")
+sn <- names(s)
+st <- sapply(s, typeof)
 out <- lapply(seq_along(st), function(i) f(sn[i], st[i]))
-writeLines(unlist(out), "update_settings.rs")
+writeLines(unlist(out), "update_settings_snippet.rs")

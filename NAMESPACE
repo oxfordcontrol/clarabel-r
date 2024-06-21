@@ -3,5 +3,6 @@
 export(clarabel)
 export(clarabel_control)
 export(solver_status_descriptions)
+importFrom(methods,as)
 useDynLib(clarabel)
 useDynLib(clarabel, .registration = TRUE)

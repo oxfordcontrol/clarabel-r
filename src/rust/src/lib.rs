@@ -3,28 +3,11 @@
 // Example functions
 use savvy::savvy;
 use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, ListSexp, OwnedListSexp, TypedSexp};
-// use savvy::NotAvailableValue;
-// use savvy::r_println;
 use clarabel::algebra::*;
 use clarabel::solver::*;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-
-// // Create an OwnedRealSexp out of a Rust double vector
-// fn make_owned_real_sexp(v: &Vec<f64>) -> savvy::Result<savvy::Sexp> {
-//     let mut out = OwnedRealSexp::new(v.len())?;
-//     for (i, &v) in v.iter().enumerate() {
-//         out[i] = v;
-//     }
-//     out.into()
-// }
-
-// impl From<clarabel::solver::SolverStatus> for i32 {
-//     fn from(status: SolverStatus) -> Self {
-//         status as i32
-//     }
-// }
 
 // Solve using Clarabel Rust solver.
 #[savvy]
@@ -78,6 +61,7 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     for (key, value) in cone_spec.iter() {
 	let typed_value = value.into_typed();
 	if ZC.is_match(key.as_ref()) {
+	    println!("Matched Zero cone");
 	    match typed_value {
 		TypedSexp::Integer(i) => cones.push(ZeroConeT(i.as_slice()[0] as usize)),
 		_ => (),
@@ -93,6 +77,7 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 		_ => (),
 	    }
 	} else if EPC.is_match(key.as_ref()) {
+	    println!("Matched Exponential cone");
 	    match typed_value {
 		TypedSexp::Integer(i) => for _i in 0..(i.as_slice()[0] as usize) {
 		    cones.push(ExponentialConeT());
@@ -115,7 +100,7 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	}
     }
 
-    // println!("cones: {:?}", cones);    
+    println!("cones: {:?}", cones);    
     // Update default settings with specified R settings for use below
     let settings = update_settings(r_settings);
     
@@ -124,6 +109,9 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 
     let mut obj_val = OwnedRealSexp::new(1)?;
     obj_val[0] = solver.solution.obj_val;
+
+    let mut obj_val_dual = OwnedRealSexp::new(1)?;
+    obj_val_dual[0] = solver.solution.obj_val_dual;
 
     let mut status = OwnedIntegerSexp::new(1)?;
     status[0] = solver.solution.status as i32 + 1;  // R's one-based index
@@ -140,17 +128,49 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     let mut r_dual = OwnedRealSexp::new(1)?;
     r_dual[0] = solver.solution.r_dual;
 
-    let mut out = OwnedListSexp::new(9, true)?;
+    let mut out = OwnedListSexp::new(11, true)?;
     out.set_name_and_value(0, "x", OwnedRealSexp::try_from_slice(solver.solution.x)?)?;
     out.set_name_and_value(1, "z", OwnedRealSexp::try_from_slice(solver.solution.z)?)?;
     out.set_name_and_value(2, "s", OwnedRealSexp::try_from_slice(solver.solution.s)?)?;
     out.set_name_and_value(3, "obj_val", obj_val)?;
-    out.set_name_and_value(4, "status", status)?;
-    out.set_name_and_value(5, "solve_time", solve_time)?;
-    out.set_name_and_value(6, "iterations", iterations)?;
-    out.set_name_and_value(7, "r_prim", r_prim)?;
-    out.set_name_and_value(8, "r_dual", r_dual)?;
+    out.set_name_and_value(4, "obj_val_dual", obj_val_dual)?;
+    out.set_name_and_value(5, "status", status)?;
+    out.set_name_and_value(6, "solve_time", solve_time)?;
+    out.set_name_and_value(7, "iterations", iterations)?;
+    out.set_name_and_value(8, "r_prim", r_prim)?;
+    out.set_name_and_value(9, "r_dual", r_dual)?;
 
+    // Handle Info
+    let fields = [
+	("μ", solver.info.μ),
+	("sigma", solver.info.sigma),
+	("step_length", solver.info.step_length),
+	("cost_primal", solver.info.cost_primal),
+	("cost_dual", solver.info.cost_dual),
+	("res_primal", solver.info.res_primal),
+	("res_dual", solver.info.res_dual),
+	("res_primal_inf", solver.info.res_primal_inf),
+	("res_dual_inf", solver.info.res_dual_inf),
+	("gap_abs", solver.info.gap_abs),
+	("gap_rel", solver.info.gap_rel),
+	("ktratio", solver.info.ktratio),
+	("solve_time", solver.info.solve_time),
+    ];
+
+    let mut info = OwnedListSexp::new(15, true)?;
+    for (i, (name, value)) in fields.iter().enumerate() {
+        let mut tmp = OwnedRealSexp::new(1)?;
+        tmp[0] = *value;
+        info.set_name_and_value(i, name, tmp)?;
+    }
+    let mut tmp = OwnedIntegerSexp::new(1)?;
+    tmp[0] = solver.info.iterations as i32;
+    info.set_name_and_value(13, "iterations", tmp)?;    
+    let mut tmp = OwnedIntegerSexp::new(1)?;
+    tmp[0] = solver.info.status as i32 + 1;
+    info.set_name_and_value(14, "status", tmp)?;        
+
+    out.set_name_and_value(10, "info", info)?;
     out.into()
 }
 
@@ -377,3 +397,5 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
     }
     settings
 }
+
+

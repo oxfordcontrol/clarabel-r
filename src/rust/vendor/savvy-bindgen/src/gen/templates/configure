@@ -1,5 +1,0 @@
-if [ "$(uname)" = "Emscripten" ]; then
-  TARGET="wasm32-unknown-emscripten"
-fi
-
-sed -e "s/@TARGET@/${TARGET}/" src/Makevars.in > src/Makevars

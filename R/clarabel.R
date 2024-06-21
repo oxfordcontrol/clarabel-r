@@ -65,7 +65,7 @@
 #'    \tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
 #'    \tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
 #'    \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-#'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
+#'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters           
 #' } }
 #'
 #' When the parameter `strict_cone_order` is `FALSE`, one can specify
@@ -91,14 +91,29 @@
 clarabel <- function(A, b, q, P = NULL, cones, control = list(),
                      strict_cone_order = TRUE) {
 
+  m <- length(b); n <- length(q);
+  n_variables <- ncol(A)
+  n_constraints <- nrow(A)
+  
+  if (m != n_constraints) stop("A and b incompatible dimensions.")
+  if (n != n_variables) stop("A and q incompatible dimensions.")
+  if (!is.null(P)) {
+    if (n != ncol(P)) stop("P and q incompatible dimensions.")
+    if (ncol(P) != nrow(P)) stop("P not square.")
+  }
+
+  # Sanitize control parameters
+  control <- do.call(clarabel_control, control)
+  if (strict_cone_order) {
+    cones_and_nvars <- sanitize_cone_spec(cones)
+    cones <- cones_and_nvars[["cones"]]
+    nvars <- cones_and_nvars[["nvars"]]
+  } else {
+    nvars <- nvars(cones)
+  }
+  if (sum(nvars) != m) stop("Constraint dimensions inconsistent with size of cones.")
+  
   ## TBD check box cone parameters, bsize > 0  & bl, bu have lengths bsize - 1
-
-  n_variables <- NCOL(A)
-  n_constraints <- NROW(A)
-
-  ## if (n_variables <= 0) {
-  ##   stop("No variables")
-  ## }
 
   if ( inherits(A, "dgCMatrix") ) {
     Ai <- A@i
@@ -110,9 +125,6 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
     Ap <- csc[["matbeg"]]
     Ax <- csc[["values"]]
   }
-
-  ## data <- list(m = n_constraints, n = n_variables, c = obj,
-  ##              Ai = Ai, Ap = Ap, Ax = Ax, b = b)
 
   if (!is.null(P)) {
     if (inherits(P, "dsCMatrix") ) {
@@ -131,10 +143,6 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
     Px <- numeric(0)
   }
 
-  # Sanitize control parameters
-  control <- do.call(clarabel_control, control)
-  if (strict_cone_order) cones <- sanitize_cone_spec(cones)
-  ##.Call(savvy_clarabel_solve__impl, m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings)
   .Call(savvy_clarabel_solve__impl, n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control, PACKAGE = "clarabel")
 
   ## clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
@@ -300,47 +308,47 @@ solver_status_descriptions <- function() {
 
 ### Sanitize cone specifications
 ### @param cone_spec a list of cone specifications
-### @return sanitized cone specifications
+### @return a named list of sanitized cone specifications and the number of variables for each cone (`nvars`)
 sanitize_cone_spec <- function(cone_spec) {
   cone_names <- names(cone_spec)
-
+  
   ## Simple sanity checks
   if ((nc <- length(cone_names)) == 0L) {
     stop("sanitize_cone_spec: no cone parameters specified")    
   } 
   if (length(intersect(cone_names, c("z", "l", "q", "s", "ep", "p"))) != nc) {
-    stop("sanitize_cone_spec: unknown cone parameters specified")
+    stop("sanitize_cone_spec: repeated cone parameters or unknown cone parameters specified")
   }
-
+  
   ## Check lengths as noted cone parameters table for ?clarabel
   ## First, scalars
-  z <- as.integer(cone_spec[["z"]]); zl <- length(z)
-  l <- as.integer(cone_spec[["l"]]); ll <- length(l)
-  ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep)
+  z <- as.integer(cone_spec[["z"]]); zl <- length(z); nvar_z <- sum(z);
+  l <- as.integer(cone_spec[["l"]]); ll <- length(l); nvar_l <- sum(l);
+  ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep); nvar_ep <- sum(ep) * 3 ## 3 variables per exp cone
   if (zl > 1 || ll > 1 || epl > 1) {
     stop("sanitize_cone_spec: z, l, ep should be scalars")
   }
   if (any(c(z, l, ep) < 0L)) {
     stop("sanitize_cone_spec: z, l, ep should be scalars > 0")
   }
-
+  
   ## Now the others
   ## SOC 
-  q <- as.integer(cone_spec[["q"]]); ql <- length(q)
+  q <- as.integer(cone_spec[["q"]]); ql <- length(q); nvar_q <- sum(q);
   if (any(q <= 0L)) stop("sanitize_cone_spec: SOC dimensions should be > 0")
   q <- as.list(q); names(q) <- rep("q", ql);
-
+  
   ## PSD 
-  s <- as.integer(cone_spec[["s"]]); sl <- length(s)
+  s <- as.integer(cone_spec[["s"]]); sl <- length(s); nvar_s <- if (sl > 0) sum(sapply(s, triangular_number)) else 0; ## triangular number
   if (any(s <= 0L)) stop("sanitize_cone_spec: PSD dimensions should be > 0")
   s <- as.list(s); names(s) <- rep("s", sl);
-
+  
   ## Power Cone
-  p <- as.numeric(cone_spec[["p"]]); pl <- length(p)
+  p <- as.numeric(cone_spec[["p"]]); pl <- length(p); nvar_p <- pl * 3; ## 3 variables per power cone
   if (any(p <= 0)) stop("sanitize_cone_spec: Power cone parameter should be > 0")
   p <- as.list(p); names(p) <- rep("p", pl);  
   
-  c(
+  cones <- c(
     if (zl > 0) list(z = z),
     if (ll > 0) list(l = l),
     if (ql > 0) q,
@@ -348,4 +356,39 @@ sanitize_cone_spec <- function(cone_spec) {
     if (epl > 0) list(ep = ep),
     if (pl > 0) p
   )
+
+  nvars <- c(z = nvar_z,
+             l = nvar_l,
+             q = nvar_q,
+             s = nvar_s,
+             ep = nvar_ep,
+             p = nvar_p)
+  list(cones = cones, nvars = nvars)
 }
+
+### Return the number of variables used for each type of cone based on cone specification
+### @param cones the cone specifications
+### @return a named vector of number of variables per each type of cone
+nvars <- function(cones) {
+  cones <- unlist(cones)
+  cone_names <- names(cones)
+  nvar_z <- if (length(matched <- grep("^z", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_l <- if (length(matched <- grep("^l", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_q <- if (length(matched <- grep("^q", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_s <- if (length(matched <- grep("^s", cone_names)) > 0) sum(sapply(cones[matched], triangular_number)) else 0L
+  nvar_ep <- if (length(matched <- grep("^ep", cone_names)) > 0) 3 * sum(cones[matched]) else 0L
+  nvar_p <- if (length(matched <- grep("^p", cone_names)) > 0) 3 * length(cones[matched]) else 0L
+  c(z = nvar_z,
+    l = nvar_l,
+    q = nvar_q,
+    s = nvar_s,
+    ep = nvar_ep,
+    p = nvar_p)
+}
+
+## Return the n-th triangular number
+triangular_number <- function(n) {
+  n * (n + 1) / 2
+}
+
+# Generalized power cone α.len() + *dim2,

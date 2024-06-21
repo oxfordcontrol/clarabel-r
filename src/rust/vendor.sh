@@ -5,6 +5,7 @@
 
 cargo vendor
 
+## Clarabel has a CITATION.bib file that CRAN flags
 # c.f. https://reproducible-builds.org/docs/archives/
 echo
 echo "Tarring up files"
