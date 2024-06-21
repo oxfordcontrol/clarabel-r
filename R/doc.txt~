@@ -1,6 +1,0 @@
-\code{z}	integer	\eqn{1}	number of primal zero cones (dual free cones), which corresponds to the primal equality constraints	\eqn{\{ 0 \}^{n}}
-\code{l}	integer	\eqn{1}	number of linear cones (non-negative cones)    \eqn{\{ x \in \mathbb{R}^{n} : x_i \ge 0, \forall i=1,\dots,\mathrm{n} \}}
-\code{q}	integer	\eqn{\geq1}    vector of second-order cone sizes       \eqn{\{ (t,x) \in \mathbb{R}^{n}  :  \|\|x\|\|_2   \leq t \}}
-\code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
-\code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-\code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters

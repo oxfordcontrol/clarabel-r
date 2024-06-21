@@ -59,13 +59,14 @@
 #' The table below shows the cone parameter specifications
 #' \tabular{rllll}{
 #'    \tab \bold{Parameter} \tab \bold{Type} \tab \bold{Length} \tab \bold{Description}                       \cr
-#'    \tab \code{z}         \tab integer     \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
-#'    \tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
-#'    \tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
-#'    \tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
-#'    \tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
-#'    \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-#'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters           
+#'    \tab \code{z}   \tab integer  \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
+#'    \tab            \tab          \tab               \tab which corresponds to the primal equality constraints \cr
+#'    \tab \code{l}   \tab integer  \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
+#'    \tab \code{q}   \tab integer  \tab \eqn{\geq 1}   \tab vector of second-order cone sizes                    \cr
+#'    \tab \code{s}   \tab integer  \tab \eqn{\geq 1}   \tab vector of positive semidefinite cone sizes           \cr
+#'    \tab \code{ep}  \tab integer  \tab \eqn{1}       \tab number of primal exponential cones                   \cr
+#'    \tab \code{p}   \tab numeric  \tab \eqn{\geq 1}   \tab vector of primal power cone parameters               \cr
+#'    \tab \code{gp}  \tab list     \tab \eqn{\geq 1}  \tab list of named lists of two items, `exponents` : a numeric vector of at least 2 exponent terms in the product summing to 1, and `dimension` : an integer dimension of generalized power cone parameters
 #' } }
 #'
 #' When the parameter `strict_cone_order` is `FALSE`, one can specify
@@ -78,6 +79,8 @@
 #' cone of size 2, followed by a linear cone of size 2, followed by a second-order
 #' cone of size 2, followed by a zero cone of size 3, and finally a second-order
 #' cone of size 3.
+#'
+#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit!_
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)
@@ -347,6 +350,10 @@ sanitize_cone_spec <- function(cone_spec) {
   p <- as.numeric(cone_spec[["p"]]); pl <- length(p); nvar_p <- pl * 3; ## 3 variables per power cone
   if (any(p <= 0)) stop("sanitize_cone_spec: Power cone parameter should be > 0")
   p <- as.list(p); names(p) <- rep("p", pl);  
+
+  ## Power Cone
+  gp <- cone_spec[["gp"]];  gpl <- length(gp); result <- sanitize_gp_params_and_get_nvars(gp);
+  gp <- result$sanitized_gp_params; names(gp) <- rep("gp", gpl);  nvar_gp <- result$nvar;
   
   cones <- c(
     if (zl > 0) list(z = z),
@@ -354,7 +361,8 @@ sanitize_cone_spec <- function(cone_spec) {
     if (ql > 0) q,
     if (sl > 0) s,
     if (epl > 0) list(ep = ep),
-    if (pl > 0) p
+    if (pl > 0) p,
+    if (gpl > 0) gp
   )
 
   nvars <- c(z = nvar_z,
@@ -362,15 +370,26 @@ sanitize_cone_spec <- function(cone_spec) {
              q = nvar_q,
              s = nvar_s,
              ep = nvar_ep,
-             p = nvar_p)
+             p = nvar_p,
+             gp = nvar_gp)
   list(cones = cones, nvars = nvars)
 }
 
 ### Return the number of variables used for each type of cone based on cone specification
-### @param cones the cone specifications
+### @param cones the cone specifications, expecting strict_cone_order to be FALSE
 ### @return a named vector of number of variables per each type of cone
 nvars <- function(cones) {
-  cones <- unlist(cones)
+  cone_names <- names(cones)
+  ## separate out gp cones from others.
+  gp_indices <- grep("^gp", cone_names)
+  if (length(gp_indices) > 0) {
+    gp_cones <- cones[gp_indices]
+    nvar_gp <- sum(sapply(gp_cones, function(x) length(x[[1L]]) + x[[2L]]))
+  } else {
+    nvar_gp <- 0L
+  }
+  other_indices <- grep("^gp", cone_names, invert = TRUE)
+  cones <- unlist(cones[other_indices])
   cone_names <- names(cones)
   nvar_z <- if (length(matched <- grep("^z", cone_names)) > 0) sum(cones[matched]) else 0L
   nvar_l <- if (length(matched <- grep("^l", cone_names)) > 0) sum(cones[matched]) else 0L
@@ -383,12 +402,37 @@ nvars <- function(cones) {
     q = nvar_q,
     s = nvar_s,
     ep = nvar_ep,
-    p = nvar_p)
+    p = nvar_p,
+    gp = nvar_gp)
 }
-
+  
 ## Return the n-th triangular number
 triangular_number <- function(n) {
   n * (n + 1) / 2
 }
 
-# Generalized power cone α.len() + *dim2,
+## Check Generalized Power Cone Params
+sanitize_gp_params_and_get_nvars <- function(gp) {
+  # Generalized power cone α.len() + dim
+  if (length(gp) == 0) {
+    list(sanitized_gp_params = list(), nvar = 0L)
+  } else  {
+    sanitized_gp_params <- 
+      lapply(gp, function(x) {
+        par_names <- sort(names(x))
+        if (length(x) != 2L || !identical(par_names, c("dimension", "exponents"))) {
+          stop("Generalized power cone param list should be a list of two elements named 'dimension' and 'exponents'")
+        }
+        exps <- x[["exponents"]]
+        if (length(exps) < 2L || any(exps <= 0) || any(exps >= 1) || abs(sum(exps) - 1.0) > 0.0) {
+          stop("Improper Generalized power cone exponents!")
+        }
+        n <- x[["dimension"]]
+        if (length(n) != 1L || n <= 0) stop("Improper Generalized power cone dimension!")
+        list(exponents = as.numeric(exps), dimension = as.integer(n))
+      })
+    list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[[1L]]) + x[[2L]])))
+  }
+}
+
+

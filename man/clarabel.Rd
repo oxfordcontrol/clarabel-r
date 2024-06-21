@@ -70,13 +70,14 @@ listed in \dQuote{Cone Parameters} below } }
 The table below shows the cone parameter specifications
 \tabular{rllll}{
 \tab \bold{Parameter} \tab \bold{Type} \tab \bold{Length} \tab \bold{Description}                       \cr
-\tab \code{z}         \tab integer     \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
-\tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
-\tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
-\tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
-\tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
-\tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-\tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
+\tab \code{z}   \tab integer  \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
+\tab            \tab          \tab               \tab which corresponds to the primal equality constraints \cr
+\tab \code{l}   \tab integer  \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
+\tab \code{q}   \tab integer  \tab \eqn{\geq 1}   \tab vector of second-order cone sizes                    \cr
+\tab \code{s}   \tab integer  \tab \eqn{\geq 1}   \tab vector of positive semidefinite cone sizes           \cr
+\tab \code{ep}  \tab integer  \tab \eqn{1}       \tab number of primal exponential cones                   \cr
+\tab \code{p}   \tab numeric  \tab \eqn{\geq 1}   \tab vector of primal power cone parameters               \cr
+\tab \code{gp}  \tab list     \tab \eqn{\geq 1}  \tab list of named lists of two items, \code{exponents} : a numeric vector of at least 2 exponent terms in the product summing to 1, and \code{dimension} : an integer dimension of generalized power cone parameters
 } }
 
 When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
@@ -87,6 +88,8 @@ and so on. For example, either of the following would be valid: \code{list(z = 2
 cone of size 2, followed by a linear cone of size 2, followed by a second-order
 cone of size 2, followed by a zero cone of size 3, and finally a second-order
 cone of size 3.
+
+\emph{Note that when \code{strict_cone_order = FALSE}, types of cone parameters such as integers, reals have to be explicit!}
 }
 \examples{
 A <- matrix(c(1, 1), ncol = 1)

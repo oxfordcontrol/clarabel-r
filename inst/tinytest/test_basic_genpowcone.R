@@ -11,30 +11,31 @@
 
 ## x = (x1, y, z1, x2, y2, z2)
 
-## n <- 6;
-## P <- Matrix::sparseMatrix(i = integer(0), j = integer(0), x = numeric(0), dims = c(n, n))
-## q <- c(0., 0., -1., 0., 0., -1.)
+n <- 6;
+P <- Matrix::sparseMatrix(i = integer(0), j = integer(0), x = numeric(0), dims = c(n, n))
+q <- c(0., 0., -1., 0., 0., -1.)
 
 ## (x1, y, z1) in K_pow(0.6)
 ## (x2, y2, z2) in K_pow(0.1)
 
-## A1 <- -diag(n)
-## b1 <- numeric(n)
-## cones1 <- list(gp1 = list(c(0.6, 0.4), 1L),
-##                gp2 = list(c(0.1, 0.9), 1L)
-##                )
+A1 <- -diag(n)
+b1 <- numeric(n)
+cones1 <- list(gp1 = list(exponents = c(0.6, 0.4), dimension = 1L),
+               gp2 = list(exponents = c(0.1, 0.9), dimension = 1L)
+               )
 
 ## x1 + 2y + 3x2 == 3
 ## y2 == 1
 
-## A2 <- Matrix::sparseMatrix(i = c(rep(1, 3), 2), j = c(1, 2, 4, 5), x = c(1.0, 2.0, 3.0, 1.0),
-##                            dims = c(2, 6))
-## b2 <- c(3., 1.)
-## cones2 <- list(z = 2)
-## A <- rbind(A1, A2)
-## b <- c(b1, b2)
-## cones <- c(cones1, cones2)
-## solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones)
-## expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
-## refobj <- -1.8458;
-## expect_true(abs(solution$info$cost_primal - refobj) <= 1e-3)
+A2 <- Matrix::sparseMatrix(i = c(rep(1, 3), 2), j = c(1, 2, 4, 5), x = c(1.0, 2.0, 3.0, 1.0),
+                           dims = c(2, 6))
+b2 <- c(3., 1.)
+cones2 <- list(z = 2L)
+A <- rbind(A1, A2)
+b <- c(b1, b2)
+cones <- c(cones1, cones2)
+
+solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones, strict_cone_order = FALSE)
+expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
+refobj <- -1.8458;
+expect_true(abs(solution$info$cost_primal - refobj) <= 1e-3)

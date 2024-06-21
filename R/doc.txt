@@ -1,6 +1,0 @@
-`z`	`integer`	\eqn{1}	number of primal zero cones (dual free cones), which corresponds to the primal equality constraints	\eqn{\{ 0 \}^{n}}
-`l`	`integer`	\eqn{1}	number of linear cones (non-negative cones)    \eqn{\{ x \in R^n : x_i \ge 0, \forall i=1,\dots,\mathrm{n} \}}
-`q`	`integer`	\eqn{\geq 1}    vector of second-order cone sizes       \eqn{\{ (t,x) \in R^{n}  :  \|\|x\|\|_2   \leq t \}}
-`s`	`integer`	\eqn{\geq 1}	vector of positive semidefinite cone sizes	Upper triangular part of the positive semidefinite cone \eqn{S^n_+}. The elements \eqn{x} of this cone represent the columnwise stacking of the upper triangular part of a positive semidefinite matrix \eqn{X \in S^n_+}, so that \eqn{x \in R^d} with \eqn{d = n(n+1)/2}.
-`ep`	`integer`	\eqn{1}	  number of primal exponential cones	\eqn{\{(x, y, z) : y > 0,~~ ye^{x/y} ≤ z \}}
-\code{p}         \tab numeric     \tab \eqn{\geq 1}   \tab vector of primal power cone parameters

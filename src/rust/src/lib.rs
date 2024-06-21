@@ -42,10 +42,10 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     // println!("A: {:?}", A);
     // assert!(A.check_format().is_ok());
     
-    let b = b.as_slice().to_vec();
-    let q = q.as_slice().to_vec();
-    // println!("b: {:?}", b);
-    // println!("q: {:?}", q);    
+    let bb = b.as_slice().to_vec();
+    let qq = q.as_slice().to_vec();
+    // println!("b: {:?}", bb);
+    // println!("q: {:?}", qq);    
     
     // Handle cones
     lazy_static! {
@@ -55,13 +55,13 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	static ref EPC: Regex = Regex::new("^ep").unwrap(); // Exponential Cone
 	static ref PC: Regex = Regex::new("^p").unwrap();  // Power Cone
 	static ref PSDTC: Regex = Regex::new("^s").unwrap();  // PSD Triangle Cone
+	static ref GPC: Regex = Regex::new("^gp").unwrap();  // Generalized Power Cone
     }
 
     let mut cones: Vec::<SupportedConeT<f64>> = Vec::new();
     for (key, value) in cone_spec.iter() {
 	let typed_value = value.into_typed();
 	if ZC.is_match(key.as_ref()) {
-	    println!("Matched Zero cone");
 	    match typed_value {
 		TypedSexp::Integer(i) => cones.push(ZeroConeT(i.as_slice()[0] as usize)),
 		_ => (),
@@ -77,7 +77,6 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 		_ => (),
 	    }
 	} else if EPC.is_match(key.as_ref()) {
-	    println!("Matched Exponential cone");
 	    match typed_value {
 		TypedSexp::Integer(i) => for _i in 0..(i.as_slice()[0] as usize) {
 		    cones.push(ExponentialConeT());
@@ -94,6 +93,24 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 		TypedSexp::Real(f) => cones.push(PowerConeT(f.as_slice()[0] as f64)),
 		_ => (),
 	    }
+	} else if GPC.is_match(key.as_ref()) {
+	    match typed_value {
+		TypedSexp::List(l) => {
+		    match l.get("exponents").expect("GenPower exponents vector").into_typed() {
+			TypedSexp::Real(f) => {
+			    match l.get("dimension").expect("GenPower dimension").into_typed() {
+				TypedSexp::Integer(i) => {
+				    cones.push(GenPowerConeT(f.as_slice().to_vec(), i.as_slice()[0] as usize))
+				},
+				_ => (),
+			    }
+			    
+			},
+			_ => (),
+		    }
+		},
+		_ => (),
+	    }
         } else {
 	    let msg = format!("Ignoring unknown cone: {}", key);
 	    let _ = savvy::io::r_warn(&msg);
@@ -104,7 +121,7 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     // Update default settings with specified R settings for use below
     let settings = update_settings(r_settings);
     
-    let mut solver = DefaultSolver::new(&P, &q, &A, &b, &cones, settings);
+    let mut solver = DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings);
     solver.solve();
 
     let mut obj_val = OwnedRealSexp::new(1)?;
