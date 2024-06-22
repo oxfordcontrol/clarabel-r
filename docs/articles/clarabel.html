@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clarabel</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
       </span>
     </div>
 
@@ -89,8 +89,8 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The first two examples are from the original <a href="https://github.com/oxfordcontrol/ClarabelDocs" class="external-link">Clarabel
-documentation</a> and the third is from <a href="https://www.cvxgrp.org/scs/" class="external-link">SCS</a>.</p>
+<p>The first two examples are from the original <a href="https://clarabel.org" class="external-link">Clarabel documentation</a> and the third is
+from <a href="https://www.cvxgrp.org/scs/" class="external-link">SCS</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="basic-quadratic-program-example">1. Basic Quadratic Program Example<a class="anchor" aria-label="anchor" href="#basic-quadratic-program-example"></a>
@@ -154,8 +154,9 @@ so.</p>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
 </div>
 </div>
@@ -202,7 +203,7 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 <div class="section level3">
 <h3 id="solution-1">2.3. Solution<a class="anchor" aria-label="anchor" href="#solution-1"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
@@ -212,8 +213,9 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -1.000000)</span></span></code></pre></div>
 </div>
 </div>
@@ -269,8 +271,8 @@ components of the vectors returned by Clarabel corresponding to each
 semidefinite cone. That is, the off-diagonal entries must be scaled by
 <span class="math inline">\(1/\sqrt{2}\)</span> and the upper triangular
 entries are filled in by copying the values of lower triangular entries.
-Explicitly, the inverse operation takes vector <span class="math inline">\(s \in \mathbb{R}^{k(k+1)/2}\)</span> and produces
-the matrix</p>
+Explicitly, the inverse operation takes vector <span class="math inline">\(s \in
+\mathbb{R}^{k(k+1)/2}\)</span> and produces the matrix</p>
 <p><span class="math display">\[
 \begin{aligned}
 \text{mat}(s) =  \begin{bmatrix}
@@ -291,7 +293,7 @@ s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots
 \mathbb{R}^{k(k+1)/2} \mid \text{mat}(s) \succeq 0 \}.
 \]</span></p>
 <p>Below are two functions to implement both <span class="math inline">\(\text{vec}\)</span> and <span class="math inline">\(\text{mat}\)</span>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Return an vectorization of symmetric matrix using the upper triangular part,</span></span>
 <span><span class="co">#' still in column order.</span></span>
 <span><span class="co">#' @param S a symmetric matrix</span></span>
@@ -353,13 +355,16 @@ B_2=\begin{bmatrix} 14 &amp; 9 &amp; 40\\ 9 &amp; 91 &amp; 10\\ 40 &amp;
 \]</span></p>
 <p>The constraints involve symmetric positive semidefinite cones over
 variables <span class="math inline">\(x \in \mathbb{R}^n\)</span> and
-<span class="math inline">\(S \in \mathbb{R}^{k \times k}\)</span></p>
+<span class="math inline">\(S \in
+\mathbb{R}^{k \times k}\)</span></p>
 <p><span class="math display">\[
 B - \sum_{i=1}^n \mathcal{A}_i x_i = S \succeq 0
 \]</span></p>
 <p>where data <span class="math inline">\(B, \mathcal{A}_1, \ldots,
-\mathcal{A}_n \in \mathbb{R}^{k \times k}\)</span> are symmetric. We can
-write this in the canonical form over a new variable <span class="math inline">\(s \in \mathcal{S}_+^k\)</span>:</p>
+\mathcal{A}_n \in \mathbb{R}^{k
+\times k}\)</span> are symmetric. We can write this in the canonical
+form over a new variable <span class="math inline">\(s \in
+\mathcal{S}_+^k\)</span>:</p>
 <p><span class="math display">\[
 \begin{aligned}
 \begin{align}
@@ -371,8 +376,8 @@ s &amp;= \text{vec}(S)\\
 \end{aligned}
 \]</span></p>
 <p>using the fact that <span class="math inline">\(\text{vec}\)</span>
-is linear, where <span class="math inline">\(b = \text{vec}(B)\)</span>
-and</p>
+is linear, where <span class="math inline">\(b =
+\text{vec}(B)\)</span> and</p>
 <p><span class="math display">\[
 A =
 \begin{bmatrix}
@@ -388,7 +393,7 @@ Clarabel, we simply use <span class="math inline">\(S^\star =
 <p>We have two such constraints and will therefore construct the vectors
 for both cones in order and specify the appropriate dimensions, 2 and 3,
 respectively.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># objective: x_1 - x2 + x_3</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -407,22 +412,122 @@ respectively.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">B1</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">B2</span><span class="op">)</span><span class="op">)</span> <span class="co"># stack both psd constraints</span></span>
 <span><span class="va">cones</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co"># cone dimensions</span></span>
-<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, cone <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
+<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution (x1, x2, x3) = (-0.367752, 1.898333, -0.887460)</span></span></code></pre></div>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="control-parameters">4. Control parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
+<h2 id="cone-specifications">4. Cone Specifications<a class="anchor" aria-label="anchor" href="#cone-specifications"></a>
+</h2>
+<p>The following cones can be specified in Clarabel.</p>
+<table class="table">
+<colgroup>
+<col width="2%">
+<col width="1%">
+<col width="1%">
+<col width="36%">
+<col width="57%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Type</th>
+<th align="left">Length</th>
+<th align="left">Description</th>
+<th align="left">Definition (per parameter element)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">z</td>
+<td align="left">integer</td>
+<td align="left">1</td>
+<td align="left">Number of primal zero cones (dual free cones), which
+corresponds to the primal equality constraints</td>
+<td align="left"><span class="math inline">\(\{ 0 \}^{z}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">l</td>
+<td align="left">integer</td>
+<td align="left">1</td>
+<td align="left">Number of linear cones (non-negative cones)</td>
+<td align="left"><span class="math inline">\(\{ x \in \mathbb{R}^{l} :
+x_i \ge 0, \forall i=1,\dots,l \}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">q</td>
+<td align="left">integer</td>
+<td align="left">&gt;= 1</td>
+<td align="left">Vector of second-order cone sizes</td>
+<td align="left"><span class="math inline">\(\{ (t,x) \in
+\mathbb{R}^{q}  :  \lVert x\rVert_2  \leq t \}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">s</td>
+<td align="left">integer</td>
+<td align="left">&gt;= 1</td>
+<td align="left">Vector of positive semidefinite cone sizes</td>
+<td align="left">Upper triangular part of the positive semidefinite cone
+<span class="math inline">\(S^s_+\)</span>. The elements <span class="math inline">\(x\)</span> of this cone represent the columnwise
+stacking of the upper triangular part of a positive semidefinite matrix
+<span class="math inline">\(X \in S^s_+\)</span>, so that <span class="math inline">\(x \in R^d\)</span> with <span class="math inline">\(d = s(s+1)/2\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">ep</td>
+<td align="left">integer</td>
+<td align="left">1</td>
+<td align="left">Number of primal exponential cones</td>
+<td align="left"><span class="math inline">\(\{(x, y, z) : y &gt; 0,~~
+ye^{x/y} \le z \}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">numeric</td>
+<td align="left">&gt;= 1</td>
+<td align="left">Vector of primal power cone parameters</td>
+<td align="left">
+<span class="math inline">\(\{(x, y, z) : x^p y^{(1-p)}
+\ge  \lVert z\rVert,~ (x,y) \ge 0 \}\)</span> with <span class="math inline">\(p \in (0,1)\)</span>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">gp</td>
+<td align="left">list</td>
+<td align="left">&gt;= 1</td>
+<td align="left">List of named lists of two items, <code>a</code> : the
+numeric vector of at least 2 exponent terms, and <code>n</code> : an
+integer dimension of generalized power cone parameters</td>
+<td align="left">
+<span class="math inline">\(\{(x, y) \in R^{len(a)}
+\times R^n : \prod\limits_{a_i \in a} x_i^{a_i} \ge \lVert y\rVert_2,~ x
+\ge 0 \}\)</span> with <span class="math inline">\(a_i \in
+(0,1)\)</span> and <span class="math inline">\(\sum a_i =
+1\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Generalized power cone parameters are specified as list of two-item
+lists, with component named <span class="math inline">\(a\)</span>
+denoting the exponents and the named component <span class="math inline">\(n\)</span> denoting the dimension.</p>
+<p>One can specify cones in any order if <code>strict_cone_order</code>
+is set to <code>FALSE</code> in the call to <code><a href="../reference/clarabel.html">clarabel()</a></code> but
+one has to ensure that parameter types are strictly specified for the
+values, e.g. <code>5L</code> for integers, <code>0.</code> for reals
+etc.</p>
+</div>
+<div class="section level2">
+<h2 id="control-parameters">5. Control parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
 </h2>
 <p>Clarabel has a number of parameters that control its behavior,
 including verbosity, time limits, and tolerances; see help on
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code>. As an example, in the last problem, we
 can reduce the number of iterations.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
@@ -433,8 +538,9 @@ can reduce the number of iterations.</p>
 <span>              control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_iter <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co">## Reduced number of iterations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -0.999998)</span></span></code></pre></div>
 <p>Note the different status, which should always be checked in
 code.</p>
@@ -458,7 +564,7 @@ code.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

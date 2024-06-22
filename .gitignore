@@ -43,3 +43,6 @@ vignettes/*.pdf
 
 # My stuff
 inst/stuff
+
+# Makevars is generated
+src/Makevars
