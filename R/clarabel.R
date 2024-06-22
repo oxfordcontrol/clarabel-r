@@ -56,17 +56,17 @@
 #' listed in \dQuote{Cone Parameters} below } }
 #'
 #' \subsection{Cone Parameters}{
-#' The table below shows the cone parameter specifications
+#' The table below shows the cone parameter specifications. Mathematical definitions are in the vignette.
 #' \tabular{rllll}{
 #'    \tab \bold{Parameter} \tab \bold{Type} \tab \bold{Length} \tab \bold{Description}                       \cr
 #'    \tab \code{z}   \tab integer  \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
 #'    \tab            \tab          \tab               \tab which corresponds to the primal equality constraints \cr
 #'    \tab \code{l}   \tab integer  \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
-#'    \tab \code{q}   \tab integer  \tab \eqn{\geq 1}   \tab vector of second-order cone sizes                    \cr
-#'    \tab \code{s}   \tab integer  \tab \eqn{\geq 1}   \tab vector of positive semidefinite cone sizes           \cr
+#'    \tab \code{q}   \tab integer  \tab \eqn{\ge 1}   \tab vector of second-order cone sizes                    \cr
+#'    \tab \code{s}   \tab integer  \tab \eqn{\ge 1}   \tab vector of positive semidefinite cone sizes           \cr
 #'    \tab \code{ep}  \tab integer  \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-#'    \tab \code{p}   \tab numeric  \tab \eqn{\geq 1}   \tab vector of primal power cone parameters               \cr
-#'    \tab \code{gp}  \tab list     \tab \eqn{\geq 1}  \tab list of named lists of two items, `exponents` : a numeric vector of at least 2 exponent terms in the product summing to 1, and `dimension` : an integer dimension of generalized power cone parameters
+#'    \tab \code{p}   \tab numeric  \tab \eqn{\ge 1}   \tab vector of primal power cone parameters               \cr
+#'    \tab \code{gp}  \tab list     \tab \eqn{\ge 1}  \tab list of named lists of two items, `a` : a numeric vector of at least 2 exponent terms in the product summing to 1, and `n` : an integer dimension of generalized power cone parameters
 #' } }
 #'
 #' When the parameter `strict_cone_order` is `FALSE`, one can specify
@@ -78,9 +78,9 @@
 #' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating a zero
 #' cone of size 2, followed by a linear cone of size 2, followed by a second-order
 #' cone of size 2, followed by a zero cone of size 3, and finally a second-order
-#' cone of size 3.
+#' cone of size 3. Generalized power cones parameters have to specified as named lists, e.g., `list(z = 2L, gp1 = list(a = c(0.3, 0.7), n = 3L), gp2 = list(a = c(0.5, 0.5), n = 1L))`.
 #'
-#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit!_
+#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks.!_
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)
@@ -384,7 +384,7 @@ nvars <- function(cones) {
   gp_indices <- grep("^gp", cone_names)
   if (length(gp_indices) > 0) {
     gp_cones <- cones[gp_indices]
-    nvar_gp <- sum(sapply(gp_cones, function(x) length(x[[1L]]) + x[[2L]]))
+    nvar_gp <- sum(sapply(gp_cones, function(x) length(x[["a"]]) + x[["n"]]))
   } else {
     nvar_gp <- 0L
   }
@@ -420,18 +420,18 @@ sanitize_gp_params_and_get_nvars <- function(gp) {
     sanitized_gp_params <- 
       lapply(gp, function(x) {
         par_names <- sort(names(x))
-        if (length(x) != 2L || !identical(par_names, c("dimension", "exponents"))) {
-          stop("Generalized power cone param list should be a list of two elements named 'dimension' and 'exponents'")
+        if (length(x) != 2L || !identical(par_names, c("a", "n"))) {
+          stop("Generalized power cone param list should be a list of two elements named 'a' and 'n'")
         }
-        exps <- x[["exponents"]]
+        exps <- x[["a"]]
         if (length(exps) < 2L || any(exps <= 0) || any(exps >= 1) || abs(sum(exps) - 1.0) > 0.0) {
           stop("Improper Generalized power cone exponents!")
         }
-        n <- x[["dimension"]]
+        n <- x[["n"]]
         if (length(n) != 1L || n <= 0) stop("Improper Generalized power cone dimension!")
-        list(exponents = as.numeric(exps), dimension = as.integer(n))
+        list(a = as.numeric(exps), n = as.integer(n))
       })
-    list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[[1L]]) + x[[2L]])))
+    list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[["a"]]) + x[["n"]])))
   }
 }
 

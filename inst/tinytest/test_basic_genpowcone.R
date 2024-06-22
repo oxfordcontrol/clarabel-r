@@ -20,8 +20,8 @@ q <- c(0., 0., -1., 0., 0., -1.)
 
 A1 <- -diag(n)
 b1 <- numeric(n)
-cones1 <- list(gp1 = list(exponents = c(0.6, 0.4), dimension = 1L),
-               gp2 = list(exponents = c(0.1, 0.9), dimension = 1L)
+cones1 <- list(gp1 = list(a = c(0.6, 0.4), n = 1L),
+               gp2 = list(a = c(0.1, 0.9), n = 1L)
                )
 
 ## x1 + 2y + 3x2 == 3

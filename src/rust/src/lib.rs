@@ -96,9 +96,9 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	} else if GPC.is_match(key.as_ref()) {
 	    match typed_value {
 		TypedSexp::List(l) => {
-		    match l.get("exponents").expect("GenPower exponents vector").into_typed() {
+		    match l.get("a").expect("GenPowerCone exponents vector").into_typed() {
 			TypedSexp::Real(f) => {
-			    match l.get("dimension").expect("GenPower dimension").into_typed() {
+			    match l.get("n").expect("GenPowerCone dimension").into_typed() {
 				TypedSexp::Integer(i) => {
 				    cones.push(GenPowerConeT(f.as_slice().to_vec(), i.as_slice()[0] as usize))
 				},
