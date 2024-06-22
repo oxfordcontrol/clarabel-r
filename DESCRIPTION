@@ -1,7 +1,7 @@
 Package: clarabel
 Type: Package
 Title: Interior Point Conic Optimization Solver
-Version: 0.5.1
+Version: 0.9.0
 Authors@R: c(person("Balasubramanian", "Narasimhan", role=c("aut", "cre"),
 	   	   email = "naras@stanford.edu"),
 	     person("Paul", "Goulart", role=c("aut", "cph")),
@@ -10,13 +10,12 @@ Authors@R: c(person("Balasubramanian", "Narasimhan", role=c("aut", "cre"),
 	            comment = "For vendoring/Makefile hints/R scripts for generating crate authors/licenses"),
 	     person(given = "The authors of the dependency Rust crates", role = c("ctb"),	
                     comment = "see inst/AUTHORS file for details"))
-Description: A versatile interior point solver that solves linear programs (LPs), quadratic programs (QPs), second-order cone programs (SOCPs), semidefinite programs (SDPs), and problems with exponential and power cone constraints (<https://oxfordcontrol.github.io/ClarabelDocs/stable/>). For quadratic objectives, unlike interior point solvers based on the standard homogeneous self-dual embedding (HSDE) model, 'Clarabel' handles quadratic objective without requiring any epigraphical reformulation of its objective function. It can therefore be significantly faster than other HSDE-based solvers for problems with quadratic objective functions. Infeasible problems are detected using using a homogeneous embedding technique.
+Description: A versatile interior point solver that solves linear programs (LPs), quadratic programs (QPs), second-order cone programs (SOCPs), semidefinite programs (SDPs), and problems with exponential and power cone constraints (<https://clarabel.org/stable/>). For quadratic objectives, unlike interior point solvers based on the standard homogeneous self-dual embedding (HSDE) model, 'Clarabel' handles quadratic objective without requiring any epigraphical reformulation of its objective function. It can therefore be significantly faster than other HSDE-based solvers for problems with quadratic objective functions. Infeasible problems are detected using using a homogeneous embedding technique.
 License: Apache License (== 2.0)
-SystemRequirements: Cargo (rustc package manager) and GNU make
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Config/rextendr/version: 0.3.1
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 URL: https://oxfordcontrol.github.io/clarabel-r/
 BugReports: https://github.com/oxfordcontrol/clarabel-r/issues
 Suggests: 
@@ -25,3 +24,6 @@ Suggests:
     rmarkdown,
     tinytest
 VignetteBuilder: knitr
+SystemRequirements: Cargo (Rust package manager), rustc and GNU Make
+Imports: 
+    methods

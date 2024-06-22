@@ -41,7 +41,11 @@ clarabel_control(
   iterative_refinement_abstol = 1e-12,
   iterative_refinement_max_iter = 10L,
   iterative_refinement_stop_ratio = 5,
-  presolve_enable = TRUE
+  presolve_enable = TRUE,
+  chordal_decomposition_enable = FALSE,
+  chordal_decomposition_merge_method = c("none", "parent_child", "clique_graph"),
+  chordal_decomposition_compact = FALSE,
+  chordal_decomposition_complete_dual = FALSE
 )
 }
 \arguments{
@@ -118,6 +122,14 @@ clarabel_control(
 \item{iterative_refinement_stop_ratio}{iterative refinement stalling tolerance (\code{5.0})}
 
 \item{presolve_enable}{whether to enable presolvle (\code{TRUE})}
+
+\item{chordal_decomposition_enable}{whether to enable chordal decomposition for SDPs (\code{FALSE})}
+
+\item{chordal_decomposition_merge_method}{chordal decomposition merge method, one of \code{'none'}, \code{'parent_child'} or \code{'clique_graph'}, for SDPs (\code{'none'})}
+
+\item{chordal_decomposition_compact}{a boolean flag for SDPs indicating whether to assemble decomposed system in \emph{compact} form for SDPs (\code{FALSE})}
+
+\item{chordal_decomposition_complete_dual}{a boolean flag indicating complete PSD dual variables after decomposition for SDPs}
 }
 \value{
 a list containing the control parameters.

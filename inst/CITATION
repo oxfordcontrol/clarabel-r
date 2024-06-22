@@ -1,8 +1,51 @@
 bibentry(bibtype = "Misc",
-         title        = "Clarabel: A Library for Optimization and Control",
-         author       = c(person(given = "Paul", family = "Goulart"),
-                          person(given = "Yuwen", family = "Chen")),
-         year         = "2021",
-         url          = "https://oxfordcontrol.github.io/ClarabelDocs/stable/",
-         header       = "To cite Clarabel in publications use:"
-)
+         key = "Clarabel_2024",
+         title = "Clarabel: An interior-point solver for conic programs with quadratic objectives",
+         author = c(person(given = c("Paul", "J."),
+                           family = "Goulart"),
+                    person(given = "Yuwen",
+                           family = "Chen")),
+         year = "2024",
+         eprint = "2405.12762",
+         archiveprefix = "arXiv",
+         doi = "10.48550/arXiv.2405.12762",
+         primaryclass = "math.OC",
+         header = "To cite Clarabel in publications use:"
+         )
+
+bibentry(bibtype = "InProceedings",
+         key = "Garstka_2020",
+         author = c(person(given = "Michael",
+                           family = "Garstka"),
+                    person(given = "Mark",
+                           family = "Cannon"),
+                    person(given = "Paul",
+                           family = "Goulart")),
+         title = "A clique graph based merging strategy for decomposable {SDPs}",
+         booktitle = "IFAC-PapersOnLine",
+         year = "2020",
+         note = "21th IFAC World Congress",
+         number = "2",
+         pages = "7355-7361",
+         volume = "53",
+         doi = "10.1016/j.ifacol.2020.12.1255",
+         issn = "2405-8963",
+         journal = "IFAC-PapersOnLine",
+         header = "To cite Clarabel to solve SDPs with decomposable structure use:"
+         )
+
+bibentry(bibtype = "Misc",
+         key = "chen2023efficient",
+         title = "An Efficient IPM Implementation for A Class of Nonsymmetric Cones",
+         author = c(person(given = "Yuwen",
+                           family = "Chen"),
+                    person(given = "Paul",
+                           family = "Goulart")),
+         year = "2023",
+         eprint = "2305.12275",
+         archiveprefix = "arXiv",
+         doi = "10.48550/arXiv.2305.12275",
+         primaryclass = "math.OC",
+         header = "To cite Clarabel to solve problems with generalized power cones use:"
+         )
+

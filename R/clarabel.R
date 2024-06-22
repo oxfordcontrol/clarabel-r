@@ -56,16 +56,17 @@
 #' listed in \dQuote{Cone Parameters} below } }
 #'
 #' \subsection{Cone Parameters}{
-#' The table below shows the cone parameter specifications
+#' The table below shows the cone parameter specifications. Mathematical definitions are in the vignette.
 #' \tabular{rllll}{
 #'    \tab \bold{Parameter} \tab \bold{Type} \tab \bold{Length} \tab \bold{Description}                       \cr
-#'    \tab \code{z}         \tab integer     \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
-#'    \tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
-#'    \tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
-#'    \tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
-#'    \tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
-#'    \tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-#'    \tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
+#'    \tab \code{z}   \tab integer  \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
+#'    \tab            \tab          \tab               \tab which corresponds to the primal equality constraints \cr
+#'    \tab \code{l}   \tab integer  \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
+#'    \tab \code{q}   \tab integer  \tab \eqn{\ge 1}   \tab vector of second-order cone sizes                    \cr
+#'    \tab \code{s}   \tab integer  \tab \eqn{\ge 1}   \tab vector of positive semidefinite cone sizes           \cr
+#'    \tab \code{ep}  \tab integer  \tab \eqn{1}       \tab number of primal exponential cones                   \cr
+#'    \tab \code{p}   \tab numeric  \tab \eqn{\ge 1}   \tab vector of primal power cone parameters               \cr
+#'    \tab \code{gp}  \tab list     \tab \eqn{\ge 1}  \tab list of named lists of two items, `a` : a numeric vector of at least 2 exponent terms in the product summing to 1, and `n` : an integer dimension of generalized power cone parameters
 #' } }
 #'
 #' When the parameter `strict_cone_order` is `FALSE`, one can specify
@@ -77,7 +78,9 @@
 #' 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)`, indicating a zero
 #' cone of size 2, followed by a linear cone of size 2, followed by a second-order
 #' cone of size 2, followed by a zero cone of size 3, and finally a second-order
-#' cone of size 3.
+#' cone of size 3. Generalized power cones parameters have to specified as named lists, e.g., `list(z = 2L, gp1 = list(a = c(0.3, 0.7), n = 3L), gp2 = list(a = c(0.5, 0.5), n = 1L))`.
+#'
+#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks.!_
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)
@@ -91,14 +94,29 @@
 clarabel <- function(A, b, q, P = NULL, cones, control = list(),
                      strict_cone_order = TRUE) {
 
+  m <- length(b); n <- length(q);
+  n_variables <- ncol(A)
+  n_constraints <- nrow(A)
+  
+  if (m != n_constraints) stop("A and b incompatible dimensions.")
+  if (n != n_variables) stop("A and q incompatible dimensions.")
+  if (!is.null(P)) {
+    if (n != ncol(P)) stop("P and q incompatible dimensions.")
+    if (ncol(P) != nrow(P)) stop("P not square.")
+  }
+
+  # Sanitize control parameters
+  control <- do.call(clarabel_control, control)
+  if (strict_cone_order) {
+    cones_and_nvars <- sanitize_cone_spec(cones)
+    cones <- cones_and_nvars[["cones"]]
+    nvars <- cones_and_nvars[["nvars"]]
+  } else {
+    nvars <- nvars(cones)
+  }
+  if (sum(nvars) != m) stop("Constraint dimensions inconsistent with size of cones.")
+  
   ## TBD check box cone parameters, bsize > 0  & bl, bu have lengths bsize - 1
-
-  n_variables <- NCOL(A)
-  n_constraints <- NROW(A)
-
-  ## if (n_variables <= 0) {
-  ##   stop("No variables")
-  ## }
 
   if ( inherits(A, "dgCMatrix") ) {
     Ai <- A@i
@@ -110,9 +128,6 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
     Ap <- csc[["matbeg"]]
     Ax <- csc[["values"]]
   }
-
-  ## data <- list(m = n_constraints, n = n_variables, c = obj,
-  ##              Ai = Ai, Ap = Ap, Ax = Ax, b = b)
 
   if (!is.null(P)) {
     if (inherits(P, "dsCMatrix") ) {
@@ -131,10 +146,9 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
     Px <- numeric(0)
   }
 
-  # Sanitize control parameters
-  control <- do.call(clarabel_control, control)
-  if (strict_cone_order) cones <- sanitize_cone_spec(cones)
-  clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
+  .Call(savvy_clarabel_solve__impl, n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control, PACKAGE = "clarabel")
+
+  ## clarabel_solve(n_constraints, n_variables, Ai, Ap, Ax, b, q, Pi, Pp, Px, cones, control)
 }
 
 #' Control parameters with default values and types in parenthesis
@@ -176,6 +190,10 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param iterative_refinement_max_iter iterative refinement maximum iterations (`10L`)			 
 #' @param iterative_refinement_stop_ratio iterative refinement stalling tolerance (`5.0`)
 #' @param presolve_enable whether to enable presolvle (`TRUE`)
+#' @param chordal_decomposition_enable whether to enable chordal decomposition for SDPs (`FALSE`)
+#' @param chordal_decomposition_merge_method chordal decomposition merge method, one of `'none'`, `'parent_child'` or `'clique_graph'`, for SDPs (`'none'`)
+#' @param chordal_decomposition_compact a boolean flag for SDPs indicating whether to assemble decomposed system in _compact_ form for SDPs (`FALSE`)
+#' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs
 #' @return a list containing the control parameters.
 #' @export clarabel_control
 clarabel_control <- function(
@@ -223,20 +241,30 @@ clarabel_control <- function(
                              iterative_refinement_abstol = 1e-12,
                              iterative_refinement_max_iter = 10L,
                              iterative_refinement_stop_ratio = 5.0,
-                             presolve_enable = TRUE) {
+                             presolve_enable = TRUE,
+                             chordal_decomposition_enable = FALSE,
+                             chordal_decomposition_merge_method = c('none', 'parent_child', 'clique_graph'),
+                             chordal_decomposition_compact = FALSE,
+                             chordal_decomposition_complete_dual = FALSE
+                             ) {
 
   params <- as.list(environment())
-  ## Match string arg to make sure it is kosher
+
+  ## Match string args to make sure it is kosher
   direct_solve_method <- match.arg(direct_solve_method)
   params$direct_solve_method <- direct_solve_method
+  chordal_decomposition_merge_method <- match.arg(chordal_decomposition_merge_method)
+  params$chordal_decomposition_merge_method <- chordal_decomposition_merge_method
   
   ## Rust has strict type and length checks, so try to avoid panics
   bool_params <- c("verbose", "equilibrate_enable", "direct_kkt_solver", "static_regularization_enable",
-                 "dynamic_regularization_enable", "iterative_refinement_enable", "presolve_enable")
+                   "dynamic_regularization_enable", "iterative_refinement_enable", "presolve_enable",
+                   "chordal_decomposition_enable", "chordal_decomposition_compact",
+                   "chordal_decomposition_complete_dual")
 
   int_params <- c("max_iter", "equilibrate_max_iter", "iterative_refinement_max_iter")
 
-  string_params <- "direct_solve_method" # Might need to uncomment character coercion below, if length > 1
+  string_params <- c("direct_solve_method", "chordal_decomposition_merge_method") # Might need to uncomment character coercion below, if length > 1
   
   if (any(sapply(params, length) != 1L)) stop("clarabel_control: arguments should be scalars!")
   if (any(unlist(params[int_params]) < 0)) stop("clarabel_control: integer arguments should be >= 0!")
@@ -283,52 +311,128 @@ solver_status_descriptions <- function() {
 
 ### Sanitize cone specifications
 ### @param cone_spec a list of cone specifications
-### @return sanitized cone specifications
+### @return a named list of sanitized cone specifications and the number of variables for each cone (`nvars`)
 sanitize_cone_spec <- function(cone_spec) {
   cone_names <- names(cone_spec)
-
+  
   ## Simple sanity checks
   if ((nc <- length(cone_names)) == 0L) {
     stop("sanitize_cone_spec: no cone parameters specified")    
   } 
   if (length(intersect(cone_names, c("z", "l", "q", "s", "ep", "p"))) != nc) {
-    stop("sanitize_cone_spec: unknown cone parameters specified")
+    stop("sanitize_cone_spec: repeated cone parameters or unknown cone parameters specified")
   }
-
+  
   ## Check lengths as noted cone parameters table for ?clarabel
   ## First, scalars
-  z <- as.integer(cone_spec[["z"]]); zl <- length(z)
-  l <- as.integer(cone_spec[["l"]]); ll <- length(l)
-  ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep)
+  z <- as.integer(cone_spec[["z"]]); zl <- length(z); nvar_z <- sum(z);
+  l <- as.integer(cone_spec[["l"]]); ll <- length(l); nvar_l <- sum(l);
+  ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep); nvar_ep <- sum(ep) * 3 ## 3 variables per exp cone
   if (zl > 1 || ll > 1 || epl > 1) {
     stop("sanitize_cone_spec: z, l, ep should be scalars")
   }
   if (any(c(z, l, ep) < 0L)) {
     stop("sanitize_cone_spec: z, l, ep should be scalars > 0")
   }
-
+  
   ## Now the others
   ## SOC 
-  q <- as.integer(cone_spec[["q"]]); ql <- length(q)
+  q <- as.integer(cone_spec[["q"]]); ql <- length(q); nvar_q <- sum(q);
   if (any(q <= 0L)) stop("sanitize_cone_spec: SOC dimensions should be > 0")
   q <- as.list(q); names(q) <- rep("q", ql);
-
+  
   ## PSD 
-  s <- as.integer(cone_spec[["s"]]); sl <- length(s)
+  s <- as.integer(cone_spec[["s"]]); sl <- length(s); nvar_s <- if (sl > 0) sum(sapply(s, triangular_number)) else 0; ## triangular number
   if (any(s <= 0L)) stop("sanitize_cone_spec: PSD dimensions should be > 0")
   s <- as.list(s); names(s) <- rep("s", sl);
-
+  
   ## Power Cone
-  p <- as.numeric(cone_spec[["p"]]); pl <- length(p)
+  p <- as.numeric(cone_spec[["p"]]); pl <- length(p); nvar_p <- pl * 3; ## 3 variables per power cone
   if (any(p <= 0)) stop("sanitize_cone_spec: Power cone parameter should be > 0")
   p <- as.list(p); names(p) <- rep("p", pl);  
+
+  ## Power Cone
+  gp <- cone_spec[["gp"]];  gpl <- length(gp); result <- sanitize_gp_params_and_get_nvars(gp);
+  gp <- result$sanitized_gp_params; names(gp) <- rep("gp", gpl);  nvar_gp <- result$nvar;
   
-  c(
+  cones <- c(
     if (zl > 0) list(z = z),
     if (ll > 0) list(l = l),
     if (ql > 0) q,
     if (sl > 0) s,
     if (epl > 0) list(ep = ep),
-    if (pl > 0) p
+    if (pl > 0) p,
+    if (gpl > 0) gp
   )
+
+  nvars <- c(z = nvar_z,
+             l = nvar_l,
+             q = nvar_q,
+             s = nvar_s,
+             ep = nvar_ep,
+             p = nvar_p,
+             gp = nvar_gp)
+  list(cones = cones, nvars = nvars)
 }
+
+### Return the number of variables used for each type of cone based on cone specification
+### @param cones the cone specifications, expecting strict_cone_order to be FALSE
+### @return a named vector of number of variables per each type of cone
+nvars <- function(cones) {
+  cone_names <- names(cones)
+  ## separate out gp cones from others.
+  gp_indices <- grep("^gp", cone_names)
+  if (length(gp_indices) > 0) {
+    gp_cones <- cones[gp_indices]
+    nvar_gp <- sum(sapply(gp_cones, function(x) length(x[["a"]]) + x[["n"]]))
+  } else {
+    nvar_gp <- 0L
+  }
+  other_indices <- grep("^gp", cone_names, invert = TRUE)
+  cones <- unlist(cones[other_indices])
+  cone_names <- names(cones)
+  nvar_z <- if (length(matched <- grep("^z", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_l <- if (length(matched <- grep("^l", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_q <- if (length(matched <- grep("^q", cone_names)) > 0) sum(cones[matched]) else 0L
+  nvar_s <- if (length(matched <- grep("^s", cone_names)) > 0) sum(sapply(cones[matched], triangular_number)) else 0L
+  nvar_ep <- if (length(matched <- grep("^ep", cone_names)) > 0) 3 * sum(cones[matched]) else 0L
+  nvar_p <- if (length(matched <- grep("^p", cone_names)) > 0) 3 * length(cones[matched]) else 0L
+  c(z = nvar_z,
+    l = nvar_l,
+    q = nvar_q,
+    s = nvar_s,
+    ep = nvar_ep,
+    p = nvar_p,
+    gp = nvar_gp)
+}
+  
+## Return the n-th triangular number
+triangular_number <- function(n) {
+  n * (n + 1) / 2
+}
+
+## Check Generalized Power Cone Params
+sanitize_gp_params_and_get_nvars <- function(gp) {
+  # Generalized power cone α.len() + dim
+  if (length(gp) == 0) {
+    list(sanitized_gp_params = list(), nvar = 0L)
+  } else  {
+    sanitized_gp_params <- 
+      lapply(gp, function(x) {
+        par_names <- sort(names(x))
+        if (length(x) != 2L || !identical(par_names, c("a", "n"))) {
+          stop("Generalized power cone param list should be a list of two elements named 'a' and 'n'")
+        }
+        exps <- x[["a"]]
+        if (length(exps) < 2L || any(exps <= 0) || any(exps >= 1) || abs(sum(exps) - 1.0) > 0.0) {
+          stop("Improper Generalized power cone exponents!")
+        }
+        n <- x[["n"]]
+        if (length(n) != 1L || n <= 0) stop("Improper Generalized power cone dimension!")
+        list(a = as.numeric(exps), n = as.integer(n))
+      })
+    list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[["a"]]) + x[["n"]])))
+  }
+}
+
+

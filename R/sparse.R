@@ -13,6 +13,7 @@
 
 make_csc_matrix <- function(x) UseMethod("make_csc_matrix")
 
+#' @method make_csc_matrix matrix
 make_csc_matrix.matrix <- function(x) {
     if(!is.matrix(x))
         stop("Argument 'x' must be a matrix.")
@@ -23,6 +24,7 @@ make_csc_matrix.matrix <- function(x) {
          values = x[ind])
 }
 
+#' @method make_csc_matrix simple_triplet_matrix
 make_csc_matrix.simple_triplet_matrix <- function(x) {
     if(!inherits(x, "simple_triplet_matrix"))
         stop("Argument 'x' must be of class 'simple_triplet_matrix'.")
@@ -40,6 +42,7 @@ make_csc_matrix.simple_triplet_matrix <- function(x) {
 
 make_csc_symm_matrix <- function(m) UseMethod("make_csc_symm_matrix")
 
+#' @method make_csc_symm_matrix matrix
 make_csc_symm_matrix.matrix  <- function(m) {
   ind <- which(m!=0 ,arr.ind = TRUE)
   ind  <- ind[ind[, 1] <= ind[, 2], ] ## keep upper part only
@@ -51,6 +54,7 @@ make_csc_symm_matrix.matrix  <- function(m) {
        values = values)
 }
 
+#' @method make_csc_symm_matrix simple_triplet_matrix
 make_csc_symm_matrix.simple_triplet_matrix  <- function(m) {
   ind <- which(m$i <= m$j)
   x <- list(i = m$i[ind] + 1L, j = m$j[ind] + 1L) ##make it 1-based
@@ -59,5 +63,14 @@ make_csc_symm_matrix.simple_triplet_matrix  <- function(m) {
   list(matbeg = c(0L, cumsum(tabulate(x$j[ind], m$ncol))),
        matind = x$i[ind] - 1L,
        values = values)
+}
+
+#' @method make_csc_symm_matrix dgCMatrix
+#' @importFrom methods as
+make_csc_symm_matrix.dgCMatrix  <- function(m) {
+  x <- as(m, "symmetricMatrix")
+  list(matbeg = x@p,
+       matind = x@i,
+       values = x@x)
 }
 

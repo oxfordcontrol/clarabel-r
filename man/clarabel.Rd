@@ -67,16 +67,17 @@ problems with any combination of cones, defined by the parameters
 listed in \dQuote{Cone Parameters} below } }
 
 \subsection{Cone Parameters}{
-The table below shows the cone parameter specifications
+The table below shows the cone parameter specifications. Mathematical definitions are in the vignette.
 \tabular{rllll}{
 \tab \bold{Parameter} \tab \bold{Type} \tab \bold{Length} \tab \bold{Description}                       \cr
-\tab \code{z}         \tab integer     \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
-\tab                  \tab             \tab               \tab which corresponds to the primal equality constraints \cr
-\tab \code{l}         \tab integer     \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
-\tab \code{q}         \tab integer     \tab \eqn{\geq1}   \tab vector of second-order cone sizes                    \cr
-\tab \code{s}         \tab integer     \tab \eqn{\geq1}   \tab vector of positive semidefinite cone sizes           \cr
-\tab \code{ep}        \tab integer     \tab \eqn{1}       \tab number of primal exponential cones                   \cr
-\tab \code{p}         \tab numeric     \tab \eqn{\geq1}   \tab vector of primal power cone parameters
+\tab \code{z}   \tab integer  \tab \eqn{1}       \tab number of primal zero cones (dual free cones),       \cr
+\tab            \tab          \tab               \tab which corresponds to the primal equality constraints \cr
+\tab \code{l}   \tab integer  \tab \eqn{1}       \tab number of linear cones (non-negative cones)          \cr
+\tab \code{q}   \tab integer  \tab \eqn{\ge 1}   \tab vector of second-order cone sizes                    \cr
+\tab \code{s}   \tab integer  \tab \eqn{\ge 1}   \tab vector of positive semidefinite cone sizes           \cr
+\tab \code{ep}  \tab integer  \tab \eqn{1}       \tab number of primal exponential cones                   \cr
+\tab \code{p}   \tab numeric  \tab \eqn{\ge 1}   \tab vector of primal power cone parameters               \cr
+\tab \code{gp}  \tab list     \tab \eqn{\ge 1}  \tab list of named lists of two items, \code{a} : a numeric vector of at least 2 exponent terms in the product summing to 1, and \code{n} : an integer dimension of generalized power cone parameters
 } }
 
 When the parameter \code{strict_cone_order} is \code{FALSE}, one can specify
@@ -86,7 +87,9 @@ argument in such a case should be a named list with names matching
 and so on. For example, either of the following would be valid: \code{list(z = 2L, l = 2L, q = 2L, z = 3L, q = 3L)}, or, \code{list(z1 = 2L, l1 = 2L, q1 = 2L, zb = 3L, qx = 3L)}, indicating a zero
 cone of size 2, followed by a linear cone of size 2, followed by a second-order
 cone of size 2, followed by a zero cone of size 3, and finally a second-order
-cone of size 3.
+cone of size 3. Generalized power cones parameters have to specified as named lists, e.g., \code{list(z = 2L, gp1 = list(a = c(0.3, 0.7), n = 3L), gp2 = list(a = c(0.5, 0.5), n = 1L))}.
+
+\emph{Note that when \code{strict_cone_order = FALSE}, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks.!}
 }
 \examples{
 A <- matrix(c(1, 1), ncol = 1)

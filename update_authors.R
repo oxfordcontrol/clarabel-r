@@ -9,7 +9,8 @@ library(RcppTOML)
 
 VENDOR_PATH <- "src/rust/vendor"
 manifests <- list.files(VENDOR_PATH, pattern = "Cargo.toml", recursive = TRUE)
-
+manifests <- stringr::str_extract(manifests, "^[^/]+/Cargo\\.toml$")
+manifests <- manifests[!is.na(manifests)]
 l <- lapply(manifests, \(x) RcppTOML::parseTOML(file.path(VENDOR_PATH, x))$package)
 
 names <- vapply(l, \(x) x[["name"]], FUN.VALUE = character(1L))
