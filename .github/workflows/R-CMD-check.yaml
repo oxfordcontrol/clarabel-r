@@ -16,11 +16,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release', rust-version: 'stable-msvc' }
-          - {os: windows-latest, r: 'devel',   rust-version: 'stable-msvc' }
-          - {os: macOS-latest,   r: 'release', rust-version: 'stable'      }
-          - {os: ubuntu-latest,  r: 'release', rust-version: 'stable'      }
-          - {os: ubuntu-latest,  r: 'devel',   rust-version: 'stable'      }
+          - {os: windows-latest, r: 'release', rust: 'stable-msvc' }
+          - {os: windows-latest, r: 'devel',   rust: 'stable-msvc' }
+          - {os: macOS-latest,   r: 'release', rust: 'stable'      }
+          - {os: ubuntu-latest,  r: 'release', rust: 'stable'      }
+          - {os: ubuntu-latest,  r: 'devel',   rust: 'stable'      }
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
