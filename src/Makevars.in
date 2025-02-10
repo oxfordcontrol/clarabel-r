@@ -13,8 +13,9 @@ PKG_LIBS = -L$(LIBDIR) -lclarabel $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 CARGOTMP = $(CURDIR)/rust/.cargo
 CARGO_BUILD_ARGS = -j 2 --lib --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
+RUST_BACKTRACE=1
 
-all: C_clean
+all: $(SHLIB)
 
 $(SHLIB): $(STATLIB)
 
