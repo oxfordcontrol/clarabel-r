@@ -37,6 +37,13 @@ jobs:
           # TODO: enable RSPM when all the packages are available
           use-public-rspm: false
 
+      # Insert your debug step here, immediately after R is set up
+      - name: Debug R executable
+        run: |
+          which R
+          file "$(which R)"
+          R RHOME
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: dtolnay/rust-toolchain@master
