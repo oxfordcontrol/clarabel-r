@@ -1,2 +1,2 @@
-# Just to ensure that the Unix configure script is not run on Windows
+# Just a dummy script
 echo "R_HOME is $(R_HOME)"
