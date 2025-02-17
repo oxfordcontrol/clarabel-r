@@ -1,5 +1,12 @@
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+echo "R_HOME is $R_HOME"
+
 if [ "$(uname)" = "Emscripten" ]; then
   TARGET="wasm32-unknown-emscripten"
 fi
 
-sed -e "s/@TARGET@/${TARGET}/" src/Makevars.in > src/Makevars
+sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" src/Makevars.in > src/Makevars
