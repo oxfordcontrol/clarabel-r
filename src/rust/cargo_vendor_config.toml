@@ -1,6 +1,15 @@
 [source.crates-io]
 replace-with = "vendored-sources"
 
+[source."git+https://github.com/bnaras/r-src?rev=03e133e1947cf96829f28bd3ebbd906391523dc2"]
+git = "https://github.com/bnaras/r-src"
+rev = "03e133e1947cf96829f28bd3ebbd906391523dc2"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/oxfordcontrol/Clarabel.rs?rev=c2f76b69a157c1917101e76098e970f1e026d5f5"]
+git = "https://github.com/oxfordcontrol/Clarabel.rs"
+rev = "c2f76b69a157c1917101e76098e970f1e026d5f5"
+replace-with = "vendored-sources"
+
 [source.vendored-sources]
 directory = "vendor"
-

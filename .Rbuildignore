@@ -9,7 +9,6 @@
 ^src/rust/modified_files.csv
 ^src/rust/vendor.sh
 ^src/rust/fix_hash.R
-^src/rust/Cargo.lock
 ^src/rust/vendor$
 ^src/*.o
 ^src/*.so

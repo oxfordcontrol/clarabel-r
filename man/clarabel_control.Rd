@@ -28,6 +28,7 @@ clarabel_control(
   linesearch_backtrack_step = 0.8,
   min_switch_step_length = 0.1,
   min_terminate_step_length = 1e-04,
+  max_threads = 0L,
   direct_kkt_solver = TRUE,
   direct_solve_method = c("qdldl", "mkl", "cholmod"),
   static_regularization_enable = TRUE,
@@ -94,6 +95,8 @@ clarabel_control(
 \item{min_switch_step_length}{minimum step size allowed for asymmetric cones with PrimalDual scaling (\code{1e-1})}
 
 \item{min_terminate_step_length}{minimum step size allowed for symmetric cones && asymmetric cones with Dual scaling (\code{1e-4})}
+
+\item{max_threads}{maximum solver threads for multithreaded KKT solvers, 0 lets the solver choose for itself (\code{0L})}
 
 \item{direct_kkt_solver}{use a direct linear solver method (required true) (\code{TRUE})}
 

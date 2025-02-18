@@ -176,6 +176,7 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param linesearch_backtrack_step linesearch backtracking (`0.8`)			 
 #' @param min_switch_step_length minimum step size allowed for asymmetric cones with PrimalDual scaling (`1e-1`)		 
 #' @param min_terminate_step_length minimum step size allowed for symmetric cones && asymmetric cones with Dual scaling (`1e-4`)		 
+#' @param max_threads maximum solver threads for multithreaded KKT solvers, 0 lets the solver choose for itself (`0L`)
 #' @param direct_kkt_solver use a direct linear solver method (required true) (`TRUE`)		 
 #' @param direct_solve_method direct linear solver (`"qdldl"`, `"mkl"` or `"cholmod"`) (`"qdldl"`)		 
 #' @param static_regularization_enable enable KKT static regularization (`TRUE`)		 
@@ -225,6 +226,9 @@ clarabel_control <- function(
                              linesearch_backtrack_step = 0.8,
                              min_switch_step_length = 1e-1,
                              min_terminate_step_length = 1e-4,
+                             ## maximum solver threads for multithreaded KKT solvers
+                             ## choosing 0 lets the solver choose for itself
+                             max_threads = 0L,
                              ## Linear solver settings
                              direct_kkt_solver = TRUE,
                              direct_solve_method = c("qdldl", "mkl", "cholmod"),
@@ -262,7 +266,7 @@ clarabel_control <- function(
                    "chordal_decomposition_enable", "chordal_decomposition_compact",
                    "chordal_decomposition_complete_dual")
 
-  int_params <- c("max_iter", "equilibrate_max_iter", "iterative_refinement_max_iter")
+  int_params <- c("max_iter", "max_threads", "equilibrate_max_iter", "iterative_refinement_max_iter")
 
   string_params <- c("direct_solve_method", "chordal_decomposition_merge_method") # Might need to uncomment character coercion below, if length > 1
   

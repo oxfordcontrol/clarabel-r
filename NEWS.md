@@ -1,3 +1,12 @@
+# clarabel 0.10.0
+
+- Synced up to v0.10.0 of `Clarabel.rs`
+- Fixed up to use new `r-src` that detects R being used correctly (thank you, Ivan Krylov!)
+
+# clarabel 0.9.0.1
+
+- Explicit system requirements for Rust and Cargo added.
+
 # clarabel 0.9.0
 
 - Synced up to version 0.9.0 of Clarabel.rs
