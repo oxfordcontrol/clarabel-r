@@ -11,7 +11,7 @@ composition of convex cones."><meta property="og:image" content="/logo.png"><!--
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -25,7 +25,7 @@ composition of convex cones."><meta property="og:image" content="/logo.png"><!--
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clarabel</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -42,14 +42,14 @@ composition of convex cones."><meta property="og:image" content="/logo.png"><!--
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/oxfordcontrol/clarabel-r/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -77,29 +77,31 @@ composition of convex cones.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>A</dt>
+
+
+<dl><dt id="arg-a">A<a class="anchor" aria-label="anchor" href="#arg-a"></a></dt>
 <dd><p>a matrix of constraint coefficients.</p></dd>
 
 
-<dt>b</dt>
+<dt id="arg-b">b<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
 <dd><p>a numeric vector giving the primal constraints</p></dd>
 
 
-<dt>q</dt>
+<dt id="arg-q">q<a class="anchor" aria-label="anchor" href="#arg-q"></a></dt>
 <dd><p>a numeric vector giving the primal objective</p></dd>
 
 
-<dt>P</dt>
+<dt id="arg-p">P<a class="anchor" aria-label="anchor" href="#arg-p"></a></dt>
 <dd><p>a symmetric positive semidefinite matrix, default
 <code>NULL</code></p></dd>
 
 
-<dt>cones</dt>
+<dt id="arg-cones">cones<a class="anchor" aria-label="anchor" href="#arg-cones"></a></dt>
 <dd><p>a named list giving the cone sizes, see “Cone
 Parameters” below for specification</p></dd>
 
 
-<dt>control</dt>
+<dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
 <dd><p>a list giving specific control parameters to use in
 place of default values, with an empty list indicating the
 default control parameters. Specified parameters should be
@@ -107,7 +109,7 @@ correctly named and typed to avoid Rust system panics as no
 sanitization is done for efficiency reasons</p></dd>
 
 
-<dt>strict_cone_order</dt>
+<dt id="arg-strict-cone-order">strict_cone_order<a class="anchor" aria-label="anchor" href="#arg-strict-cone-order"></a></dt>
 <dd><p>a logical flag, default <code>TRUE</code> for forcing
 order of cones described below. If <code>FALSE</code> cones can be specified
 in any order and even repeated and directly passed to the solver
@@ -116,9 +118,7 @@ without type and length checks</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>named list of solution vectors x, y, s and information
+    <p>named list of solution vectors x, y, s and information
 about run</p>
     </div>
     <div id="details">
@@ -194,7 +194,7 @@ cone of size 3. Generalized power cones parameters have to specified as named li
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $solve_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000111267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000106417</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $iterations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
@@ -243,7 +243,7 @@ cone of size 3. Generalized power cones parameters have to specified as named li
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $info$solve_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000111267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000106417</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $info$iterations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
@@ -267,15 +267,15 @@ cone of size 3. Generalized power cones parameters have to specified as named li
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

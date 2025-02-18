@@ -18,15 +18,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Clarabel Solver Examples">
-<meta property="og:description" content="clarabel">
-<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">clarabel</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
@@ -60,7 +58,7 @@
 <li>
   <a href="https://github.com/oxfordcontrol/clarabel-r/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -71,7 +69,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -97,11 +95,11 @@ from <a href="https://www.cvxgrp.org/scs/" class="external-link">SCS</a>.</p>
 </h2>
 <p>Suppose that we want to solve the following 2-dimensional quadratic
 programming problem:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">minimize</mtext></mtd><mtd columnalign="left" style="text-align: left"><mn>3</mn><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>+</mo><mn>2</mn><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup><mo>−</mo><msub><mi>x</mi><mn>1</mn></msub><mo>−</mo><mn>4</mn><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">subject to</mtext></mtd><mtd columnalign="left" style="text-align: left"><mi>−</mi><mn>1</mn><mo>≤</mo><mi>x</mi><mo>≤</mo><mn>1</mn><mo>,</mo><mspace width="0.222em"></mspace><msub><mi>x</mi><mn>1</mn></msub><mo>=</mo><mn>2</mn><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{array}{ll} \text{minimize} &amp;  3x_1^2 + 2x_2^2 - x_1 - 4x_2\\
 \text{subject to} &amp;  -1 \leq x \leq 1, ~ x_1 = 2x_2
 \end{array}
-\]</span></p>
+</annotation></semantics></math></p>
 <p>We will show how to solve this problem using Clarabel in R.</p>
 <p>The first step is to put the problem data into the standard form
 expected by the solver.</p>
@@ -109,37 +107,49 @@ expected by the solver.</p>
 <h3 id="objective-function">1.1. Objective function<a class="anchor" aria-label="anchor" href="#objective-function"></a>
 </h3>
 <p>The Clarabel solver’s default configuration expects problem data in
-the form <span class="math inline">\(\frac{1}{2}x^\top P x + q^\top
-x\)</span>.<br>
+the form
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>x</mi><mi>⊤</mi></msup><mi>P</mi><mi>x</mi><mo>+</mo><msup><mi>q</mi><mi>⊤</mi></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">\frac{1}{2}x^\top P x + q^\top x</annotation></semantics></math>.<br>
 We therefore define the objective function data as</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><mn>2</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>3</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>q</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>4</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 P = 2 \cdot \begin{bmatrix} 3 &amp; 0 \\ 0 &amp; 2\end{bmatrix}
 \mbox{ and }
 q = \begin{bmatrix} -1 \\ -4\end{bmatrix}.
-\]</span></p>
+</annotation></semantics></math></p>
 </div>
 <div class="section level3">
 <h3 id="constraints">1.2. Constraints<a class="anchor" aria-label="anchor" href="#constraints"></a>
 </h3>
 <p>The solver’s default configuration expects constraints in the form
-<span class="math inline">\(Ax + s = b\)</span>, where <span class="math inline">\(s \in \mathcal{K}\)</span> for some composite cone
-<span class="math inline">\(\mathcal{K}\)</span>. We have 1 equality
-constraint and 4 inequalities, so we require the first element of <span class="math inline">\(s\)</span> to be zero (i.e. the first constraint
-will correspond to the equality) and all other elements <span class="math inline">\(s_i \ge 0\)</span>. Our cone constraint on <span class="math inline">\(s\)</span> is therefore</p>
-<p><span class="math display">\[
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>x</mi><mo>+</mo><mi>s</mi><mo>=</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">Ax + s = b</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><mi>𝒦</mi></mrow><annotation encoding="application/x-tex">s \in \mathcal{K}</annotation></semantics></math>
+for some composite cone
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝒦</mi><annotation encoding="application/x-tex">\mathcal{K}</annotation></semantics></math>.
+We have 1 equality constraint and 4 inequalities, so we require the
+first element of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
+to be zero (i.e. the first constraint will correspond to the equality)
+and all other elements
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">s_i \ge 0</annotation></semantics></math>.
+Our cone constraint on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
+is therefore</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><mi>𝒦</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><msup><mo stretchy="false" form="postfix">}</mo><mn>1</mn></msup><mo>×</mo><msubsup><mi>ℝ</mi><mrow><mo>≥</mo><mn>0</mn></mrow><mn>4</mn></msubsup><mi>.</mi></mrow><annotation encoding="application/x-tex">
 s \in \mathcal K = \{0\}^1 \times \mathbb{R}^4_{\ge 0}.
-\]</span></p>
+</annotation></semantics></math></p>
 <p>Define the constraint data as</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>2</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>b</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 A =
-\begin{bmatrix} 1 &amp; -2 \\ 1 &amp; 0 \\ 0 &amp; 1 \\ -1 &amp; 0 \\ 0
-&amp; -1\end{bmatrix}
+\begin{bmatrix} 1 &amp; -2 \\ 1 &amp; 0 \\ 0 &amp; 1 \\ -1 &amp; 0 \\ 0 &amp; -1\end{bmatrix}
 \mbox{ and }
 b=\begin{bmatrix} 0 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}.
-\]</span></p>
+</annotation></semantics></math></p>
 <p>Note that Clarabel expects inputs in Compressed Sparse Column (CSC)
-format for both <span class="math inline">\(P\)</span> and <span class="math inline">\(A\)</span> and will try to convert them if not
-so.</p>
+format for both
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and will try to convert them if not so.</p>
 </div>
 <div class="section level3">
 <h3 id="solution">1.3. Solution<a class="anchor" aria-label="anchor" href="#solution"></a>
@@ -154,9 +164,8 @@ so.</p>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
 </div>
 </div>
@@ -165,45 +174,46 @@ so.</p>
 </h2>
 <p>We want to solve the following 2-dimensional optimization
 problem:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">minimize</mtext></mtd><mtd columnalign="left" style="text-align: left"><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">subject to</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mrow><mo stretchy="true" form="prefix">∥</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">∥</mo></mrow><mn>2</mn></msub><mo>≤</mo><mn>1</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{array}{ll} \text{minimize} &amp; x_2^2\\[2ex]
-\text{subject to} &amp;  \left\|\begin{pmatrix} 2x_1 \\ x_2
-\end{pmatrix}
+\text{subject to} &amp;  \left\|\begin{pmatrix} 2x_1 \\ x_2 \end{pmatrix}
 - \begin{pmatrix} 2 \\ 2 \end{pmatrix}\right\|_2 \le 1
 \end{array}
-\]</span></p>
+</annotation></semantics></math></p>
 <div class="section level3">
 <h3 id="objective-function-1">2.1. Objective function<a class="anchor" aria-label="anchor" href="#objective-function-1"></a>
 </h3>
 <p>The Clarabel solver’s default configuration expects problem data in
-the form <span class="math inline">\(\frac{1}{2}x^\top P x + q^\top
-x\)</span>.<br>
+the form
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>x</mi><mi>⊤</mi></msup><mi>P</mi><mi>x</mi><mo>+</mo><msup><mi>q</mi><mi>⊤</mi></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">\frac{1}{2}x^\top P x + q^\top x</annotation></semantics></math>.<br>
 We therefore define the objective function data as</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><mn>2</mn><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> and </mtext><mspace width="0.333em"></mspace></mrow><mi>q</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 P = 2 \cdot \begin{bmatrix} 0 &amp; 0 \\ 0 &amp; 1\end{bmatrix}
 \mbox{ and }
 q = \begin{bmatrix} 0 \\ 0\end{bmatrix}.
-\]</span></p>
+</annotation></semantics></math></p>
 </div>
 <div class="section level3">
 <h3 id="constraints-1">2.2. Constraints<a class="anchor" aria-label="anchor" href="#constraints-1"></a>
 </h3>
 <p>The solver’s default configuration expects constraints in the form
-<span class="math inline">\(Ax + s = b\)</span>, where <span class="math inline">\(s \in \mathcal{K}\)</span> for some composite cone
-<span class="math inline">\(\mathcal{K}\)</span>. We have a single
-constraint on the 2-norm of a vector, so we rewrite</p>
-<p><span class="math display">\[
-\left\|\begin{pmatrix} 2x_1 \\ x_2 \end{pmatrix} - \begin{pmatrix} 2 \\
-2 \end{pmatrix}\right\|_2 \le 1
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>x</mi><mo>+</mo><mi>s</mi><mo>=</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">Ax + s = b</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><mi>𝒦</mi></mrow><annotation encoding="application/x-tex">s \in \mathcal{K}</annotation></semantics></math>
+for some composite cone
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝒦</mi><annotation encoding="application/x-tex">\mathcal{K}</annotation></semantics></math>.
+We have a single constraint on the 2-norm of a vector, so we rewrite</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mo stretchy="true" form="prefix">∥</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>x</mi><mn>2</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">∥</mo></mrow><mn>2</mn></msub><mo>≤</mo><mn>1</mn><mspace width="1.0em"></mspace><mo>⇔</mo><mspace width="1.0em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub><mo>−</mo><mn>2</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>x</mi><mn>2</mn></msub><mo>−</mo><mn>2</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">)</mo></mrow><mo>∈</mo><msub><mi>𝒦</mi><mrow><mi>S</mi><mi>O</mi><mi>C</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+\left\|\begin{pmatrix} 2x_1 \\ x_2 \end{pmatrix} - \begin{pmatrix} 2 \\ 2 \end{pmatrix}\right\|_2 \le 1
 \quad \Longleftrightarrow \quad
-\begin{pmatrix} 1 \\ 2x_1 - 2\\ x_2 - 2 \end{pmatrix} \in
-\mathcal{K}_{SOC}
-\]</span> which puts our constraint in the form <span class="math inline">\(b - Ax \in \mathcal{K}_{SOC}\)</span>.</p>
+\begin{pmatrix} 1 \\ 2x_1 - 2\\ x_2 - 2 \end{pmatrix} \in \mathcal{K}_{SOC}
+</annotation></semantics></math> which puts our constraint in the form
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>−</mo><mi>A</mi><mi>x</mi><mo>∈</mo><msub><mi>𝒦</mi><mrow><mi>S</mi><mi>O</mi><mi>C</mi></mrow></msub></mrow><annotation encoding="application/x-tex">b - Ax \in \mathcal{K}_{SOC}</annotation></semantics></math>.</p>
 </div>
 <div class="section level3">
 <h3 id="solution-1">2.3. Solution<a class="anchor" aria-label="anchor" href="#solution-1"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
@@ -213,9 +223,8 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, P <span class="op">=</span> <span class="va">P</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -1.000000)</span></span></code></pre></div>
 </div>
 </div>
@@ -226,28 +235,42 @@ constraint on the 2-norm of a vector, so we rewrite</p>
 borrow from the <a href="https://www.cvxgrp.org/scs/api/cones.html#sdcone" class="external-link">documentation
 for the SCS solver</a> which has similar calling conventions.</p>
 <p>The symmetric positive semidefinite cone of matrices is the set</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>S</mi><mo>∈</mo><msup><mi>𝐑</mi><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow></msup><mo>∣</mo><mi>S</mi><mo>=</mo><msup><mi>S</mi><mi>⊤</mi></msup><mo>,</mo><msup><mi>x</mi><mi>⊤</mi></msup><mi>S</mi><mi>x</mi><mo>≥</mo><mn>0</mn><mspace width="0.222em"></mspace><mo>∀</mo><mi>x</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>k</mi></msup><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">
 \{S \in \mathbf{R}^{k \times k} \mid  S = S^\top,  x^\top S x \geq 0 \
 \forall x \in \mathbb{R}^k \}
-\]</span></p>
-<p>and for short, we use <span class="math inline">\(S \succeq
-0\)</span> to denote membership. Clarabel vectorizes this cone in a
-special way which we detail here.</p>
+</annotation></semantics></math></p>
+<p>and for short, we use
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>≽</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">S \succeq 0</annotation></semantics></math>
+to denote membership. Clarabel vectorizes this cone in a special way
+which we detail here.</p>
 <p>Clarabel assumes that the input data corresponding to semidefinite
-cones have been vectorized by scaling the off-diagonal entries by <span class="math inline">\(\sqrt{2}\)</span> and stacking the upper
-triangular elements column-wise. (<a href="https://www.cvxgrp.org/scs/index.html" class="external-link">SCS</a> uses the lower
-triangular elements.) For a <span class="math inline">\(k \times
-k\)</span> matrix variable (or data matrix) this operation would create
-a vector of length <span class="math inline">\(k(k+1)/2\)</span>.
-Scaling by <span class="math inline">\(\sqrt{2}\)</span> is required to
-preserve the inner-product.</p>
-<p><em>This must be done for the rows of both <span class="math inline">\(A\)</span> and <span class="math inline">\(b\)</span> that correspond to semidefinite cones
-and must be done independently for each semidefinite cone.</em></p>
-<p>More explicitly, we want to express <span class="math inline">\(\text{Trace}(Y S)\)</span> as <span class="math inline">\(\text{vec}(Y)^\top \text{vec}(S)\)</span>, where
-the <span class="math inline">\(\text{vec}\)</span> operation takes the
-(assumed to be symmetric) <span class="math inline">\(k \times
-k\)</span> matrix</p>
-<p><span class="math display">\[
+cones have been vectorized by scaling the off-diagonal entries by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>2</mn></msqrt><annotation encoding="application/x-tex">\sqrt{2}</annotation></semantics></math>
+and stacking the upper triangular elements column-wise. (<a href="https://www.cvxgrp.org/scs/index.html" class="external-link">SCS</a> uses the lower
+triangular elements.) For a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">k \times k</annotation></semantics></math>
+matrix variable (or data matrix) this operation would create a vector of
+length
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">k(k+1)/2</annotation></semantics></math>.
+Scaling by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>2</mn></msqrt><annotation encoding="application/x-tex">\sqrt{2}</annotation></semantics></math>
+is required to preserve the inner-product.</p>
+<p><em>This must be done for the rows of both
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+that correspond to semidefinite cones and must be done independently for
+each semidefinite cone.</em></p>
+<p>More explicitly, we want to express
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Trace</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Trace}(Y S)</annotation></semantics></math>
+as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">vec</mtext><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>⊤</mi></msup><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{vec}(Y)^\top \text{vec}(S)</annotation></semantics></math>,
+where the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">vec</mtext><annotation encoding="application/x-tex">\text{vec}</annotation></semantics></math>
+operation takes the (assumed to be symmetric)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">k \times k</annotation></semantics></math>
+matrix</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>S</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mn>11</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mn>12</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mn>21</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mn>22</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd><mtd columnalign="center" style="text-align: center"><mo>⋱</mo></mtd><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mrow><mi>k</mi><mn>1</mn></mrow></msub></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mrow><mi>k</mi><mn>2</mn></mrow></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>S</mi><mrow><mi>k</mi><mi>k</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 S =  \begin{bmatrix}
         S_{11} &amp; S_{12} &amp; \ldots &amp; S_{1k}  \\
@@ -256,44 +279,44 @@ S =  \begin{bmatrix}
         S_{k1} &amp; S_{k2} &amp; \ldots &amp; S_{kk}  \\
       \end{bmatrix}
 \end{aligned}
-\]</span></p>
+</annotation></semantics></math></p>
 <p>and produces a vector consisting of the upper triangular elements
 scaled and arranged as</p>
-<p><span class="math display">\[
-\text{vec}(S) = (S_{11}, \sqrt{2} S_{12}, S_{22}, \sqrt{2}S_{13},
-\ldots, \sqrt{2}
-S_{1k}, \sqrt{2}S_{2k}, \sqrt{2}S_{3k}, \dots, \sqrt{2}S_{k-1,k},
-S_{kk}) \in
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>S</mi><mn>11</mn></msub><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mn>12</mn></msub><mo>,</mo><msub><mi>S</mi><mn>22</mn></msub><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mn>13</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mrow><mn>1</mn><mi>k</mi></mrow></msub><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mrow><mn>2</mn><mi>k</mi></mrow></msub><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mrow><mn>3</mn><mi>k</mi></mrow></msub><mo>,</mo><mi>…</mi><mo>,</mo><msqrt><mn>2</mn></msqrt><msub><mi>S</mi><mrow><mi>k</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>S</mi><mrow><mi>k</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\text{vec}(S) = (S_{11}, \sqrt{2} S_{12}, S_{22}, \sqrt{2}S_{13}, \ldots, \sqrt{2}
+S_{1k}, \sqrt{2}S_{2k}, \sqrt{2}S_{3k}, \dots, \sqrt{2}S_{k-1,k}, S_{kk}) \in
 \mathbb{R}^{k(k+1)/2}.
-\]</span></p>
+</annotation></semantics></math></p>
 <p>To recover the matrix solution this operation must be inverted on the
 components of the vectors returned by Clarabel corresponding to each
 semidefinite cone. That is, the off-diagonal entries must be scaled by
-<span class="math inline">\(1/\sqrt{2}\)</span> and the upper triangular
-entries are filled in by copying the values of lower triangular entries.
-Explicitly, the inverse operation takes vector <span class="math inline">\(s \in
-\mathbb{R}^{k(k+1)/2}\)</span> and produces the matrix</p>
-<p><span class="math display">\[
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><msqrt><mn>2</mn></msqrt></mrow><annotation encoding="application/x-tex">1/\sqrt{2}</annotation></semantics></math>
+and the upper triangular entries are filled in by copying the values of
+lower triangular entries. Explicitly, the inverse operation takes vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">s \in
+\mathbb{R}^{k(k+1)/2}</annotation></semantics></math> and produces the
+matrix</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtext mathvariant="normal">mat</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mn>1</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mn>2</mn></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn><mo>−</mo><mn>1</mn></mrow></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mn>2</mn></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mn>3</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd><mtd columnalign="center" style="text-align: center"><mo>⋱</mo></mtd><mtd columnalign="center" style="text-align: center"><mi>⋮</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn><mo>−</mo><mn>1</mn></mrow></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msub><mi>/</mi><msqrt><mn>2</mn></msqrt></mtd><mtd columnalign="center" style="text-align: center"><mi>…</mi></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>s</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow></msup><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 \text{mat}(s) =  \begin{bmatrix}
-s_{1} &amp; s_{2} / \sqrt{2} &amp; \ldots &amp; s_{k(k-1)/2-1} /
-\sqrt{2}  \\
-s_{2} / \sqrt{2} &amp; s_{3} &amp; \ldots &amp; s_{k(k-1)/2} /
-\sqrt{2}  \\
+s_{1} &amp; s_{2} / \sqrt{2} &amp; \ldots &amp; s_{k(k-1)/2-1} / \sqrt{2}  \\
+s_{2} / \sqrt{2} &amp; s_{3} &amp; \ldots &amp; s_{k(k-1)/2} / \sqrt{2}  \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots  \\
-s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots
-&amp; s_{k(k+1) / 2}  \\
+s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots &amp; s_{k(k+1) / 2}  \\
 \end{bmatrix}
 \in \mathbb{R}^{k \times k}.
 \end{aligned}
-\]</span></p>
+</annotation></semantics></math></p>
 <p>So the cone definition that Clarabel uses is</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>𝒮</mi><mo>+</mo><mi>k</mi></msubsup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∣</mo><mi>S</mi><mo>≽</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>s</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow></msup><mo>∣</mo><mtext mathvariant="normal">mat</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>≽</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \mathcal{S}_+^k = \{ \text{vec}(S) \mid S \succeq 0\} = \{s \in
 \mathbb{R}^{k(k+1)/2} \mid \text{mat}(s) \succeq 0 \}.
-\]</span></p>
-<p>Below are two functions to implement both <span class="math inline">\(\text{vec}\)</span> and <span class="math inline">\(\text{mat}\)</span>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+</annotation></semantics></math></p>
+<p>Below are two functions to implement both
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">vec</mtext><annotation encoding="application/x-tex">\text{vec}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">mat</mtext><annotation encoding="application/x-tex">\text{mat}</annotation></semantics></math>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Return an vectorization of symmetric matrix using the upper triangular part,</span></span>
 <span><span class="co">#' still in column order.</span></span>
 <span><span class="co">#' @param S a symmetric matrix</span></span>
@@ -323,49 +346,46 @@ s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots
 <h3 id="example">3.1. Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h3>
 <p>Consider the problem:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">minimize</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>x</mi><mn>1</mn></msub><mo>−</mo><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><msub><mi>x</mi><mn>3</mn></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">subject to</mtext></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>B</mi><mn>1</mn></msub><mo>−</mo><msub><mi>A</mi><mn>11</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>−</mo><msub><mi>A</mi><mn>12</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>−</mo><msub><mi>A</mi><mn>13</mn></msub><msub><mi>x</mi><mn>3</mn></msub><mo>≽</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>B</mi><mn>2</mn></msub><mo>−</mo><msub><mi>A</mi><mn>21</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>−</mo><msub><mi>A</mi><mn>22</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>−</mo><msub><mi>A</mi><mn>23</mn></msub><msub><mi>x</mi><mn>3</mn></msub><mo>≽</mo><mn>0</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{array}{ll} \text{minimize} &amp;  x_1 - x_2 + x_3\\
-\text{subject to} &amp; B_1 - A_{11}x_1 - A_{12}x_2 - A_{13}x_3 \succeq
-0\\
-                  &amp; B_2 - A_{21}x_1 - A_{22}x_2 - A_{23}x_3 \succeq
-0
+\text{subject to} &amp; B_1 - A_{11}x_1 - A_{12}x_2 - A_{13}x_3 \succeq 0\\
+                  &amp; B_2 - A_{21}x_1 - A_{22}x_2 - A_{23}x_3 \succeq 0
 \end{array}
-\]</span> where <span class="math display">\[
+</annotation></semantics></math> where
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mn>11</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>7</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>11</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>11</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>3</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mtext mathvariant="normal">, </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>A</mi><mn>12</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>7</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>18</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>18</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>8</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mtext mathvariant="normal">, </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>A</mi><mn>13</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>2</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>8</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>8</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
 A_{11}=\begin{bmatrix} -7 &amp; -11 \\ -11 &amp; 3\end{bmatrix}\mbox{, }
 A_{12}=\begin{bmatrix} 7 &amp; -18 \\ -18 &amp; 8\end{bmatrix}\mbox{, }
 A_{13}=\begin{bmatrix} -2 &amp; -8 \\ -8 &amp; 1\end{bmatrix},
-\]</span></p>
-<p><span class="math display">\[
-A_{21}=\begin{bmatrix} -21 &amp; -11 &amp; 0\\ -11 &amp; 10 &amp; 8\\ 0
-&amp; 8 &amp;
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mn>21</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>21</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>11</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>11</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>8</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>8</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>5</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mtext mathvariant="normal">, </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>A</mi><mn>22</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>16</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>10</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>16</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>3</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mtext mathvariant="normal">, </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>A</mi><mn>23</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>17</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>2</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>6</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>8</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>17</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>8</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>6</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+A_{21}=\begin{bmatrix} -21 &amp; -11 &amp; 0\\ -11 &amp; 10 &amp; 8\\ 0 &amp; 8 &amp;
 5\end{bmatrix}\mbox{, }
-A_{22}=\begin{bmatrix} 0 &amp; 10 &amp; 16\\ 10 &amp; -10 &amp; -10\\ 16
-&amp; -10 &amp;
+A_{22}=\begin{bmatrix} 0 &amp; 10 &amp; 16\\ 10 &amp; -10 &amp; -10\\ 16 &amp; -10 &amp;
 3\end{bmatrix}\mbox{, }
-A_{23}=\begin{bmatrix} -5 &amp; 2 &amp; -17\\ 2 &amp; -6 &amp; 8\\ -17
-&amp; 8 &amp;
+A_{23}=\begin{bmatrix} -5 &amp; 2 &amp; -17\\ 2 &amp; -6 &amp; 8\\ -17 &amp; 8 &amp;
 6\end{bmatrix},
-\]</span></p>
+</annotation></semantics></math></p>
 <p>and</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>B</mi><mn>1</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>33</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>9</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>9</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>26</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mtext mathvariant="normal">, </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>B</mi><mn>2</mn></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>14</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>9</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>40</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>9</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>91</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>10</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>40</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>10</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>15</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 B_1=\begin{bmatrix} 33 &amp; -9 \\ -9 &amp; 26\end{bmatrix}\mbox{, }
-B_2=\begin{bmatrix} 14 &amp; 9 &amp; 40\\ 9 &amp; 91 &amp; 10\\ 40 &amp;
-10 &amp;
+B_2=\begin{bmatrix} 14 &amp; 9 &amp; 40\\ 9 &amp; 91 &amp; 10\\ 40 &amp; 10 &amp;
 15\end{bmatrix}.
-\]</span></p>
+</annotation></semantics></math></p>
 <p>The constraints involve symmetric positive semidefinite cones over
-variables <span class="math inline">\(x \in \mathbb{R}^n\)</span> and
-<span class="math inline">\(S \in
-\mathbb{R}^{k \times k}\)</span></p>
-<p><span class="math display">\[
+variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">x \in \mathbb{R}^n</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow></msup></mrow><annotation encoding="application/x-tex">S \in
+\mathbb{R}^{k \times k}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>𝒜</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo>=</mo><mi>S</mi><mo>≽</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">
 B - \sum_{i=1}^n \mathcal{A}_i x_i = S \succeq 0
-\]</span></p>
-<p>where data <span class="math inline">\(B, \mathcal{A}_1, \ldots,
-\mathcal{A}_n \in \mathbb{R}^{k
-\times k}\)</span> are symmetric. We can write this in the canonical
-form over a new variable <span class="math inline">\(s \in
-\mathcal{S}_+^k\)</span>:</p>
-<p><span class="math display">\[
+</annotation></semantics></math></p>
+<p>where data
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>,</mo><msub><mi>𝒜</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>𝒜</mi><mi>n</mi></msub><mo>∈</mo><msup><mi>ℝ</mi><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow></msup></mrow><annotation encoding="application/x-tex">B, \mathcal{A}_1, \ldots, \mathcal{A}_n \in \mathbb{R}^{k
+\times k}</annotation></semantics></math> are symmetric. We can write
+this in the canonical form over a new variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>∈</mo><msubsup><mi>𝒮</mi><mo>+</mo><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">s \in \mathcal{S}_+^k</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>s</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>𝒜</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝒜</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>x</mi><mi>i</mi></msub></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>b</mi><mo>−</mo><mi>A</mi><mi>x</mi></mtd></mtr></mtable></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 \begin{align}
 s &amp;= \text{vec}(S)\\
@@ -374,26 +394,29 @@ s &amp;= \text{vec}(S)\\
 &amp;= b - Ax
 \end{align}
 \end{aligned}
-\]</span></p>
-<p>using the fact that <span class="math inline">\(\text{vec}\)</span>
-is linear, where <span class="math inline">\(b =
-\text{vec}(B)\)</span> and</p>
-<p><span class="math display">\[
+</annotation></semantics></math></p>
+<p>using the fact that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">vec</mtext><annotation encoding="application/x-tex">\text{vec}</annotation></semantics></math>
+is linear, where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">b =
+\text{vec}(B)</annotation></semantics></math> and</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝒜</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="center" style="text-align: center"><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝒜</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="center" style="text-align: center"><mi>⋯</mi></mtd><mtd columnalign="center" style="text-align: center"><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝒜</mi><mi>n</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
 A =
 \begin{bmatrix}
-\text{vec}(\mathcal{A}_1) &amp; \text{vec}(\mathcal{A}_2) &amp; \cdots
-&amp; \text{vec}(\mathcal{A}_n)
+\text{vec}(\mathcal{A}_1) &amp; \text{vec}(\mathcal{A}_2) &amp; \cdots &amp; \text{vec}(\mathcal{A}_n)
 \end{bmatrix}
-\]</span></p>
-<p>i.e., the vectors <span class="math inline">\(\text{vec}(\mathcal{A}_i)\)</span> stacked
-columnwise. This is in a form that we can input into Clarabel. To
-recover the matrix solution from the optimal solution returned by
-Clarabel, we simply use <span class="math inline">\(S^\star =
-\text{mat}(s^\star)\)</span>.</p>
+</annotation></semantics></math></p>
+<p>i.e., the vectors
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">vec</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝒜</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{vec}(\mathcal{A}_i)</annotation></semantics></math>
+stacked columnwise. This is in a form that we can input into Clarabel.
+To recover the matrix solution from the optimal solution returned by
+Clarabel, we simply use
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>S</mi><mo>⋆</mo></msup><mo>=</mo><mtext mathvariant="normal">mat</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>s</mi><mo>⋆</mo></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S^\star =
+\text{mat}(s^\star)</annotation></semantics></math>.</p>
 <p>We have two such constraints and will therefore construct the vectors
 for both cones in order and specify the appropriate dimensions, 2 and 3,
 respectively.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># objective: x_1 - x2 + x_3</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -415,9 +438,8 @@ respectively.</p>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, q <span class="op">=</span> <span class="va">q</span>, cones <span class="op">=</span> <span class="va">cones</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (2, Solver terminated with a solution.)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)</span></span></code></pre></div>
 </div>
 </div>
@@ -447,23 +469,21 @@ respectively.</p>
 <td align="left">1</td>
 <td align="left">Number of primal zero cones (dual free cones), which
 corresponds to the primal equality constraints</td>
-<td align="left"><span class="math inline">\(\{ 0 \}^{z}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><msup><mo stretchy="false" form="postfix">}</mo><mi>z</mi></msup></mrow><annotation encoding="application/x-tex">\{ 0 \}^{z}</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td align="left">l</td>
 <td align="left">integer</td>
 <td align="left">1</td>
 <td align="left">Number of linear cones (non-negative cones)</td>
-<td align="left"><span class="math inline">\(\{ x \in \mathbb{R}^{l} :
-x_i \ge 0, \forall i=1,\dots,l \}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>x</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>l</mi></msup><mo>:</mo><msub><mi>x</mi><mi>i</mi></msub><mo>≥</mo><mn>0</mn><mo>,</mo><mo>∀</mo><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>l</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{ x \in \mathbb{R}^{l} : x_i \ge 0, \forall i=1,\dots,l \}</annotation></semantics></math></td>
 </tr>
 <tr class="odd">
 <td align="left">q</td>
 <td align="left">integer</td>
 <td align="left">&gt;= 1</td>
 <td align="left">Vector of second-order cone sizes</td>
-<td align="left"><span class="math inline">\(\{ (t,x) \in
-\mathbb{R}^{q}  :  \lVert x\rVert_2  \leq t \}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∈</mo><msup><mi>ℝ</mi><mi>q</mi></msup><mo>:</mo><msub><mrow><mo stretchy="true" form="prefix">‖</mo><mi>x</mi><mo stretchy="true" form="postfix">‖</mo></mrow><mn>2</mn></msub><mo>≤</mo><mi>t</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{ (t,x) \in \mathbb{R}^{q}  :  \lVert x\rVert_2  \leq t \}</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td align="left">s</td>
@@ -471,9 +491,16 @@ x_i \ge 0, \forall i=1,\dots,l \}\)</span></td>
 <td align="left">&gt;= 1</td>
 <td align="left">Vector of positive semidefinite cone sizes</td>
 <td align="left">Upper triangular part of the positive semidefinite cone
-<span class="math inline">\(S^s_+\)</span>. The elements <span class="math inline">\(x\)</span> of this cone represent the columnwise
-stacking of the upper triangular part of a positive semidefinite matrix
-<span class="math inline">\(X \in S^s_+\)</span>, so that <span class="math inline">\(x \in R^d\)</span> with <span class="math inline">\(d = s(s+1)/2\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>S</mi><mo>+</mo><mi>s</mi></msubsup><annotation encoding="application/x-tex">S^s_+</annotation></semantics></math>.
+The elements
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+of this cone represent the columnwise stacking of the upper triangular
+part of a positive semidefinite matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∈</mo><msubsup><mi>S</mi><mo>+</mo><mi>s</mi></msubsup></mrow><annotation encoding="application/x-tex">X \in S^s_+</annotation></semantics></math>,
+so that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><msup><mi>R</mi><mi>d</mi></msup></mrow><annotation encoding="application/x-tex">x \in R^d</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">d = s(s+1)/2</annotation></semantics></math>
 </td>
 </tr>
 <tr class="odd">
@@ -481,8 +508,7 @@ stacking of the upper triangular part of a positive semidefinite matrix
 <td align="left">integer</td>
 <td align="left">1</td>
 <td align="left">Number of primal exponential cones</td>
-<td align="left"><span class="math inline">\(\{(x, y, z) : y &gt; 0,~~
-ye^{x/y} \le z \}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>:</mo><mi>y</mi><mo>&gt;</mo><mn>0</mn><mo>,</mo><mspace width="0.222em"></mspace><mspace width="0.222em"></mspace><mi>y</mi><msup><mi>e</mi><mrow><mi>x</mi><mi>/</mi><mi>y</mi></mrow></msup><mo>≤</mo><mi>z</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{(x, y, z) : y &gt; 0,~~ ye^{x/y} \le z \}</annotation></semantics></math></td>
 </tr>
 <tr class="even">
 <td align="left">p</td>
@@ -490,8 +516,9 @@ ye^{x/y} \le z \}\)</span></td>
 <td align="left">&gt;= 1</td>
 <td align="left">Vector of primal power cone parameters</td>
 <td align="left">
-<span class="math inline">\(\{(x, y, z) : x^p y^{(1-p)}
-\ge  \lVert z\rVert,~ (x,y) \ge 0 \}\)</span> with <span class="math inline">\(p \in (0,1)\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>:</mo><msup><mi>x</mi><mi>p</mi></msup><msup><mi>y</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></msup><mo>≥</mo><mrow><mo stretchy="true" form="prefix">‖</mo><mi>z</mi><mo stretchy="true" form="postfix">‖</mo></mrow><mo>,</mo><mspace width="0.222em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>≥</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{(x, y, z) : x^p y^{(1-p)} \ge  \lVert z\rVert,~ (x,y) \ge 0 \}</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p \in (0,1)</annotation></semantics></math>
 </td>
 </tr>
 <tr class="odd">
@@ -502,18 +529,21 @@ ye^{x/y} \le z \}\)</span></td>
 numeric vector of at least 2 exponent terms, and <code>n</code> : an
 integer dimension of generalized power cone parameters</td>
 <td align="left">
-<span class="math inline">\(\{(x, y) \in R^{len(a)}
-\times R^n : \prod\limits_{a_i \in a} x_i^{a_i} \ge \lVert y\rVert_2,~ x
-\ge 0 \}\)</span> with <span class="math inline">\(a_i \in
-(0,1)\)</span> and <span class="math inline">\(\sum a_i =
-1\)</span>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∈</mo><msup><mi>R</mi><mrow><mi>l</mi><mi>e</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msup><mo>×</mo><msup><mi>R</mi><mi>n</mi></msup><mo>:</mo><munder><mo>∏</mo><mrow><msub><mi>a</mi><mi>i</mi></msub><mo>∈</mo><mi>a</mi></mrow></munder><msubsup><mi>x</mi><mi>i</mi><msub><mi>a</mi><mi>i</mi></msub></msubsup><mo>≥</mo><msub><mrow><mo stretchy="true" form="prefix">‖</mo><mi>y</mi><mo stretchy="true" form="postfix">‖</mo></mrow><mn>2</mn></msub><mo>,</mo><mspace width="0.222em"></mspace><mi>x</mi><mo>≥</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{(x, y) \in R^{len(a)} \times R^n : \prod\limits_{a_i \in a} x_i^{a_i} \ge \lVert y\rVert_2,~ x \ge 0 \}</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>i</mi></msub><mo>∈</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">a_i \in (0,1)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><msub><mi>a</mi><mi>i</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sum a_i = 1</annotation></semantics></math>
 </td>
 </tr>
 </tbody>
 </table>
 <p>Generalized power cone parameters are specified as list of two-item
-lists, with component named <span class="math inline">\(a\)</span>
-denoting the exponents and the named component <span class="math inline">\(n\)</span> denoting the dimension.</p>
+lists, with component named
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+denoting the exponents and the named component
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+denoting the dimension.</p>
 <p>One can specify cones in any order if <code>strict_cone_order</code>
 is set to <code>FALSE</code> in the call to <code><a href="../reference/clarabel.html">clarabel()</a></code> but
 one has to ensure that parameter types are strictly specified for the
@@ -527,7 +557,7 @@ etc.</p>
 including verbosity, time limits, and tolerances; see help on
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code>. As an example, in the last problem, we
 can reduce the number of iterations.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
@@ -538,9 +568,8 @@ can reduce the number of iterations.</p>
 <span>              control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_iter <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co">## Reduced number of iterations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution status, description: = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -0.999998)</span></span></code></pre></div>
 <p>Note the different status, which should always be checked in
 code.</p>
@@ -549,9 +578,7 @@ code.</p>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -564,16 +591,16 @@ code.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
