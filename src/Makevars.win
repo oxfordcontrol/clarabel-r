@@ -16,7 +16,7 @@ CARGOTMP = $(CURDIR)/rust/.cargo
 # to overwrite it via configuration.
 CARGO_LINKER = x86_64-w64-mingw32.static.posix-gcc.exe
 
-all: C_clean
+all: $(SHLIB) clean_intermediate
 
 $(SHLIB): $(STATLIB)
 
@@ -36,8 +36,10 @@ $(STATLIB):
 	rm -Rf $(VENDOR_DIR)
 	rm -Rf $(LIBDIR)/build
 
-C_clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
+clean_intermediate:
+	rm -f $(STATLIB)
 
 clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rust/target
+	rm -Rf $(SHLIB) $(OBJECTS) $(STATLIB) ./rust/target
+
+.PHONY: all clean_intermediate clean

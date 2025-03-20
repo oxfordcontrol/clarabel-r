@@ -16,7 +16,7 @@ CARGOTMP = $(CURDIR)/rust/.cargo
 CARGO_BUILD_ARGS = -j 2 --lib --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
 RUST_BACKTRACE=1
 
-all: $(SHLIB)
+all: $(SHLIB) clean_intermediate
 
 $(SHLIB): $(STATLIB)
 
@@ -51,9 +51,10 @@ $(STATLIB):
 	rm -Rf $(VENDOR_DIR)
 	rm -Rf $(LIBDIR)/build
 
-C_clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
+clean_intermediate:
+	rm -f $(STATLIB)
 
 clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rust/target
+	rm -Rf $(SHLIB) $(OBJECTS) $(STATLIB) ./rust/target
 
+.PHONY: all clean_intermediate clean
