@@ -36,7 +36,7 @@ $(STATLIB):
 	rm -Rf $(VENDOR_DIR)
 	rm -Rf $(LIBDIR)/build
 
-clean_intermediate:
+clean_intermediate: $(SHLIB)
 	rm -f $(STATLIB)
 
 clean:
