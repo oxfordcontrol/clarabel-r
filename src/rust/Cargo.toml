@@ -1,13 +1,13 @@
 [package]
 name = "clarabel"
-version = "0.10.0"
+version = "0.10.1"
 edition = "2021"
 
 [lib]
 crate-type = ["staticlib", "lib"]
 
 [dependencies]
-savvy = "0.8.6"
+savvy = "0.8.9"
 clarabel = {version = '0.10.0', features = [ 'sdp-r' ]}
 lazy_static = "1.4.0"
 regex = "1.10.4"
@@ -22,7 +22,7 @@ regex = "1.10.4"
 # However, it's possible that the panic is thrown by some of the dependency
 # crate and there's little you can do. In such cases, you can change the
 # following line to `panic = "unwind"` to always catch a panic.
-panic = "abort"
+panic = "unwind"
 
 [patch.crates-io]
 clarabel = { git = "https://github.com/oxfordcontrol/Clarabel.rs", rev = "c2f76b69a157c1917101e76098e970f1e026d5f5" }
