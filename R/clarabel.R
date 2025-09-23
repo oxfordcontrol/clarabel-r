@@ -1,4 +1,4 @@
-#' @title Interface to 'Clarabel', an interior point conic solver
+#' Interface to 'Clarabel', an interior point conic solver
 #'
 #' @description
 #'
@@ -80,7 +80,7 @@
 #' cone of size 2, followed by a zero cone of size 3, and finally a second-order
 #' cone of size 3. Generalized power cones parameters have to specified as named lists, e.g., `list(z = 2L, gp1 = list(a = c(0.3, 0.7), n = 3L), gp2 = list(a = c(0.5, 0.5), n = 1L))`.
 #'
-#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks.!_
+#' _Note that when `strict_cone_order = FALSE`, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks!_
 #'
 #' @examples
 #' A <- matrix(c(1, 1), ncol = 1)
@@ -175,7 +175,7 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param equilibrate_max_scaling maximum equilibration scaling allowed (`1e+4`)		 
 #' @param linesearch_backtrack_step linesearch backtracking (`0.8`)			 
 #' @param min_switch_step_length minimum step size allowed for asymmetric cones with PrimalDual scaling (`1e-1`)		 
-#' @param min_terminate_step_length minimum step size allowed for symmetric cones && asymmetric cones with Dual scaling (`1e-4`)		 
+#' @param min_terminate_step_length minimum step size allowed for symmetric cones && asymmetric cones with Dual scaling (`1e-4`)
 #' @param max_threads maximum solver threads for multithreaded KKT solvers, 0 lets the solver choose for itself (`0L`)
 #' @param direct_kkt_solver use a direct linear solver method (required true) (`TRUE`)		 
 #' @param direct_solve_method direct linear solver (`"qdldl"`, `"mkl"` or `"cholmod"`) (`"qdldl"`)		 
@@ -191,11 +191,14 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param iterative_refinement_max_iter iterative refinement maximum iterations (`10L`)			 
 #' @param iterative_refinement_stop_ratio iterative refinement stalling tolerance (`5.0`)
 #' @param presolve_enable whether to enable presolvle (`TRUE`)
+#' @param input_sparse_dropzeros explicitly drop structural zeros from sparse data inputs (`FALSE`); see details
 #' @param chordal_decomposition_enable whether to enable chordal decomposition for SDPs (`FALSE`)
 #' @param chordal_decomposition_merge_method chordal decomposition merge method, one of `'none'`, `'parent_child'` or `'clique_graph'`, for SDPs (`'none'`)
 #' @param chordal_decomposition_compact a boolean flag for SDPs indicating whether to assemble decomposed system in _compact_ form for SDPs (`FALSE`)
 #' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs
 #' @return a list containing the control parameters.
+#' @details
+#' Setting `input_sparse_dropzeros` to `TRUE` will disable parametric updating functionality. See documentation of ‘dropzeros’ in Rust `struct CscMatrix` for dropping structural zeros before passing to the solver. 
 #' @export clarabel_control
 clarabel_control <- function(
                              ## Main algorithm settings
@@ -246,6 +249,7 @@ clarabel_control <- function(
                              iterative_refinement_max_iter = 10L,
                              iterative_refinement_stop_ratio = 5.0,
                              presolve_enable = TRUE,
+                             input_sparse_dropzeros = FALSE,
                              chordal_decomposition_enable = FALSE,
                              chordal_decomposition_merge_method = c('none', 'parent_child', 'clique_graph'),
                              chordal_decomposition_compact = FALSE,
@@ -263,6 +267,7 @@ clarabel_control <- function(
   ## Rust has strict type and length checks, so try to avoid panics
   bool_params <- c("verbose", "equilibrate_enable", "direct_kkt_solver", "static_regularization_enable",
                    "dynamic_regularization_enable", "iterative_refinement_enable", "presolve_enable",
+                   "input_sparse_dropzeros",
                    "chordal_decomposition_enable", "chordal_decomposition_compact",
                    "chordal_decomposition_complete_dual")
 

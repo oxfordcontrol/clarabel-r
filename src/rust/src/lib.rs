@@ -117,11 +117,15 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	}
     }
 
-    println!("cones: {:?}", cones);    
+    // println!("cones: {:?}", cones);    
     // Update default settings with specified R settings for use below
     let settings = update_settings(r_settings);
     
-    let mut solver = DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings);
+    // API change from v0.10.1 to v0.11.1 in Clarabel.rs
+    let mut solver = match DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings) {
+	Ok(s) => s,
+	Err(e) => return Err(savvy::Error::new(e.to_string())),
+    };
     solver.solve();
 
     let mut obj_val = OwnedRealSexp::new(1)?;
@@ -159,7 +163,7 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 
     // Handle Info
     let fields = [
-	("μ", solver.info.μ),
+	("μ", solver.info.mu),
 	("sigma", solver.info.sigma),
 	("step_length", solver.info.step_length),
 	("cost_primal", solver.info.cost_primal),
@@ -315,6 +319,11 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
 		    TypedSexp::Real(f) => settings.min_terminate_step_length = f.as_slice()[0],
 		    _ => (),
 		},
+	    "max_threads" => 
+		match typed_value {
+		    TypedSexp::Integer(i) => settings.max_threads = i.as_slice()[0] as u32,
+		    _ => (),
+		},
 	    "direct_kkt_solver" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.direct_kkt_solver = b.as_slice_raw()[0] != 0,
@@ -385,6 +394,11 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
 	    "presolve_enable" => 
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.presolve_enable = b.as_slice_raw()[0] != 0,
+		    _ => (),
+		},
+	    "input_sparse_dropzeros" => 
+		match typed_value {
+		    TypedSexp::Logical(b) => settings.input_sparse_dropzeros = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
 	    "chordal_decomposition_enable" => 

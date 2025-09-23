@@ -1,8 +1,15 @@
+template:
+  bootstrap: 5
+
 destination: docs
+
+url: https://oxfordcontrol.github.io/clarabel-r/
+
 authors:
   Balasubramanian Narasimhan:
     href: https://naras.su.domains/
   Paul Goulart:
     href: https://users.ox.ac.uk/~engs1373/
   Yuwen Chen:
+    href: https://yuwenchen95.github.io/
 
