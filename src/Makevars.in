@@ -1,5 +1,6 @@
 TARGET = @TARGET@
 R_HOME = @R_HOME@
+CC_ALONE = @CC_ALONE@
 VENDORING = yes
 VENDOR_SRC = ./rust/vendor.tar.xz
 VENDOR_DIR = ./rust/vendor
@@ -35,6 +36,7 @@ $(STATLIB):
 	      export CARGO_HOME=$(CARGOTMP);  \
 	      export R_HOME=$(R_HOME);  \
 	      export PATH="$(PATH):$(HOME)/.cargo/bin";  \
+	      export RUSTFLAGS="-C linker=${CC_ALONE}"; \
 	      cargo build $(CARGO_BUILD_ARGS) --release --offline; \
 	    else \
 	      cargo build $(CARGO_BUILD_ARGS); \
@@ -43,6 +45,7 @@ $(STATLIB):
 	    export CC="$(CC)" && \
 	    export R_HOME="$(R_HOME)" && \
 	    export CFLAGS="$(CFLAGS)" && \
+	    export LDFLAGS="$(LDFLAGS)" && \
 	    export CARGO_PROFILE_DEV_PANIC="abort" && \
 	    export CARGO_PROFILE_RELEASE_PANIC="abort" && \
 	    cargo +nightly build $(CARGO_BUILD_ARGS) -Zbuild-std=panic_abort,std; \

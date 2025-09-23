@@ -6,4 +6,6 @@ if [ "$(uname)" = "Emscripten" ]; then
   TARGET="wasm32-unknown-emscripten"
 fi
 
-sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" src/Makevars.in > src/Makevars
+CC_ALONE=`$R_HOME/bin/R CMD config CC | awk '{print $1}'`
+
+sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" -e "s|@CC_ALONE@|${CC_ALONE}|" src/Makevars.in > src/Makevars
