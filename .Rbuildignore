@@ -16,3 +16,4 @@
 
 ^src/rust/.cargo$
 ^src/Makevars$
+^cran-comments\.md$

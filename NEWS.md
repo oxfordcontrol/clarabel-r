@@ -1,3 +1,12 @@
+# clarabel 0.11.1
+
+- Synced up to v0.11.1 of `Clarabel.rs`
+- Fixed `flang` issues shown on CRAN for fedora-clang-rdevel
+
+# clarabel 0.10.1
+
+- Minor fixes to fix CRAN issues
+
 # clarabel 0.10.0
 
 - Synced up to v0.10.0 of `Clarabel.rs`

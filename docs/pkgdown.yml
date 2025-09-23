@@ -1,6 +1,9 @@
-pandoc: 3.6.3
-pkgdown: 2.1.1
+pandoc: '3.8'
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   clarabel: clarabel.html
-last_built: 2025-02-18T16:18Z
+last_built: 2025-09-23T16:41Z
+urls:
+  reference: https://oxfordcontrol.github.io/clarabel-r/reference
+  article: https://oxfordcontrol.github.io/clarabel-r/articles

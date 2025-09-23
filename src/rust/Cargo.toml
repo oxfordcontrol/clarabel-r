@@ -1,16 +1,16 @@
 [package]
 name = "clarabel"
-version = "0.10.1"
+version = "0.11.1"
 edition = "2021"
 
 [lib]
 crate-type = ["staticlib", "lib"]
 
 [dependencies]
-savvy = "0.8.9"
-clarabel = {version = '0.10.0', features = [ 'sdp-r' ]}
-lazy_static = "1.4.0"
-regex = "1.10.4"
+savvy = "0.8.13"
+clarabel = {version = '0.11.1', features = [ 'sdp-r' ]}
+lazy_static = "1.5.0"
+regex = "1.11.2"
 
 [profile.release]
 # By default, on release build, savvy terminates the R session when a panic
@@ -25,5 +25,4 @@ regex = "1.10.4"
 panic = "unwind"
 
 [patch.crates-io]
-clarabel = { git = "https://github.com/oxfordcontrol/Clarabel.rs", rev = "c2f76b69a157c1917101e76098e970f1e026d5f5" }
 r-src = { git = "https://github.com/bnaras/r-src", rev = "03e133e1947cf96829f28bd3ebbd906391523dc2" }

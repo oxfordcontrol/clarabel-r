@@ -89,7 +89,7 @@ cone of size 2, followed by a linear cone of size 2, followed by a second-order
 cone of size 2, followed by a zero cone of size 3, and finally a second-order
 cone of size 3. Generalized power cones parameters have to specified as named lists, e.g., \code{list(z = 2L, gp1 = list(a = c(0.3, 0.7), n = 3L), gp2 = list(a = c(0.5, 0.5), n = 1L))}.
 
-\emph{Note that when \code{strict_cone_order = FALSE}, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks.!}
+\emph{Note that when \code{strict_cone_order = FALSE}, types of cone parameters such as integers, reals have to be explicit since the parameters are directly passed to the Rust interface with no sanity checks!}
 }
 \examples{
 A <- matrix(c(1, 1), ncol = 1)

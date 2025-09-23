@@ -43,6 +43,7 @@ clarabel_control(
   iterative_refinement_max_iter = 10L,
   iterative_refinement_stop_ratio = 5,
   presolve_enable = TRUE,
+  input_sparse_dropzeros = FALSE,
   chordal_decomposition_enable = FALSE,
   chordal_decomposition_merge_method = c("none", "parent_child", "clique_graph"),
   chordal_decomposition_compact = FALSE,
@@ -126,6 +127,8 @@ clarabel_control(
 
 \item{presolve_enable}{whether to enable presolvle (\code{TRUE})}
 
+\item{input_sparse_dropzeros}{explicitly drop structural zeros from sparse data inputs (\code{FALSE}); see details}
+
 \item{chordal_decomposition_enable}{whether to enable chordal decomposition for SDPs (\code{FALSE})}
 
 \item{chordal_decomposition_merge_method}{chordal decomposition merge method, one of \code{'none'}, \code{'parent_child'} or \code{'clique_graph'}, for SDPs (\code{'none'})}
@@ -139,4 +142,7 @@ a list containing the control parameters.
 }
 \description{
 Control parameters with default values and types in parenthesis
+}
+\details{
+Setting \code{input_sparse_dropzeros} to \code{TRUE} will disable parametric updating functionality. See documentation of ‘dropzeros’ in Rust \verb{struct CscMatrix} for dropping structural zeros before passing to the solver.
 }
