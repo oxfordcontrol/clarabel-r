@@ -1,3 +1,3 @@
 #!/bin/sh
 
-rm -rf src/*.o src/*.so src/*.dll src/*.a src/rust/vendor src/rust/target
+rm -rf src/Makevars src/*.o src/*.so src/*.dll src/*.a src/rust/vendor src/rust/target
