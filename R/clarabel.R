@@ -319,14 +319,15 @@ solver_status_descriptions <- function() {
 }
 
 ### Sanitize cone specifications
-### @param cone_spec a list of cone specifications
+### @param cone_spec a list of cone specifications, empty list or `NULL` accepted
 ### @return a named list of sanitized cone specifications and the number of variables for each cone (`nvars`)
 sanitize_cone_spec <- function(cone_spec) {
   cone_names <- names(cone_spec)
   
   ## Simple sanity checks
   if ((nc <- length(cone_names)) == 0L) {
-    stop("sanitize_cone_spec: no cone parameters specified")    
+    return(list(cones = cone_spec, nvars = c()))
+    #stop("sanitize_cone_spec: no cone parameters specified")    
   } 
   if (length(intersect(cone_names, c("z", "l", "q", "s", "ep", "p"))) != nc) {
     stop("sanitize_cone_spec: repeated cone parameters or unknown cone parameters specified")
