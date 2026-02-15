@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 
-// Example functions
 use savvy::savvy;
 use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, ListSexp, OwnedListSexp, TypedSexp};
 use clarabel::algebra::*;
@@ -8,11 +7,21 @@ use clarabel::solver::*;
 use lazy_static::lazy_static;
 use regex::Regex;
 
+/// Extract a usize from a TypedSexp that may be Integer or Real.
+/// Returns an error with the cone name if the type is wrong.
+fn typed_sexp_to_usize(typed_value: TypedSexp, cone_key: &str) -> savvy::Result<usize> {
+    match typed_value {
+	TypedSexp::Integer(i) => Ok(i.as_slice()[0] as usize),
+	TypedSexp::Real(f) => Ok(f.as_slice()[0] as usize),
+	_ => Err(savvy::Error::new(format!(
+	    "Cone '{}': expected integer or numeric value, got unexpected type", cone_key
+	))),
+    }
+}
 
 // Solve using Clarabel Rust solver.
 #[savvy]
 fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp, b: RealSexp, q: RealSexp, Pi: IntegerSexp, Pp: IntegerSexp, Px: RealSexp, cone_spec: ListSexp, r_settings: ListSexp) -> savvy::Result<savvy::Sexp> {
-    // QP Example
     let P = if Px.len() > 0 {
 	CscMatrix::new(
             n as usize,             // m
@@ -22,12 +31,10 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
             Px.as_slice().to_vec(),          // nzval
 	)
     } else {
-	CscMatrix::zeros((n as usize, n as usize)) // For P = 0
+	CscMatrix::zeros((n as usize, n as usize))
     };
 
-    // println!("P: {:?}", P);
-    
-    // assert!(P.check_format().is_ok());    
+    P.check_format().map_err(|e| savvy::Error::new(format!("P matrix format error: {:?}", e)))?;
 
     let A = {
 	CscMatrix::new(
@@ -39,89 +46,83 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	)
     };
 
-    // println!("A: {:?}", A);
-    // assert!(A.check_format().is_ok());
-    
+    A.check_format().map_err(|e| savvy::Error::new(format!("A matrix format error: {:?}", e)))?;
+
     let bb = b.as_slice().to_vec();
     let qq = q.as_slice().to_vec();
-    // println!("b: {:?}", bb);
-    // println!("q: {:?}", qq);    
-    
+
     // Handle cones
+    // Regex ordering matters: check ^gp before ^p, and ^ep before ^p,
+    // so that prefixed cone names are matched correctly.
     lazy_static! {
-	static ref ZC: Regex = Regex::new("^z").unwrap();  // ZeroCone
-	static ref NNC: Regex = Regex::new("^l").unwrap(); // NonNegativeCone
-	static ref SOC: Regex = Regex::new("^q").unwrap(); // Second Order Cone
-	static ref EPC: Regex = Regex::new("^ep").unwrap(); // Exponential Cone
-	static ref PC: Regex = Regex::new("^p").unwrap();  // Power Cone
-	static ref PSDTC: Regex = Regex::new("^s").unwrap();  // PSD Triangle Cone
-	static ref GPC: Regex = Regex::new("^gp").unwrap();  // Generalized Power Cone
+	static ref ZC: Regex = Regex::new("^z").unwrap();    // ZeroCone
+	static ref NNC: Regex = Regex::new("^l").unwrap();   // NonNegativeCone
+	static ref SOC: Regex = Regex::new("^q").unwrap();   // SecondOrderCone
+	static ref EPC: Regex = Regex::new("^ep").unwrap();  // ExponentialCone
+	static ref GPC: Regex = Regex::new("^gp").unwrap();  // GenPowerCone
+	static ref PSDTC: Regex = Regex::new("^s").unwrap(); // PSDTriangleCone
+	static ref PC: Regex = Regex::new("^p").unwrap();    // PowerCone
     }
 
     let mut cones: Vec::<SupportedConeT<f64>> = Vec::new();
     for (key, value) in cone_spec.iter() {
 	let typed_value = value.into_typed();
 	if ZC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Integer(i) => cones.push(ZeroConeT(i.as_slice()[0] as usize)),
-		_ => (),
-	    }
+	    let dim = typed_sexp_to_usize(typed_value, key.as_ref())?;
+	    cones.push(ZeroConeT(dim));
 	} else if NNC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Integer(i) => cones.push(NonnegativeConeT(i.as_slice()[0] as usize)),
-		_ => (),		
-	    }
+	    let dim = typed_sexp_to_usize(typed_value, key.as_ref())?;
+	    cones.push(NonnegativeConeT(dim));
 	} else if SOC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Integer(i) => cones.push(SecondOrderConeT(i.as_slice()[0] as usize)),
-		_ => (),
-	    }
+	    let dim = typed_sexp_to_usize(typed_value, key.as_ref())?;
+	    cones.push(SecondOrderConeT(dim));
 	} else if EPC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Integer(i) => for _i in 0..(i.as_slice()[0] as usize) {
-		    cones.push(ExponentialConeT());
-		}
-		_ => (),
-	    }
-	} else if PSDTC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Integer(i) => cones.push(PSDTriangleConeT(i.as_slice()[0] as usize)),
-		_ => (),
-	    }
-	} else if PC.is_match(key.as_ref()) {
-	    match typed_value {
-		TypedSexp::Real(f) => cones.push(PowerConeT(f.as_slice()[0] as f64)),
-		_ => (),
+	    let count = typed_sexp_to_usize(typed_value, key.as_ref())?;
+	    for _i in 0..count {
+		cones.push(ExponentialConeT());
 	    }
 	} else if GPC.is_match(key.as_ref()) {
 	    match typed_value {
 		TypedSexp::List(l) => {
-		    match l.get("a").expect("GenPowerCone exponents vector").into_typed() {
+		    let a_sexp = l.get("a").ok_or_else(|| savvy::Error::new(
+			format!("GenPowerCone '{}': missing 'a' (exponents vector)", key)
+		    ))?;
+		    let n_sexp = l.get("n").ok_or_else(|| savvy::Error::new(
+			format!("GenPowerCone '{}': missing 'n' (dimension)", key)
+		    ))?;
+		    match a_sexp.into_typed() {
 			TypedSexp::Real(f) => {
-			    match l.get("n").expect("GenPowerCone dimension").into_typed() {
-				TypedSexp::Integer(i) => {
-				    cones.push(GenPowerConeT(f.as_slice().to_vec(), i.as_slice()[0] as usize))
-				},
-				_ => (),
-			    }
-			    
+			    let dim = typed_sexp_to_usize(n_sexp.into_typed(), key.as_ref())?;
+			    cones.push(GenPowerConeT(f.as_slice().to_vec(), dim));
 			},
-			_ => (),
+			_ => return Err(savvy::Error::new(format!(
+			    "GenPowerCone '{}': 'a' must be a numeric vector", key
+			))),
 		    }
 		},
-		_ => (),
+		_ => return Err(savvy::Error::new(format!(
+		    "GenPowerCone '{}': expected a list with 'a' and 'n' elements", key
+		))),
+	    }
+	} else if PSDTC.is_match(key.as_ref()) {
+	    let dim = typed_sexp_to_usize(typed_value, key.as_ref())?;
+	    cones.push(PSDTriangleConeT(dim));
+	} else if PC.is_match(key.as_ref()) {
+	    match typed_value {
+		TypedSexp::Real(f) => cones.push(PowerConeT(f.as_slice()[0])),
+		TypedSexp::Integer(i) => cones.push(PowerConeT(i.as_slice()[0] as f64)),
+		_ => return Err(savvy::Error::new(format!(
+		    "PowerCone '{}': expected a numeric value", key
+		))),
 	    }
         } else {
-	    let msg = format!("Ignoring unknown cone: {}", key);
-	    let _ = savvy::io::r_warn(&msg);
+	    return Err(savvy::Error::new(format!("Unknown cone type: '{}'", key)));
 	}
     }
 
-    // println!("cones: {:?}", cones);    
     // Update default settings with specified R settings for use below
     let settings = update_settings(r_settings);
-    
-    // API change from v0.10.1 to v0.11.1 in Clarabel.rs
+
     let mut solver = match DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings) {
 	Ok(s) => s,
 	Err(e) => return Err(savvy::Error::new(e.to_string())),
