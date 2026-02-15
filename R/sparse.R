@@ -16,7 +16,7 @@ make_csc_matrix <- function(x) UseMethod("make_csc_matrix")
 #' @method make_csc_matrix matrix
 make_csc_matrix.matrix <- function(x) {
     if(!is.matrix(x))
-        stop("Argument 'x' must be a matrix.")
+        cli::cli_abort("{.arg x} must be a matrix.")
 
     ind <- which(x != 0, arr.ind = TRUE)
     list(matbeg = c(0L, cumsum(tabulate(ind[, 2L], ncol(x)))),
@@ -27,7 +27,7 @@ make_csc_matrix.matrix <- function(x) {
 #' @method make_csc_matrix simple_triplet_matrix
 make_csc_matrix.simple_triplet_matrix <- function(x) {
     if(!inherits(x, "simple_triplet_matrix"))
-        stop("Argument 'x' must be of class 'simple_triplet_matrix'.")
+        cli::cli_abort("{.arg x} must be of class {.cls simple_triplet_matrix}.")
 
     ## The matrix method assumes that indices for non-zero entries are
     ## in row-major order, but the simple_triplet_matrix() constructor

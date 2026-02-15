@@ -98,11 +98,11 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
   n_variables <- ncol(A)
   n_constraints <- nrow(A)
   
-  if (m != n_constraints) stop("A and b incompatible dimensions.")
-  if (n != n_variables) stop("A and q incompatible dimensions.")
+  if (m != n_constraints) cli::cli_abort("{.arg A} and {.arg b} have incompatible dimensions.")
+  if (n != n_variables) cli::cli_abort("{.arg A} and {.arg q} have incompatible dimensions.")
   if (!is.null(P)) {
-    if (n != ncol(P)) stop("P and q incompatible dimensions.")
-    if (ncol(P) != nrow(P)) stop("P not square.")
+    if (n != ncol(P)) cli::cli_abort("{.arg P} and {.arg q} have incompatible dimensions.")
+    if (ncol(P) != nrow(P)) cli::cli_abort("{.arg P} is not square.")
   }
 
   # Sanitize control parameters
@@ -114,7 +114,7 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
   } else {
     nvars <- nvars(cones)
   }
-  if (sum(nvars) != m) stop("Constraint dimensions inconsistent with size of cones.")
+  if (sum(nvars) != m) cli::cli_abort("Constraint dimensions inconsistent with size of {.arg cones}.")
   
   ## TBD check box cone parameters, bsize > 0  & bl, bu have lengths bsize - 1
 
@@ -275,8 +275,10 @@ clarabel_control <- function(
 
   string_params <- c("direct_solve_method", "chordal_decomposition_merge_method") # Might need to uncomment character coercion below, if length > 1
   
-  if (any(sapply(params, length) != 1L)) stop("clarabel_control: arguments should be scalars!")
-  if (any(unlist(params[int_params]) < 0)) stop("clarabel_control: integer arguments should be >= 0!")
+  non_scalar <- names(which(sapply(params, length) != 1L))
+  if (length(non_scalar) > 0L) cli::cli_abort("All {.fn clarabel_control} arguments must be scalars, but {.arg {non_scalar}} {?is/are} not.")
+  neg_int <- names(which(unlist(params[int_params]) < 0))
+  if (length(neg_int) > 0L) cli::cli_abort("Integer arguments must be >= 0, but {.arg {neg_int}} {?is/are} negative.")
  
   ## The rest
   float_params <- setdiff(names(params), c(bool_params, int_params, string_params))
@@ -329,8 +331,14 @@ sanitize_cone_spec <- function(cone_spec) {
     return(list(cones = cone_spec, nvars = c()))
     #stop("sanitize_cone_spec: no cone parameters specified")    
   } 
-  if (length(intersect(cone_names, c("z", "l", "q", "s", "ep", "p"))) != nc) {
-    stop("sanitize_cone_spec: repeated cone parameters or unknown cone parameters specified")
+  valid_cones <- c("z", "l", "q", "s", "ep", "p")
+  unknown <- setdiff(cone_names, valid_cones)
+  if (length(unknown) > 0L || length(cone_names) != length(unique(cone_names))) {
+    if (length(unknown) > 0L) {
+      cli::cli_abort("Unknown cone parameter{?s}: {.val {unknown}}. Valid names are {.val {valid_cones}}.")
+    } else {
+      cli::cli_abort("Repeated cone parameter{?s} detected. Use {.arg strict_cone_order = FALSE} for repeated cones.")
+    }
   }
   
   ## Check lengths as noted cone parameters table for ?clarabel
@@ -339,26 +347,26 @@ sanitize_cone_spec <- function(cone_spec) {
   l <- as.integer(cone_spec[["l"]]); ll <- length(l); nvar_l <- sum(l);
   ep <- as.integer(cone_spec[["ep"]]); epl <- length(ep); nvar_ep <- sum(ep) * 3 ## 3 variables per exp cone
   if (zl > 1 || ll > 1 || epl > 1) {
-    stop("sanitize_cone_spec: z, l, ep should be scalars")
+    cli::cli_abort("Cone parameters {.val z}, {.val l}, and {.val ep} must be scalars.")
   }
   if (any(c(z, l, ep) < 0L)) {
-    stop("sanitize_cone_spec: z, l, ep should be scalars > 0")
+    cli::cli_abort("Cone parameters {.val z}, {.val l}, and {.val ep} must be non-negative.")
   }
   
   ## Now the others
   ## SOC 
   q <- as.integer(cone_spec[["q"]]); ql <- length(q); nvar_q <- sum(q);
-  if (any(q <= 0L)) stop("sanitize_cone_spec: SOC dimensions should be > 0")
+  if (any(q <= 0L)) cli::cli_abort("Second-order cone dimensions must be > 0.")
   q <- as.list(q); names(q) <- rep("q", ql);
   
   ## PSD 
   s <- as.integer(cone_spec[["s"]]); sl <- length(s); nvar_s <- if (sl > 0) sum(sapply(s, triangular_number)) else 0; ## triangular number
-  if (any(s <= 0L)) stop("sanitize_cone_spec: PSD dimensions should be > 0")
+  if (any(s <= 0L)) cli::cli_abort("PSD cone dimensions must be > 0.")
   s <- as.list(s); names(s) <- rep("s", sl);
   
   ## Power Cone
   p <- as.numeric(cone_spec[["p"]]); pl <- length(p); nvar_p <- pl * 3; ## 3 variables per power cone
-  if (any(p <= 0)) stop("sanitize_cone_spec: Power cone parameter should be > 0")
+  if (any(p <= 0)) cli::cli_abort("Power cone parameters must be > 0.")
   p <- as.list(p); names(p) <- rep("p", pl);  
 
   ## Power Cone
@@ -431,14 +439,14 @@ sanitize_gp_params_and_get_nvars <- function(gp) {
       lapply(gp, function(x) {
         par_names <- sort(names(x))
         if (length(x) != 2L || !identical(par_names, c("a", "n"))) {
-          stop("Generalized power cone param list should be a list of two elements named 'a' and 'n'")
+          cli::cli_abort("Generalized power cone: each entry must be a list with elements {.val a} and {.val n}.")
         }
         exps <- x[["a"]]
         if (length(exps) < 2L || any(exps <= 0) || any(exps >= 1) || abs(sum(exps) - 1.0) > 0.0) {
-          stop("Improper Generalized power cone exponents!")
+          cli::cli_abort("Generalized power cone: exponents must be in (0, 1) and sum to 1.")
         }
         n <- x[["n"]]
-        if (length(n) != 1L || n <= 0) stop("Improper Generalized power cone dimension!")
+        if (length(n) != 1L || n <= 0) cli::cli_abort("Generalized power cone: dimension {.val n} must be a positive scalar.")
         list(a = as.numeric(exps), n = as.integer(n))
       })
     list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[["a"]]) + x[["n"]])))
