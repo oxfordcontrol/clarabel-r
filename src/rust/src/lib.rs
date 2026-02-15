@@ -1,14 +1,15 @@
 #![allow(non_snake_case)]
 
 use savvy::savvy;
-use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, ListSexp, OwnedListSexp, TypedSexp};
+use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, OwnedLogicalSexp, ListSexp, OwnedListSexp, TypedSexp};
 use clarabel::algebra::*;
 use clarabel::solver::*;
 use lazy_static::lazy_static;
 use regex::Regex;
 
-/// Extract a usize from a TypedSexp that may be Integer or Real.
-/// Returns an error with the cone name if the type is wrong.
+// ---------------------------------------------------------------------------
+// Helper: extract a usize from a TypedSexp (Integer or Real).
+// ---------------------------------------------------------------------------
 fn typed_sexp_to_usize(typed_value: TypedSexp, cone_key: &str) -> savvy::Result<usize> {
     match typed_value {
 	TypedSexp::Integer(i) => Ok(i.as_slice()[0] as usize),
@@ -19,39 +20,44 @@ fn typed_sexp_to_usize(typed_value: TypedSexp, cone_key: &str) -> savvy::Result<
     }
 }
 
-// Solve using Clarabel Rust solver.
-#[savvy]
-fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp, b: RealSexp, q: RealSexp, Pi: IntegerSexp, Pp: IntegerSexp, Px: RealSexp, cone_spec: ListSexp, r_settings: ListSexp) -> savvy::Result<savvy::Sexp> {
+// ---------------------------------------------------------------------------
+// Helper: build a CscMatrix for P from R's CSC components.
+// ---------------------------------------------------------------------------
+fn build_P_matrix(n: usize, Pi: &IntegerSexp, Pp: &IntegerSexp, Px: &RealSexp) -> savvy::Result<CscMatrix<f64>> {
     let P = if Px.len() > 0 {
 	CscMatrix::new(
-            n as usize,             // m
-            n as usize,             // n
-            Pp.as_slice().iter().map(|&x| x as usize).collect(),          // colptr
-            Pi.as_slice().iter().map(|&x| x as usize).collect(),          // rowval
-            Px.as_slice().to_vec(),          // nzval
+            n,
+            n,
+            Pp.as_slice().iter().map(|&x| x as usize).collect(),
+            Pi.as_slice().iter().map(|&x| x as usize).collect(),
+            Px.as_slice().to_vec(),
 	)
     } else {
-	CscMatrix::zeros((n as usize, n as usize))
+	CscMatrix::zeros((n, n))
     };
-
     P.check_format().map_err(|e| savvy::Error::new(format!("P matrix format error: {:?}", e)))?;
+    Ok(P)
+}
 
-    let A = {
-	CscMatrix::new(
-            m as usize,             // m
-            n as usize,             // n
-            Ap.as_slice().iter().map(|&x| x as usize).collect(),          // colptr
-            Ai.as_slice().iter().map(|&x| x as usize).collect(),          // rowval
-            Ax.as_slice().to_vec(),          // nzval
-	)
-    };
-
+// ---------------------------------------------------------------------------
+// Helper: build a CscMatrix for A from R's CSC components.
+// ---------------------------------------------------------------------------
+fn build_A_matrix(m: usize, n: usize, Ai: &IntegerSexp, Ap: &IntegerSexp, Ax: &RealSexp) -> savvy::Result<CscMatrix<f64>> {
+    let A = CscMatrix::new(
+        m,
+        n,
+        Ap.as_slice().iter().map(|&x| x as usize).collect(),
+        Ai.as_slice().iter().map(|&x| x as usize).collect(),
+        Ax.as_slice().to_vec(),
+    );
     A.check_format().map_err(|e| savvy::Error::new(format!("A matrix format error: {:?}", e)))?;
+    Ok(A)
+}
 
-    let bb = b.as_slice().to_vec();
-    let qq = q.as_slice().to_vec();
-
-    // Handle cones
+// ---------------------------------------------------------------------------
+// Helper: parse cone specifications from an R named list.
+// ---------------------------------------------------------------------------
+fn parse_cones(cone_spec: &ListSexp) -> savvy::Result<Vec<SupportedConeT<f64>>> {
     // Regex ordering matters: check ^gp before ^p, and ^ep before ^p,
     // so that prefixed cone names are matched correctly.
     lazy_static! {
@@ -119,16 +125,13 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
 	    return Err(savvy::Error::new(format!("Unknown cone type: '{}'", key)));
 	}
     }
+    Ok(cones)
+}
 
-    // Update default settings with specified R settings for use below
-    let settings = update_settings(r_settings);
-
-    let mut solver = match DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings) {
-	Ok(s) => s,
-	Err(e) => return Err(savvy::Error::new(e.to_string())),
-    };
-    solver.solve();
-
+// ---------------------------------------------------------------------------
+// Helper: extract solver solution into an R list.
+// ---------------------------------------------------------------------------
+fn extract_solution(solver: &DefaultSolver<f64>) -> savvy::Result<savvy::Sexp> {
     let mut obj_val = OwnedRealSexp::new(1)?;
     obj_val[0] = solver.solution.obj_val;
 
@@ -151,9 +154,9 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     r_dual[0] = solver.solution.r_dual;
 
     let mut out = OwnedListSexp::new(11, true)?;
-    out.set_name_and_value(0, "x", OwnedRealSexp::try_from_slice(solver.solution.x)?)?;
-    out.set_name_and_value(1, "z", OwnedRealSexp::try_from_slice(solver.solution.z)?)?;
-    out.set_name_and_value(2, "s", OwnedRealSexp::try_from_slice(solver.solution.s)?)?;
+    out.set_name_and_value(0, "x", OwnedRealSexp::try_from_slice(solver.solution.x.as_slice())?)?;
+    out.set_name_and_value(1, "z", OwnedRealSexp::try_from_slice(solver.solution.z.as_slice())?)?;
+    out.set_name_and_value(2, "s", OwnedRealSexp::try_from_slice(solver.solution.s.as_slice())?)?;
     out.set_name_and_value(3, "obj_val", obj_val)?;
     out.set_name_and_value(4, "obj_val_dual", obj_val_dual)?;
     out.set_name_and_value(5, "status", status)?;
@@ -187,239 +190,329 @@ fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp
     }
     let mut tmp = OwnedIntegerSexp::new(1)?;
     tmp[0] = solver.info.iterations as i32;
-    info.set_name_and_value(13, "iterations", tmp)?;    
+    info.set_name_and_value(13, "iterations", tmp)?;
     let mut tmp = OwnedIntegerSexp::new(1)?;
     tmp[0] = solver.info.status as i32 + 1;
-    info.set_name_and_value(14, "status", tmp)?;        
+    info.set_name_and_value(14, "status", tmp)?;
 
     out.set_name_and_value(10, "info", info)?;
     out.into()
 }
 
+// ===========================================================================
+// Original fire-and-forget solver (backwards compatible)
+// ===========================================================================
+#[savvy]
+fn clarabel_solve(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp, b: RealSexp, q: RealSexp, Pi: IntegerSexp, Pp: IntegerSexp, Px: RealSexp, cone_spec: ListSexp, r_settings: ListSexp) -> savvy::Result<savvy::Sexp> {
+    let P = build_P_matrix(n as usize, &Pi, &Pp, &Px)?;
+    let A = build_A_matrix(m as usize, n as usize, &Ai, &Ap, &Ax)?;
+    let bb = b.as_slice().to_vec();
+    let qq = q.as_slice().to_vec();
+    let cones = parse_cones(&cone_spec)?;
+    let settings = update_settings(r_settings);
 
+    let mut solver = match DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings) {
+	Ok(s) => s,
+	Err(e) => return Err(savvy::Error::new(e.to_string())),
+    };
+    solver.solve();
+    extract_solution(&solver)
+}
+
+// ===========================================================================
+// Persistent solver object for warm starts
+// ===========================================================================
+
+/// A persistent Clarabel solver that can be reused across R calls.
+#[savvy]
+struct ClarabelSolver {
+    solver: DefaultSolver<f64>,
+}
+
+#[savvy]
+impl ClarabelSolver {
+    /// Create a new persistent solver from problem data.
+    fn new(m: i32, n: i32, Ai: IntegerSexp, Ap: IntegerSexp, Ax: RealSexp, b: RealSexp, q: RealSexp, Pi: IntegerSexp, Pp: IntegerSexp, Px: RealSexp, cone_spec: ListSexp, r_settings: ListSexp) -> savvy::Result<Self> {
+	let P = build_P_matrix(n as usize, &Pi, &Pp, &Px)?;
+	let A = build_A_matrix(m as usize, n as usize, &Ai, &Ap, &Ax)?;
+	let bb = b.as_slice().to_vec();
+	let qq = q.as_slice().to_vec();
+	let cones = parse_cones(&cone_spec)?;
+	let settings = update_settings(r_settings);
+
+	let solver = match DefaultSolver::new(&P, &qq, &A, &bb, &cones, settings) {
+	    Ok(s) => s,
+	    Err(e) => return Err(savvy::Error::new(e.to_string())),
+	};
+
+	Ok(ClarabelSolver { solver })
+    }
+
+    /// Solve the problem and return the solution as an R list.
+    fn solve(&mut self) -> savvy::Result<savvy::Sexp> {
+	self.solver.solve();
+	extract_solution(&self.solver)
+    }
+
+    /// Update problem data. Pass empty vectors (length 0) to skip updating
+    /// a component. Px and Ax are the nonzero values of P and A respectively
+    /// (same sparsity pattern as the original). q and b are full vectors.
+    fn update_data(&mut self, Px: RealSexp, Ax: RealSexp, q: RealSexp, b: RealSexp) -> savvy::Result<()> {
+	if Px.len() > 0 {
+	    let px = Px.as_slice().to_vec();
+	    self.solver.update_P(&px)
+		.map_err(|e| savvy::Error::new(format!("P update error: {}", e)))?;
+	}
+	if q.len() > 0 {
+	    let qq = q.as_slice().to_vec();
+	    self.solver.update_q(&qq)
+		.map_err(|e| savvy::Error::new(format!("q update error: {}", e)))?;
+	}
+	if Ax.len() > 0 {
+	    let ax = Ax.as_slice().to_vec();
+	    self.solver.update_A(&ax)
+		.map_err(|e| savvy::Error::new(format!("A update error: {}", e)))?;
+	}
+	if b.len() > 0 {
+	    let bb = b.as_slice().to_vec();
+	    self.solver.update_b(&bb)
+		.map_err(|e| savvy::Error::new(format!("b update error: {}", e)))?;
+	}
+	Ok(())
+    }
+
+    /// Check whether data updates are allowed on this solver.
+    /// Returns FALSE if presolve, chordal decomposition, or dropzeros is active.
+    fn is_update_allowed(&self) -> savvy::Result<savvy::Sexp> {
+	let mut out = OwnedLogicalSexp::new(1)?;
+	out.set_elt(0, self.solver.is_data_update_allowed())?;
+	out.into()
+    }
+}
+
+// ===========================================================================
+// Settings helper (unchanged)
+// ===========================================================================
 fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
     let mut settings = DefaultSettings::default();
-    // Should really be using something like structmap (https://github.com/ex0dus-0x/structmap) but
-    // unsuccessful so far, so a directly generated implementation
     for (key, value) in r_settings.iter() {
 	let typed_value = value.into_typed();
-	// auto-generated, see: inst/misc/code-gen.R
 	match key.as_ref() {
-	    "max_iter" => 
+	    "max_iter" =>
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.max_iter = i.as_slice()[0] as u32,
 		    _ => (),
 		},
-	    "time_limit" => 
+	    "time_limit" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.time_limit = f.as_slice()[0],
 		    _ => (),
 		},
-	    "verbose" => 
+	    "verbose" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.verbose = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "max_step_fraction" => 
+	    "max_step_fraction" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.max_step_fraction = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_gap_abs" => 
+	    "tol_gap_abs" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_gap_abs = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_gap_rel" => 
+	    "tol_gap_rel" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_gap_rel = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_feas" => 
+	    "tol_feas" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_feas = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_infeas_abs" => 
+	    "tol_infeas_abs" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_infeas_abs = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_infeas_rel" => 
+	    "tol_infeas_rel" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_infeas_rel = f.as_slice()[0],
 		    _ => (),
 		},
-	    "tol_ktratio" => 
+	    "tol_ktratio" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.tol_ktratio = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_gap_abs" => 
+	    "reduced_tol_gap_abs" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_gap_abs = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_gap_rel" => 
+	    "reduced_tol_gap_rel" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_gap_rel = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_feas" => 
+	    "reduced_tol_feas" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_feas = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_infeas_abs" => 
+	    "reduced_tol_infeas_abs" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_infeas_abs = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_infeas_rel" => 
+	    "reduced_tol_infeas_rel" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_infeas_rel = f.as_slice()[0],
 		    _ => (),
 		},
-	    "reduced_tol_ktratio" => 
+	    "reduced_tol_ktratio" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.reduced_tol_ktratio = f.as_slice()[0],
 		    _ => (),
 		},
-	    "equilibrate_enable" => 
+	    "equilibrate_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.equilibrate_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "equilibrate_max_iter" => 
+	    "equilibrate_max_iter" =>
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.equilibrate_max_iter = i.as_slice()[0] as u32,
 		    _ => (),
 		},
-	    "equilibrate_min_scaling" => 
+	    "equilibrate_min_scaling" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.equilibrate_min_scaling = f.as_slice()[0],
 		    _ => (),
 		},
-	    "equilibrate_max_scaling" => 
+	    "equilibrate_max_scaling" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.equilibrate_max_scaling = f.as_slice()[0],
 		    _ => (),
 		},
-	    "linesearch_backtrack_step" => 
+	    "linesearch_backtrack_step" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.linesearch_backtrack_step = f.as_slice()[0],
 		    _ => (),
 		},
-	    "min_switch_step_length" => 
+	    "min_switch_step_length" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.min_switch_step_length = f.as_slice()[0],
 		    _ => (),
 		},
-	    "min_terminate_step_length" => 
+	    "min_terminate_step_length" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.min_terminate_step_length = f.as_slice()[0],
 		    _ => (),
 		},
-	    "max_threads" => 
+	    "max_threads" =>
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.max_threads = i.as_slice()[0] as u32,
 		    _ => (),
 		},
-	    "direct_kkt_solver" => 
+	    "direct_kkt_solver" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.direct_kkt_solver = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "direct_solve_method" => 
+	    "direct_solve_method" =>
 		match typed_value {
 		    TypedSexp::String(s) => if let Some(result) = s.to_vec().get(0) {
 			settings.direct_solve_method = result.to_string();
 		    },
 		    _ => (),
 		},
-	    "static_regularization_enable" => 
+	    "static_regularization_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.static_regularization_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "static_regularization_constant" => 
+	    "static_regularization_constant" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.static_regularization_constant = f.as_slice()[0],
 		    _ => (),
 		},
-	    "static_regularization_proportional" => 
+	    "static_regularization_proportional" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.static_regularization_proportional = f.as_slice()[0],
 		    _ => (),
 		},
-	    "dynamic_regularization_enable" => 
+	    "dynamic_regularization_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.dynamic_regularization_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "dynamic_regularization_eps" => 
+	    "dynamic_regularization_eps" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.dynamic_regularization_eps = f.as_slice()[0],
 		    _ => (),
 		},
-	    "dynamic_regularization_delta" => 
+	    "dynamic_regularization_delta" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.dynamic_regularization_delta = f.as_slice()[0],
 		    _ => (),
 		},
-	    "iterative_refinement_enable" => 
+	    "iterative_refinement_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.iterative_refinement_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "iterative_refinement_reltol" => 
+	    "iterative_refinement_reltol" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_reltol = f.as_slice()[0],
 		    _ => (),
 		},
-	    "iterative_refinement_abstol" => 
+	    "iterative_refinement_abstol" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_abstol = f.as_slice()[0],
 		    _ => (),
 		},
-	    "iterative_refinement_max_iter" => 
+	    "iterative_refinement_max_iter" =>
 		match typed_value {
 		    TypedSexp::Integer(i) => settings.iterative_refinement_max_iter = i.as_slice()[0] as u32,
 		    _ => (),
 		},
-	    "iterative_refinement_stop_ratio" => 
+	    "iterative_refinement_stop_ratio" =>
 		match typed_value {
 		    TypedSexp::Real(f) => settings.iterative_refinement_stop_ratio = f.as_slice()[0],
 		    _ => (),
 		},
-	    "presolve_enable" => 
+	    "presolve_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.presolve_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "input_sparse_dropzeros" => 
+	    "input_sparse_dropzeros" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.input_sparse_dropzeros = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "chordal_decomposition_enable" => 
+	    "chordal_decomposition_enable" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_enable = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "chordal_decomposition_merge_method" => 
+	    "chordal_decomposition_merge_method" =>
 		match typed_value {
 		    TypedSexp::String(s) => if let Some(result) = s.to_vec().get(0) {
 			settings.chordal_decomposition_merge_method = result.to_string();
 		    },
 		    _ => (),
 		},
-	    "chordal_decomposition_compact" => 
+	    "chordal_decomposition_compact" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_compact = b.as_slice_raw()[0] != 0,
 		    _ => (),
 		},
-	    "chordal_decomposition_complete_dual" => 
+	    "chordal_decomposition_complete_dual" =>
 		match typed_value {
 		    TypedSexp::Logical(b) => settings.chordal_decomposition_complete_dual = b.as_slice_raw()[0] != 0,
 		    _ => (),
@@ -429,5 +522,3 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
     }
     settings
 }
-
-

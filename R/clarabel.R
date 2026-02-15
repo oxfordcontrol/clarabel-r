@@ -435,7 +435,7 @@ sanitize_gp_params_and_get_nvars <- function(gp) {
   if (length(gp) == 0) {
     list(sanitized_gp_params = list(), nvar = 0L)
   } else  {
-    sanitized_gp_params <- 
+    sanitized_gp_params <-
       lapply(gp, function(x) {
         par_names <- sort(names(x))
         if (length(x) != 2L || !identical(par_names, c("a", "n"))) {
@@ -451,6 +451,167 @@ sanitize_gp_params_and_get_nvars <- function(gp) {
       })
     list(sanitized_gp_params = sanitized_gp_params, nvar = sum(sapply(sanitized_gp_params, function(x) length(x[["a"]]) + x[["n"]])))
   }
+}
+
+# ===========================================================================
+# Persistent Solver API for Warm Starts
+# ===========================================================================
+
+#' Create a persistent Clarabel solver object
+#'
+#' @description
+#' Creates a persistent solver that can be reused across multiple
+#' solves with updated problem data (warm starts). This avoids the
+#' overhead of reallocating the solver's internal data structures when
+#' only the problem data changes but the sparsity pattern stays the
+#' same.
+#'
+#' @inheritParams clarabel
+#' @return a `ClarabelSolver` environment object with methods
+#'   `solve()`, `update_data(Px, Ax, q, b)`, and
+#'   `is_update_allowed()`
+#' @seealso [solver_solve()], [solver_update()],
+#'   [solver_is_update_allowed()], [clarabel()]
+#' @details
+#' For data updates to work, the solver settings must have
+#' `presolve_enable = FALSE`, `chordal_decomposition_enable = FALSE`,
+#' and `input_sparse_dropzeros = FALSE`. Use
+#' [solver_is_update_allowed()] to check after construction.
+#'
+#' @examples
+#' \dontrun{
+#' P <- Matrix::sparseMatrix(i = 1:2, j = 1:2, x = c(2, 1), dims = c(2, 2))
+#' A <- matrix(c(1, 0, 0, 1), nrow = 2)
+#' b <- c(1, 1)
+#' q <- c(-2, -3)
+#' cones <- list(l = 2L)
+#' ctrl <- clarabel_control(presolve_enable = FALSE, verbose = FALSE)
+#' s <- clarabel_solver(A, b, q, P, cones, control = ctrl)
+#' sol1 <- solver_solve(s)
+#' solver_update(s, q = c(-4, -1))
+#' sol2 <- solver_solve(s)
+#' }
+#' @export
+clarabel_solver <- function(A, b, q, P = NULL, cones, control = list(),
+                            strict_cone_order = TRUE) {
+
+  m <- length(b); n <- length(q)
+  n_variables <- ncol(A)
+  n_constraints <- nrow(A)
+
+  if (m != n_constraints) cli::cli_abort("{.arg A} and {.arg b} have incompatible dimensions.")
+  if (n != n_variables) cli::cli_abort("{.arg A} and {.arg q} have incompatible dimensions.")
+  if (!is.null(P)) {
+    if (n != ncol(P)) cli::cli_abort("{.arg P} and {.arg q} have incompatible dimensions.")
+    if (ncol(P) != nrow(P)) cli::cli_abort("{.arg P} is not square.")
+  }
+
+  control <- do.call(clarabel_control, control)
+  if (strict_cone_order) {
+    cones_and_nvars <- sanitize_cone_spec(cones)
+    cones <- cones_and_nvars[["cones"]]
+    nvars <- cones_and_nvars[["nvars"]]
+  } else {
+    nvars <- nvars(cones)
+  }
+  if (sum(nvars) != m) cli::cli_abort("Constraint dimensions inconsistent with size of {.arg cones}.")
+
+  if (inherits(A, "dgCMatrix")) {
+    Ai <- A@i; Ap <- A@p; Ax <- A@x
+  } else {
+    csc <- make_csc_matrix(A)
+    Ai <- csc[["matind"]]; Ap <- csc[["matbeg"]]; Ax <- csc[["values"]]
+  }
+
+  if (!is.null(P)) {
+    if (inherits(P, "dsCMatrix")) {
+      Pi <- P@i; Pp <- P@p; Px <- P@x
+    } else {
+      csc <- make_csc_symm_matrix(P)
+      Pi <- csc[["matind"]]; Pp <- csc[["matbeg"]]; Px <- csc[["values"]]
+    }
+  } else {
+    Pi <- integer(0); Pp <- integer(0); Px <- numeric(0)
+  }
+
+  ClarabelSolver$new(n_constraints, n_variables, Ai, Ap, Ax, b, q,
+                     Pi, Pp, Px, cones, control)
+}
+
+#' Solve using a persistent Clarabel solver
+#'
+#' @param solver a `ClarabelSolver` object created by
+#'   [clarabel_solver()]
+#' @return the same named list as [clarabel()]: solution vectors
+#'   `x`, `z`, `s` and solver information
+#' @seealso [clarabel_solver()], [solver_update()]
+#' @export
+solver_solve <- function(solver) {
+  solver$solve()
+}
+
+#' Update problem data on a persistent Clarabel solver
+#'
+#' @description
+#' Update one or more of P (objective), q (linear objective), A
+#' (constraints), b (constraint RHS) on an existing solver. The
+#' sparsity pattern of P and A must remain the same as the original
+#' problem; only the nonzero values can change.
+#'
+#' @param solver a `ClarabelSolver` object created by
+#'   [clarabel_solver()]
+#' @param P new upper-triangular P matrix (same sparsity), or `NULL`
+#'   to leave unchanged
+#' @param q new linear objective vector, or `NULL` to leave unchanged
+#' @param A new constraint matrix (same sparsity), or `NULL` to leave
+#'   unchanged
+#' @param b new constraint RHS vector, or `NULL` to leave unchanged
+#' @return invisible `NULL`
+#' @seealso [clarabel_solver()], [solver_solve()]
+#' @export
+solver_update <- function(solver, P = NULL, q = NULL, A = NULL, b = NULL) {
+  ## Extract nonzero values from sparse matrices, or pass empty vectors
+  if (!is.null(P)) {
+    if (inherits(P, "dsCMatrix")) {
+      Px <- P@x
+    } else {
+      csc <- make_csc_symm_matrix(P)
+      Px <- csc[["values"]]
+    }
+  } else {
+    Px <- numeric(0)
+  }
+
+  if (!is.null(A)) {
+    if (inherits(A, "dgCMatrix")) {
+      Ax <- A@x
+    } else {
+      csc <- make_csc_matrix(A)
+      Ax <- csc[["values"]]
+    }
+  } else {
+    Ax <- numeric(0)
+  }
+
+  q_vec <- if (!is.null(q)) as.numeric(q) else numeric(0)
+  b_vec <- if (!is.null(b)) as.numeric(b) else numeric(0)
+
+  solver$update_data(Px, Ax, q_vec, b_vec)
+}
+
+#' Check if data updates are allowed on a persistent solver
+#'
+#' @description
+#' Returns `FALSE` if presolve, chordal decomposition, or
+#' `input_sparse_dropzeros` is enabled, which prevents data updates.
+#'
+#' @param solver a `ClarabelSolver` object created by
+#'   [clarabel_solver()]
+#' @return logical scalar
+#' @seealso [clarabel_solver()], [solver_update()]
+#' @export
+solver_is_update_allowed <- function(solver) {
+  solver$is_update_allowed()
 }
 
 
