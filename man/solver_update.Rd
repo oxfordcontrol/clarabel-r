@@ -29,6 +29,13 @@ Update one or more of P (objective), q (linear objective), A
 sparsity pattern of P and A must remain the same as the original
 problem; only the nonzero values can change.
 }
+\examples{
+\dontrun{
+solver_update(s, q = c(-4, -1))   # update linear objective only
+solver_update(s, b = c(2, 2))     # update constraint RHS only
+sol2 <- solver_solve(s)           # re-solve with updated data
+}
+}
 \seealso{
 \code{\link[=clarabel_solver]{clarabel_solver()}}, \code{\link[=solver_solve]{solver_solve()}}
 }

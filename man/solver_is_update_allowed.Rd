@@ -17,6 +17,11 @@ logical scalar
 Returns \code{FALSE} if presolve, chordal decomposition, or
 \code{input_sparse_dropzeros} is enabled, which prevents data updates.
 }
+\examples{
+\dontrun{
+solver_is_update_allowed(s)  # TRUE if presolve and chordal decomp are off
+}
+}
 \seealso{
 \code{\link[=clarabel_solver]{clarabel_solver()}}, \code{\link[=solver_update]{solver_update()}}
 }

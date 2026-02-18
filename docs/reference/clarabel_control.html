@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">clarabel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -268,9 +268,19 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Setting <code>input_sparse_dropzeros</code> to <code>TRUE</code> will disable parametric updating functionality. See documentation of ‘dropzeros’ in Rust <code>struct CscMatrix</code> for dropping structural zeros before passing to the solver.</p>
+    <p>Setting <code>input_sparse_dropzeros</code> to <code>TRUE</code> will disable parametric updating functionality. See documentation of 'dropzeros' in Rust <code>struct CscMatrix</code> for dropping structural zeros before passing to the solver.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Default control parameters</span></span></span>
+<span class="r-in"><span><span class="va">ctrl</span> <span class="op">&lt;-</span> <span class="fu">clarabel_control</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctrl</span><span class="op">$</span><span class="va">max_iter</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 200</span>
+<span class="r-in"><span><span class="co"># Custom tolerances and quiet output</span></span></span>
+<span class="r-in"><span><span class="va">ctrl</span> <span class="op">&lt;-</span> <span class="fu">clarabel_control</span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span>, tol_gap_rel <span class="op">=</span> <span class="fl">1e-7</span>, max_iter <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
@@ -280,7 +290,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

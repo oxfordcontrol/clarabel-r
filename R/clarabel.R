@@ -198,7 +198,13 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs
 #' @return a list containing the control parameters.
 #' @details
-#' Setting `input_sparse_dropzeros` to `TRUE` will disable parametric updating functionality. See documentation of ‘dropzeros’ in Rust `struct CscMatrix` for dropping structural zeros before passing to the solver. 
+#' Setting `input_sparse_dropzeros` to `TRUE` will disable parametric updating functionality. See documentation of 'dropzeros' in Rust `struct CscMatrix` for dropping structural zeros before passing to the solver.
+#' @examples
+#' # Default control parameters
+#' ctrl <- clarabel_control()
+#' ctrl$max_iter
+#' # Custom tolerances and quiet output
+#' ctrl <- clarabel_control(verbose = FALSE, tol_gap_rel = 1e-7, max_iter = 100L)
 #' @export clarabel_control
 clarabel_control <- function(
                              ## Main algorithm settings
@@ -545,6 +551,14 @@ clarabel_solver <- function(A, b, q, P = NULL, cones, control = list(),
 #' @return the same named list as [clarabel()]: solution vectors
 #'   `x`, `z`, `s` and solver information
 #' @seealso [clarabel_solver()], [solver_update()]
+#' @examples
+#' \dontrun{
+#' s <- clarabel_solver(A, b, q, P, cones,
+#'                      control = clarabel_control(presolve_enable = FALSE,
+#'                                                 verbose = FALSE))
+#' sol <- solver_solve(s)
+#' sol$status
+#' }
 #' @export
 solver_solve <- function(solver) {
   solver$solve()
@@ -568,6 +582,12 @@ solver_solve <- function(solver) {
 #' @param b new constraint RHS vector, or `NULL` to leave unchanged
 #' @return invisible `NULL`
 #' @seealso [clarabel_solver()], [solver_solve()]
+#' @examples
+#' \dontrun{
+#' solver_update(s, q = c(-4, -1))   # update linear objective only
+#' solver_update(s, b = c(2, 2))     # update constraint RHS only
+#' sol2 <- solver_solve(s)           # re-solve with updated data
+#' }
 #' @export
 solver_update <- function(solver, P = NULL, q = NULL, A = NULL, b = NULL) {
   ## Extract nonzero values from sparse matrices, or pass empty vectors
@@ -609,6 +629,10 @@ solver_update <- function(solver, P = NULL, q = NULL, A = NULL, b = NULL) {
 #'   [clarabel_solver()]
 #' @return logical scalar
 #' @seealso [clarabel_solver()], [solver_update()]
+#' @examples
+#' \dontrun{
+#' solver_is_update_allowed(s)  # TRUE if presolve and chordal decomp are off
+#' }
 #' @export
 solver_is_update_allowed <- function(solver) {
   solver$is_update_allowed()

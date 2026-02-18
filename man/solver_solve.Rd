@@ -17,6 +17,15 @@ the same named list as \code{\link[=clarabel]{clarabel()}}: solution vectors
 \description{
 Solve using a persistent Clarabel solver
 }
+\examples{
+\dontrun{
+s <- clarabel_solver(A, b, q, P, cones,
+                     control = clarabel_control(presolve_enable = FALSE,
+                                                verbose = FALSE))
+sol <- solver_solve(s)
+sol$status
+}
+}
 \seealso{
 \code{\link[=clarabel_solver]{clarabel_solver()}}, \code{\link[=solver_update]{solver_update()}}
 }

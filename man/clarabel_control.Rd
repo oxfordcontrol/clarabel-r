@@ -144,5 +144,12 @@ a list containing the control parameters.
 Control parameters with default values and types in parenthesis
 }
 \details{
-Setting \code{input_sparse_dropzeros} to \code{TRUE} will disable parametric updating functionality. See documentation of ‘dropzeros’ in Rust \verb{struct CscMatrix} for dropping structural zeros before passing to the solver.
+Setting \code{input_sparse_dropzeros} to \code{TRUE} will disable parametric updating functionality. See documentation of 'dropzeros' in Rust \verb{struct CscMatrix} for dropping structural zeros before passing to the solver.
+}
+\examples{
+# Default control parameters
+ctrl <- clarabel_control()
+ctrl$max_iter
+# Custom tolerances and quiet output
+ctrl <- clarabel_control(verbose = FALSE, tol_gap_rel = 1e-7, max_iter = 100L)
 }

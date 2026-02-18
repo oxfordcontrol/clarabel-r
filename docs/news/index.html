@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">clarabel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,16 @@
       <small>Source: <a href="https://github.com/oxfordcontrol/clarabel-r/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.11.9003" id="clarabel-0119003">clarabel 0.11.9003<a class="anchor" aria-label="anchor" href="#clarabel-0119003"></a></h2>
+<ul><li>Added persistent solver API for warm starts: <code><a href="../reference/clarabel_solver.html">clarabel_solver()</a></code>, <code><a href="../reference/solver_solve.html">solver_solve()</a></code>, <code><a href="../reference/solver_update.html">solver_update()</a></code>, <code><a href="../reference/solver_is_update_allowed.html">solver_is_update_allowed()</a></code>
+</li>
+<li>Robustified Rust interface: type coercion, error handling, CscMatrix validation, and regex ordering fixes</li>
+<li>Switched all R-side error messaging to <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_abort()</a></code> with markup</li>
+<li>Upgraded <code>savvy</code> crate from 0.8.13 to 0.9.2</li>
+<li>Added examples to <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code> and solver functions</li>
+<li>Added vignette section on updating problem data (warm starts)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.11.1" id="clarabel-0111">clarabel 0.11.1<a class="anchor" aria-label="anchor" href="#clarabel-0111"></a></h2><p class="text-muted">CRAN release: 2025-09-24</p>
 <ul><li>Synced up to v0.11.1 of <code>Clarabel.rs</code>
@@ -79,7 +89,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
