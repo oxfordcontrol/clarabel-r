@@ -1,3 +1,5 @@
+if (at_home()) {
+
 eq_constrained_A1 <- function() {
   ## A =
   ##[ 0. 1.  1.;
@@ -57,3 +59,5 @@ b <- c(2., 0.)
 cones <- list(z = 2L)
 solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones)
 expect_equal(status_codes[[solution$status]], status_codes[["DualInfeasible"]])
+
+} ## end at_home()

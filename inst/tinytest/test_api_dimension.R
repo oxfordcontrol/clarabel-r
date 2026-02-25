@@ -1,3 +1,4 @@
+if (at_home()) {
 
 api_dim_check_data <- function() {
   P <- matrix(0.0, nrow = 4, ncol = 4)
@@ -60,4 +61,6 @@ expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
 problem_data <- api_dim_check_data()
 problem_data$cones <- list(z = 1L, l = 2L, l = 4L)
 expect_error(solution <- do.call(clarabel, problem_data))
+
+} ## end at_home()
 

@@ -1,3 +1,5 @@
+if (at_home()) {
+
 basic_expcone_data <- function() {
   ## produces data for the following exponential cone problem
   ## max  x
@@ -64,3 +66,5 @@ b <- numeric(3)
 cones <- list(ep = 1L)
 solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones)
 expect_equal(status_codes[[solution$status]], status_codes[["DualInfeasible"]])
+
+} ## end at_home()
