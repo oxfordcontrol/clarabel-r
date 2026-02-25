@@ -1,14 +1,20 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/404.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/CLAUDE.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/articles/clarabel.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/articles/index.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/authors.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/index.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/news/index.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/ClarabelSolver.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/clarabel-package.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_solver.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/index.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/solver_is_update_allowed.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/solver_solve.html</loc></url>
 <url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.html</loc></url>
+<url><loc>https://oxfordcontrol.github.io/clarabel-r/reference/solver_update.html</loc></url>
 </urlset>
 

@@ -23,9 +23,71 @@ NULL
   }
 }
 
+# Prohibit modifying environments
 
-clarabel_solve <- function(m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings) {
-  .Call(savvy_clarabel_solve__impl, m, n, Ai, Ap, Ax, b, q, Pi, Pp, Px, cone_spec, r_settings)
+#' @export
+`$<-.savvy_clarabel__sealed` <- function(x, name, value) {
+  class <- gsub("__bundle$", "", class(x)[1])
+  stop(class, " cannot be modified", call. = FALSE)
 }
 
+#' @export
+`[[<-.savvy_clarabel__sealed` <- function(x, i, value) {
+  class <- gsub("__bundle$", "", class(x)[1])
+  stop(class, " cannot be modified", call. = FALSE)
+}
+
+
+`clarabel_solve` <- function(`m`, `n`, `Ai`, `Ap`, `Ax`, `b`, `q`, `Pi`, `Pp`, `Px`, `cone_spec`, `r_settings`) {
+  .Call(savvy_clarabel_solve__impl, `m`, `n`, `Ai`, `Ap`, `Ax`, `b`, `q`, `Pi`, `Pp`, `Px`, `cone_spec`, `r_settings`)
+}
+
+### wrapper functions for ClarabelSolver
+
+`ClarabelSolver_is_update_allowed` <- function(self) {
+  function() {
+    .Call(savvy_ClarabelSolver_is_update_allowed__impl, `self`)
+  }
+}
+
+`ClarabelSolver_solve` <- function(self) {
+  function() {
+    .Call(savvy_ClarabelSolver_solve__impl, `self`)
+  }
+}
+
+`ClarabelSolver_update_data` <- function(self) {
+  function(`Px`, `Ax`, `q`, `b`) {
+    invisible(.Call(savvy_ClarabelSolver_update_data__impl, `self`, `Px`, `Ax`, `q`, `b`))
+  }
+}
+
+`.savvy_wrap_ClarabelSolver` <- function(ptr) {
+  e <- new.env(parent = emptyenv())
+  e$.ptr <- ptr
+  e$`is_update_allowed` <- `ClarabelSolver_is_update_allowed`(ptr)
+  e$`solve` <- `ClarabelSolver_solve`(ptr)
+  e$`update_data` <- `ClarabelSolver_update_data`(ptr)
+
+  class(e) <- c("clarabel::ClarabelSolver", "ClarabelSolver", "savvy_clarabel__sealed")
+  e
+}
+
+
+#' A persistent Clarabel solver that can be reused across R calls.
+`ClarabelSolver` <- new.env(parent = emptyenv())
+
+### associated functions for ClarabelSolver
+
+`ClarabelSolver`$`new` <- function(`m`, `n`, `Ai`, `Ap`, `Ax`, `b`, `q`, `Pi`, `Pp`, `Px`, `cone_spec`, `r_settings`) {
+  .savvy_wrap_ClarabelSolver(.Call(savvy_ClarabelSolver_new__impl, `m`, `n`, `Ai`, `Ap`, `Ax`, `b`, `q`, `Pi`, `Pp`, `Px`, `cone_spec`, `r_settings`))
+}
+
+
+class(`ClarabelSolver`) <- c("clarabel::ClarabelSolver__bundle", "savvy_clarabel__sealed")
+
+#' @export
+`print.clarabel::ClarabelSolver__bundle` <- function(x, ...) {
+  cat('clarabel::ClarabelSolver\n')
+}
 
