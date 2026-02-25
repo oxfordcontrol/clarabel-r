@@ -9,6 +9,8 @@
 - Upgraded `savvy` crate from 0.8.13 to 0.9.2
 - Added examples to `clarabel_control()` and solver functions
 - Added vignette section on updating problem data (warm starts)
+- Reduced CRAN test suite to LP and QP only; full suite runs locally
+  via `tinytest::at_home()`
 
 # clarabel 0.11.1
 
