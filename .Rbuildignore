@@ -19,4 +19,5 @@
 ^cran-comments\.md$
 
 ^src/rust/\.cargo$
-^src/Makevars\.win$
+^\.claude$
+^CLAUDE\.md$
