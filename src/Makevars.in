@@ -1,7 +1,6 @@
 TARGET = @TARGET@
 R_HOME = @R_HOME@
 CC_ALONE = @CC_ALONE@
-MACOSX_DT = @MACOSX_DT@
 VENDORING = yes
 VENDOR_SRC = ./rust/vendor.tar.xz
 VENDOR_DIR = ./rust/vendor
@@ -38,7 +37,7 @@ $(STATLIB):
 	      export R_HOME=$(R_HOME);  \
 	      export PATH="$(PATH):$(HOME)/.cargo/bin";  \
 	      export RUSTFLAGS="-C linker=${CC_ALONE}"; \
-	      if [ -n "$(MACOSX_DT)" ]; then export MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DT)"; fi; \
+	      export MACOSX_DEPLOYMENT_TARGET; \
 	      cargo build $(CARGO_BUILD_ARGS) --release --offline; \
 	    else \
 	      cargo build $(CARGO_BUILD_ARGS); \

@@ -8,28 +8,4 @@ fi
 
 CC_ALONE=`$R_HOME/bin/R CMD config CC | awk '{print $1}'`
 
-# On macOS, detect the deployment target so that C code compiled by the Rust
-# cc crate (e.g. savvy's unwind_protect_wrapper.c) uses the same target as
-# R's linker.  Without this, the cc crate defaults to the host OS version,
-# which may be newer than R's deployment target, triggering linker warnings.
-MACOSX_DT=""
-if [ "$(uname)" = "Darwin" ]; then
-  # 1) Environment variable (set by CRAN builders and R CMD INSTALL)
-  if [ -n "${MACOSX_DEPLOYMENT_TARGET}" ]; then
-    MACOSX_DT="${MACOSX_DEPLOYMENT_TARGET}"
-  fi
-  # 2) Fallback: extract -mmacosx-version-min from R's CC, CFLAGS, or LDFLAGS
-  if [ -z "${MACOSX_DT}" ]; then
-    for var in CC CFLAGS LDFLAGS; do
-      MACOSX_DT=`"${R_HOME}/bin/R" CMD config $var | \
-        sed -n 's/.*-mmacosx-version-min=\([^ ]*\).*/\1/p'`
-      if [ -n "${MACOSX_DT}" ]; then break; fi
-    done
-  fi
-fi
-
-sed -e "s/@TARGET@/${TARGET}/" \
-    -e "s|@R_HOME@|${R_HOME}|" \
-    -e "s|@CC_ALONE@|${CC_ALONE}|" \
-    -e "s|@MACOSX_DT@|${MACOSX_DT}|" \
-    src/Makevars.in > src/Makevars
+sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" -e "s|@CC_ALONE@|${CC_ALONE}|" src/Makevars.in > src/Makevars
