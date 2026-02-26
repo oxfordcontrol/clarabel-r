@@ -11,6 +11,8 @@
 - Added vignette section on updating problem data (warm starts)
 - Reduced CRAN test suite to LP and QP only; full suite runs locally
   via `tinytest::at_home()`
+- Fixed macOS CRAN linker warning by forwarding `MACOSX_DEPLOYMENT_TARGET`
+  to Rust `cc` crate during `cargo build`
 
 # clarabel 0.11.1
 
