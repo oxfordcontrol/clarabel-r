@@ -34,6 +34,7 @@ $(STATLIB):
 	  cargo build -j 2 --target $(TARGET) --lib --offline --release --manifest-path ./rust/Cargo.toml --target-dir $(TARGET_DIR)
 	rm -Rf $(CARGOTMP)
 	rm -Rf $(VENDOR_DIR)
+	rm -Rf ../vendor
 	rm -Rf $(LIBDIR)/build
 
 clean_intermediate: $(SHLIB)

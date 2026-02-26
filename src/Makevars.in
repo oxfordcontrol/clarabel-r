@@ -53,6 +53,7 @@ $(STATLIB):
 	  fi
 	rm -Rf $(CARGOTMP)
 	rm -Rf $(VENDOR_DIR)
+	rm -Rf ../vendor
 	rm -Rf $(LIBDIR)/build
 
 clean_intermediate: $(SHLIB)
