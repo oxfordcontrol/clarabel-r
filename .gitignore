@@ -46,3 +46,9 @@ inst/stuff
 
 # Makevars is generated
 src/Makevars
+
+# Rust build artifacts
+src/rust/target/
+src/rust/vendor/
+src/rust/.cargo/
+/vendor/
