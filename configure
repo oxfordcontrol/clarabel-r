@@ -8,4 +8,22 @@ fi
 
 CC_ALONE=`$R_HOME/bin/R CMD config CC | awk '{print $1}'`
 
-sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" -e "s|@CC_ALONE@|${CC_ALONE}|" src/Makevars.in > src/Makevars
+# Detect macOS deployment target for Rust cc crate.
+# The cc crate defaults to the SDK version (via xcrun --show-sdk-version)
+# which can exceed the target used by R's compiler, causing an ld warning.
+# We compile a test object with R's compiler to determine the actual target.
+MACOSX_DT=""
+if [ "$(uname)" = "Darwin" ]; then
+  if [ -n "$MACOSX_DEPLOYMENT_TARGET" ]; then
+    MACOSX_DT="$MACOSX_DEPLOYMENT_TARGET"
+  else
+    R_CC=`"${R_HOME}/bin/R" CMD config CC`
+    R_CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+    echo "int x;" > conftest_dt.c
+    $R_CC $R_CFLAGS -c conftest_dt.c -o conftest_dt.o 2>/dev/null
+    MACOSX_DT=`otool -l conftest_dt.o 2>/dev/null | awk '/LC_BUILD_VERSION/{found=1} found && /minos/{print $2; exit}'`
+    rm -f conftest_dt.c conftest_dt.o
+  fi
+fi
+
+sed -e "s/@TARGET@/${TARGET}/" -e "s|@R_HOME@|${R_HOME}|" -e "s|@CC_ALONE@|${CC_ALONE}|" -e "s|@MACOSX_DT@|${MACOSX_DT}|" src/Makevars.in > src/Makevars

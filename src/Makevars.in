@@ -1,6 +1,7 @@
 TARGET = @TARGET@
 R_HOME = @R_HOME@
 CC_ALONE = @CC_ALONE@
+MACOSX_DT = @MACOSX_DT@
 VENDORING = yes
 VENDOR_SRC = ./rust/vendor.tar.xz
 VENDOR_DIR = ./rust/vendor
@@ -16,6 +17,16 @@ PKG_LIBS = -L$(LIBDIR) -lclarabel $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 CARGOTMP = $(CURDIR)/rust/.cargo
 CARGO_BUILD_ARGS = -j 2 --lib --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
 RUST_BACKTRACE=1
+
+# Ensure the Rust cc crate uses the correct macOS deployment target.
+# Without this, cc falls back to xcrun --show-sdk-version which may
+# return a newer version than the R link target, causing an ld warning.
+ifneq ($(MACOSX_DT),)
+  MACOSX_DEPLOYMENT_TARGET = $(MACOSX_DT)
+endif
+ifdef MACOSX_DEPLOYMENT_TARGET
+  export MACOSX_DEPLOYMENT_TARGET
+endif
 
 all: $(SHLIB) clean_intermediate
 
@@ -37,7 +48,6 @@ $(STATLIB):
 	      export R_HOME=$(R_HOME);  \
 	      export PATH="$(PATH):$(HOME)/.cargo/bin";  \
 	      export RUSTFLAGS="-C linker=${CC_ALONE}"; \
-	      export MACOSX_DEPLOYMENT_TARGET; \
 	      cargo build $(CARGO_BUILD_ARGS) --release --offline; \
 	    else \
 	      cargo build $(CARGO_BUILD_ARGS); \
