@@ -19,6 +19,7 @@ jobs:
         config:
           - {os: windows-latest, r: 'release', rust: 'stable-msvc' }
           - {os: windows-latest, r: 'devel',   rust: 'stable-msvc' }
+          - {os: windows-11-arm, r: 'release', rust: 'stable-msvc', targets: 'aarch64-pc-windows-gnullvm' }
           - {os: macOS-latest,   r: 'release', rust: 'stable'      }
           - {os: ubuntu-latest,  r: 'release', rust: 'stable'      }
           - {os: ubuntu-latest,  r: 'devel',   rust: 'stable'      }
@@ -43,6 +44,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.config.rust }}
+          targets: ${{ matrix.config.targets }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
