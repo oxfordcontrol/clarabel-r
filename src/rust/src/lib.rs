@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use savvy::savvy;
-use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, OwnedLogicalSexp, ListSexp, OwnedListSexp, TypedSexp};
+use savvy::{IntegerSexp, OwnedIntegerSexp, RealSexp, OwnedRealSexp, OwnedLogicalSexp, OwnedStringSexp, ListSexp, OwnedListSexp, TypedSexp};
 use clarabel::algebra::*;
 use clarabel::solver::*;
 use lazy_static::lazy_static;
@@ -521,4 +521,96 @@ fn update_settings(r_settings: ListSexp) -> DefaultSettings<f64> {
 	}
     }
     settings
+}
+
+// ===========================================================================
+// Upstream default settings, exposed for the drift test
+// ===========================================================================
+//
+// `clarabel_control()` hard-codes its defaults on the R side so that they show
+// up in the function signature and on the help page. That copy can silently
+// fall out of step with the Rust solver, which is exactly what happened to
+// `reduced_tol_infeas_abs`: upstream changed it in Clarabel.rs v0.10.0 and this
+// package was not resynced for two releases. This accessor returns
+// `DefaultSettings::<f64>::default()` as a named list so a test can compare the
+// two field by field and fail loudly on the next upstream bump.
+
+fn set_real(list: &mut OwnedListSexp, i: usize, name: &str, v: f64) -> savvy::Result<()> {
+    let mut t = OwnedRealSexp::new(1)?;
+    t[0] = v;
+    list.set_name_and_value(i, name, t)
+}
+
+fn set_int(list: &mut OwnedListSexp, i: usize, name: &str, v: u32) -> savvy::Result<()> {
+    let mut t = OwnedIntegerSexp::new(1)?;
+    t[0] = v as i32;
+    list.set_name_and_value(i, name, t)
+}
+
+fn set_bool(list: &mut OwnedListSexp, i: usize, name: &str, v: bool) -> savvy::Result<()> {
+    let mut t = OwnedLogicalSexp::new(1)?;
+    t.set_elt(0, v)?;
+    list.set_name_and_value(i, name, t)
+}
+
+fn set_str(list: &mut OwnedListSexp, i: usize, name: &str, v: &str) -> savvy::Result<()> {
+    let mut t = OwnedStringSexp::new(1)?;
+    t.set_elt(0, v)?;
+    list.set_name_and_value(i, name, t)
+}
+
+/// Return the Rust solver's own default settings as a named list.
+///
+/// @return a named list of the defaults compiled into the Rust solver.
+/// @noRd
+#[savvy]
+fn rust_default_settings() -> savvy::Result<savvy::Sexp> {
+    let s = DefaultSettings::<f64>::default();
+    let mut out = OwnedListSexp::new(43, true)?;
+
+    set_int(&mut out, 0, "max_iter", s.max_iter)?;
+    set_real(&mut out, 1, "time_limit", s.time_limit)?;
+    set_bool(&mut out, 2, "verbose", s.verbose)?;
+    set_real(&mut out, 3, "max_step_fraction", s.max_step_fraction)?;
+    set_real(&mut out, 4, "tol_gap_abs", s.tol_gap_abs)?;
+    set_real(&mut out, 5, "tol_gap_rel", s.tol_gap_rel)?;
+    set_real(&mut out, 6, "tol_feas", s.tol_feas)?;
+    set_real(&mut out, 7, "tol_infeas_abs", s.tol_infeas_abs)?;
+    set_real(&mut out, 8, "tol_infeas_rel", s.tol_infeas_rel)?;
+    set_real(&mut out, 9, "tol_ktratio", s.tol_ktratio)?;
+    set_real(&mut out, 10, "reduced_tol_gap_abs", s.reduced_tol_gap_abs)?;
+    set_real(&mut out, 11, "reduced_tol_gap_rel", s.reduced_tol_gap_rel)?;
+    set_real(&mut out, 12, "reduced_tol_feas", s.reduced_tol_feas)?;
+    set_real(&mut out, 13, "reduced_tol_infeas_abs", s.reduced_tol_infeas_abs)?;
+    set_real(&mut out, 14, "reduced_tol_infeas_rel", s.reduced_tol_infeas_rel)?;
+    set_real(&mut out, 15, "reduced_tol_ktratio", s.reduced_tol_ktratio)?;
+    set_bool(&mut out, 16, "equilibrate_enable", s.equilibrate_enable)?;
+    set_int(&mut out, 17, "equilibrate_max_iter", s.equilibrate_max_iter)?;
+    set_real(&mut out, 18, "equilibrate_min_scaling", s.equilibrate_min_scaling)?;
+    set_real(&mut out, 19, "equilibrate_max_scaling", s.equilibrate_max_scaling)?;
+    set_real(&mut out, 20, "linesearch_backtrack_step", s.linesearch_backtrack_step)?;
+    set_real(&mut out, 21, "min_switch_step_length", s.min_switch_step_length)?;
+    set_real(&mut out, 22, "min_terminate_step_length", s.min_terminate_step_length)?;
+    set_int(&mut out, 23, "max_threads", s.max_threads)?;
+    set_bool(&mut out, 24, "direct_kkt_solver", s.direct_kkt_solver)?;
+    set_str(&mut out, 25, "direct_solve_method", &s.direct_solve_method)?;
+    set_bool(&mut out, 26, "static_regularization_enable", s.static_regularization_enable)?;
+    set_real(&mut out, 27, "static_regularization_constant", s.static_regularization_constant)?;
+    set_real(&mut out, 28, "static_regularization_proportional", s.static_regularization_proportional)?;
+    set_bool(&mut out, 29, "dynamic_regularization_enable", s.dynamic_regularization_enable)?;
+    set_real(&mut out, 30, "dynamic_regularization_eps", s.dynamic_regularization_eps)?;
+    set_real(&mut out, 31, "dynamic_regularization_delta", s.dynamic_regularization_delta)?;
+    set_bool(&mut out, 32, "iterative_refinement_enable", s.iterative_refinement_enable)?;
+    set_real(&mut out, 33, "iterative_refinement_reltol", s.iterative_refinement_reltol)?;
+    set_real(&mut out, 34, "iterative_refinement_abstol", s.iterative_refinement_abstol)?;
+    set_int(&mut out, 35, "iterative_refinement_max_iter", s.iterative_refinement_max_iter)?;
+    set_real(&mut out, 36, "iterative_refinement_stop_ratio", s.iterative_refinement_stop_ratio)?;
+    set_bool(&mut out, 37, "presolve_enable", s.presolve_enable)?;
+    set_bool(&mut out, 38, "input_sparse_dropzeros", s.input_sparse_dropzeros)?;
+    set_bool(&mut out, 39, "chordal_decomposition_enable", s.chordal_decomposition_enable)?;
+    set_str(&mut out, 40, "chordal_decomposition_merge_method", &s.chordal_decomposition_merge_method)?;
+    set_bool(&mut out, 41, "chordal_decomposition_compact", s.chordal_decomposition_compact)?;
+    set_bool(&mut out, 42, "chordal_decomposition_complete_dual", s.chordal_decomposition_complete_dual)?;
+
+    out.into()
 }

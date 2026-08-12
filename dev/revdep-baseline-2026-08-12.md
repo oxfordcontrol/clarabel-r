@@ -139,38 +139,64 @@ something downstream *does* move, we know the candidate causes.
    `DefaultSettings::<f64>::default()` field by field, with the chordal
    deviations allowlisted and commented.
 
-## Deferred: chordal decomposition
+## Chordal decomposition: measured, then aligned with upstream
 
-We are keeping `chordal_decomposition_enable = FALSE`,
-`chordal_decomposition_merge_method = "none"`, `chordal_decomposition_compact =
-FALSE`, `chordal_decomposition_complete_dual = FALSE`, against upstream, which
-has defaulted all four to on / `"clique_graph"` since v0.9.0.
+The first draft of this document argued for keeping the four
+`chordal_decomposition_*` settings off, against upstream, on the grounds that
+enabling them changes reported PSD duals for ~40 downstream packages while
+buying the warm-start work nothing. That argument was made without measuring the
+speedup. The measurement killed it.
 
-Reasons, so a future reader does not have to reconstruct them:
+Benchmark: linear matrix inequality `F0 + sum_i x_i Fi >= 0`, all `Fi` banded
+with half-bandwidth 2 (so the aggregate pattern is banded, hence chordal), 5
+variables. Script in this repo's scratchpad; regenerate with `bench_chordal.R`.
 
-- The change is not observable as an error. `decomp_reverse` reassembles at
-  `self.init_dims`, so `z` and `s` come back at original dimension and ordering
-  and CVXR's offset arithmetic in `clarabel_extract_dual_value` stays valid. What
-  changes is the *values*: `psd_completion()` runs, and a PSD completion is not
-  unique. Downstream sees different numbers in `dual_value` with no warning.
-- ~40 CRAN packages are downstream, several with stored test expectations.
-- CVXR's warm-start path already forces `chordal_decomposition_enable <- FALSE`
-  itself, so the flip would buy the warm-start work nothing.
-- `FALSE` is the conservative setting: it never silently changes anyone's duals
-  and never blocks data updates.
+| n | PSD cone length | chordal off | chordal on | speedup | obj rel. diff | max abs dz |
+|---:|---:|---:|---:|---:|---:|---:|
+| 20 | 210 | 0.016s | 0.001s | 16x | 5.0e-10 | 8.9e-06 |
+| 40 | 820 | 0.418s | 0.002s | 209x | 2.2e-08 | 6.7e-01 |
+| 60 | 1830 | 4.435s | 0.003s | 1478x | 4.4e-09 | 6.3e-04 |
+| 80 | 3240 | 30.04s | 0.005s | 6009x | 2.3e-09 | 2.3e-05 |
+| 120 | 7260 | 422.3s | 0.007s | 60332x | 7.7e-09 | 8.3e-04 |
 
-This is a pinned decision, not drift. The drift test will fail on every future
-Clarabel bump and put the question back in front of us.
+Both paths return `Solved` with objectives agreeing to ~1e-9 relative, and
+`length(z)` is identical either way (1830 at n=60), confirming that
+`decomp_reverse` reassembles at the original dimensions.
 
-**To revisit it, measure rather than argue.** The experiment:
+The "off" column grows roughly like n^6; the "on" column is close to linear.
+This is not a tuning knob, it is a change of asymptotic complexity. Defaulting it
+off is not the conservative choice — it is a trap for anyone solving a sparse
+semidefinite program who does not know the flag exists. All four settings are
+now aligned with upstream.
 
-1. Build clarabel with the four chordal defaults flipped.
-2. Run this package's suite with `at_home = TRUE`; watch `test_basic_psd.R` and
-   `test_sdp_chordal.R` (21 tests).
-3. Solve a chordally sparse SDP through `clarabel()` both ways and diff `x`,
-   `z`, `s`, `obj_val`, and iteration count. Expect `x` and `obj_val` to agree to
-   tolerance and the PSD block of `z` to differ.
-4. Run CVXR's `test-clarabel-warm-start.R` and its SDP-touching tests against
-   both builds.
-5. Of the ~40 downstream packages, identify which actually construct PSD
-   constraints — that is the true exposed set, and it is much smaller than 40.
+What the earlier argument got right, and what it got wrong:
+
+- Right: PSD **dual values** genuinely move (up to 0.67 at n=40). That is the
+  real risk and it remains the thing to watch downstream.
+- Wrong: the claim that the flip buys warm starts nothing, and therefore costs
+  nothing to refuse. Chordal decomposition only engages when PSD cones are
+  present, and updates are blocked by `is_chordal_decomposed()` — whether a
+  decomposition *actually happened*, not whether it was enabled. Linear,
+  quadratic and second-order cone problems, which are the bulk of CVXR's
+  warm-start traffic, are unaffected and stay updatable. The two features only
+  collide on SDPs, where the measurement says decomposition is worth orders of
+  magnitude and warm starting a small constant.
+
+`clarabel_control()` now matches `DefaultSettings::<f64>::default()` on all 43
+fields, asserted field by field in `inst/tinytest/test_control_defaults.R`. The
+only remaining departure is the *set of accepted values* for
+`direct_solve_method`, which is constrained by the Cargo features this package
+builds with, not a choice.
+
+## Still to verify
+
+1. CVXR's `test-clarabel-warm-start.R` and SDP-touching tests against this build.
+2. revdepcheck for CVXR 1.9.2 (in progress separately) — compare against the
+   per-package table above, remembering that its three "new problems" predate
+   this work.
+3. Of the ~40 downstream packages, which actually construct PSD constraints.
+   That is the true exposed set for the dual-value change, and it is much
+   smaller than 40.
+4. `max_threads = 0` lets the solver choose its own thread count. Worth checking
+   against CRAN's two-core policy, since this build reaches BLAS/LAPACK through
+   R and QDLDL is single-threaded — likely inert, but unverified.

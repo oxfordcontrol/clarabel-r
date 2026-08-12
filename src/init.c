@@ -44,6 +44,11 @@ SEXP savvy_clarabel_solve__impl(SEXP c_arg__m, SEXP c_arg__n, SEXP c_arg__Ai, SE
     return handle_result(res);
 }
 
+SEXP savvy_rust_default_settings__impl(void) {
+    SEXP res = savvy_rust_default_settings__ffi();
+    return handle_result(res);
+}
+
 SEXP savvy_ClarabelSolver_is_update_allowed__impl(SEXP self__) {
     SEXP res = savvy_ClarabelSolver_is_update_allowed__ffi(self__);
     return handle_result(res);
@@ -67,6 +72,7 @@ SEXP savvy_ClarabelSolver_update_data__impl(SEXP self__, SEXP c_arg__Px, SEXP c_
 
 static const R_CallMethodDef CallEntries[] = {
     {"savvy_clarabel_solve__impl", (DL_FUNC) &savvy_clarabel_solve__impl, 12},
+    {"savvy_rust_default_settings__impl", (DL_FUNC) &savvy_rust_default_settings__impl, 0},
     {"savvy_ClarabelSolver_is_update_allowed__impl", (DL_FUNC) &savvy_ClarabelSolver_is_update_allowed__impl, 1},
     {"savvy_ClarabelSolver_new__impl", (DL_FUNC) &savvy_ClarabelSolver_new__impl, 12},
     {"savvy_ClarabelSolver_solve__impl", (DL_FUNC) &savvy_ClarabelSolver_solve__impl, 1},

@@ -22,3 +22,5 @@
 ^\.claude$
 ^CLAUDE\.md$
 ^dev$
+
+^src/Makevars\.win$

@@ -18,7 +18,7 @@ clarabel_control(
   reduced_tol_gap_abs = 5e-05,
   reduced_tol_gap_rel = 5e-05,
   reduced_tol_feas = 1e-04,
-  reduced_tol_infeas_abs = 5e-05,
+  reduced_tol_infeas_abs = 5e-12,
   reduced_tol_infeas_rel = 5e-05,
   reduced_tol_ktratio = 1e-04,
   equilibrate_enable = TRUE,
@@ -30,7 +30,7 @@ clarabel_control(
   min_terminate_step_length = 1e-04,
   max_threads = 0L,
   direct_kkt_solver = TRUE,
-  direct_solve_method = c("qdldl", "mkl", "cholmod"),
+  direct_solve_method = c("auto", "qdldl"),
   static_regularization_enable = TRUE,
   static_regularization_constant = 1e-08,
   static_regularization_proportional = .Machine$double.eps * .Machine$double.eps,
@@ -44,10 +44,10 @@ clarabel_control(
   iterative_refinement_stop_ratio = 5,
   presolve_enable = TRUE,
   input_sparse_dropzeros = FALSE,
-  chordal_decomposition_enable = FALSE,
-  chordal_decomposition_merge_method = c("none", "parent_child", "clique_graph"),
-  chordal_decomposition_compact = FALSE,
-  chordal_decomposition_complete_dual = FALSE
+  chordal_decomposition_enable = TRUE,
+  chordal_decomposition_merge_method = c("clique_graph", "parent_child", "none"),
+  chordal_decomposition_compact = TRUE,
+  chordal_decomposition_complete_dual = TRUE
 )
 }
 \arguments{
@@ -69,7 +69,7 @@ clarabel_control(
 
 \item{tol_infeas_rel}{relative infeasibility tolerance (primal and dual) (\code{1e-8})}
 
-\item{tol_ktratio}{KT tolerance (\code{1e-7})}
+\item{tol_ktratio}{KT tolerance (\code{1e-6})}
 
 \item{reduced_tol_gap_abs}{reduced absolute duality gap tolerance (\code{5e-5})}
 
@@ -77,7 +77,7 @@ clarabel_control(
 
 \item{reduced_tol_feas}{reduced feasibility check tolerance (primal and dual) (\code{1e-4})}
 
-\item{reduced_tol_infeas_abs}{reduced absolute infeasibility tolerance (primal and dual) (\code{5e-5})}
+\item{reduced_tol_infeas_abs}{reduced absolute infeasibility tolerance (primal and dual) (\code{5e-12})}
 
 \item{reduced_tol_infeas_rel}{reduced relative infeasibility tolerance (primal and dual) (\code{5e-5})}
 
@@ -101,7 +101,7 @@ clarabel_control(
 
 \item{direct_kkt_solver}{use a direct linear solver method (required true) (\code{TRUE})}
 
-\item{direct_solve_method}{direct linear solver (\code{"qdldl"}, \code{"mkl"} or \code{"cholmod"}) (\code{"qdldl"})}
+\item{direct_solve_method}{direct linear solver, either \code{"auto"} or \code{"qdldl"} (\code{"auto"}). This build links only the QDLDL solver, so \code{"auto"} resolves to \code{"qdldl"}; the two are equivalent here.}
 
 \item{static_regularization_enable}{enable KKT static regularization (\code{TRUE})}
 
@@ -117,7 +117,7 @@ clarabel_control(
 
 \item{iterative_refinement_enable}{KKT solve with iterative refinement (\code{TRUE})}
 
-\item{iterative_refinement_reltol}{iterative refinement relative tolerance (\code{1e-12})}
+\item{iterative_refinement_reltol}{iterative refinement relative tolerance (\code{1e-13})}
 
 \item{iterative_refinement_abstol}{iterative refinement absolute tolerance (\code{1e-12})}
 
@@ -129,13 +129,13 @@ clarabel_control(
 
 \item{input_sparse_dropzeros}{explicitly drop structural zeros from sparse data inputs (\code{FALSE}); see details}
 
-\item{chordal_decomposition_enable}{whether to enable chordal decomposition for SDPs (\code{FALSE})}
+\item{chordal_decomposition_enable}{whether to enable chordal decomposition for SDPs (\code{TRUE})}
 
-\item{chordal_decomposition_merge_method}{chordal decomposition merge method, one of \code{'none'}, \code{'parent_child'} or \code{'clique_graph'}, for SDPs (\code{'none'})}
+\item{chordal_decomposition_merge_method}{chordal decomposition merge method, one of \code{'clique_graph'}, \code{'parent_child'} or \code{'none'}, for SDPs (\code{'clique_graph'})}
 
-\item{chordal_decomposition_compact}{a boolean flag for SDPs indicating whether to assemble decomposed system in \emph{compact} form for SDPs (\code{FALSE})}
+\item{chordal_decomposition_compact}{a boolean flag for SDPs indicating whether to assemble decomposed system in \emph{compact} form for SDPs (\code{TRUE})}
 
-\item{chordal_decomposition_complete_dual}{a boolean flag indicating complete PSD dual variables after decomposition for SDPs}
+\item{chordal_decomposition_complete_dual}{a boolean flag indicating complete PSD dual variables after decomposition for SDPs (\code{TRUE})}
 }
 \value{
 a list containing the control parameters.
@@ -145,6 +145,22 @@ Control parameters with default values and types in parenthesis
 }
 \details{
 Setting \code{input_sparse_dropzeros} to \code{TRUE} will disable parametric updating functionality. See documentation of 'dropzeros' in Rust \verb{struct CscMatrix} for dropping structural zeros before passing to the solver.
+
+These defaults track the Rust solver (Clarabel.rs 0.11.1) exactly. The only
+departure is the set of values accepted for \code{direct_solve_method}, which is
+limited by the features this package is built with.
+
+Chordal decomposition applies only to semidefinite programs, and only when the
+aggregate sparsity pattern of the semidefinite constraints is decomposable. For
+such problems it can be dramatically faster, since it replaces one large
+semidefinite cone by several small ones. It has two consequences worth knowing.
+The reported dual variables for semidefinite constraints are not in general the
+same as those obtained without decomposition, because the decomposition is
+reversed and the dual completed, and a positive semidefinite completion is not
+unique. It also blocks the data updates used for warm starts, but only when a
+decomposition actually took place: linear, quadratic and second-order cone
+problems are unaffected, and remain updatable. See
+\code{\link[=solver_is_update_allowed]{solver_is_update_allowed()}} to check a particular solver instance.
 }
 \examples{
 # Default control parameters

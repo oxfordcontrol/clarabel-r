@@ -42,6 +42,14 @@ NULL
   .Call(savvy_clarabel_solve__impl, `m`, `n`, `Ai`, `Ap`, `Ax`, `b`, `q`, `Pi`, `Pp`, `Px`, `cone_spec`, `r_settings`)
 }
 
+#' Return the Rust solver's own default settings as a named list.
+#'
+#' @return a named list of the defaults compiled into the Rust solver.
+#' @noRd
+`rust_default_settings` <- function() {
+  .Call(savvy_rust_default_settings__impl)
+}
+
 ### wrapper functions for ClarabelSolver
 
 `ClarabelSolver_is_update_allowed` <- function(self) {

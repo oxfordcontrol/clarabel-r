@@ -162,11 +162,11 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param tol_feas feasibility check tolerance (primal and dual) (`1e-8`)		 
 #' @param tol_infeas_abs absolute infeasibility tolerance (primal and dual) (`1e-8`)		 
 #' @param tol_infeas_rel relative infeasibility tolerance (primal and dual) (`1e-8`)		 
-#' @param tol_ktratio KT tolerance (`1e-7`)		 
+#' @param tol_ktratio KT tolerance (`1e-6`)
 #' @param reduced_tol_gap_abs reduced absolute duality gap tolerance (`5e-5`)		 
 #' @param reduced_tol_gap_rel reduced relative duality gap tolerance (`5e-5`)		 
 #' @param reduced_tol_feas reduced feasibility check tolerance (primal and dual) (`1e-4`)		 
-#' @param reduced_tol_infeas_abs reduced absolute infeasibility tolerance (primal and dual) (`5e-5`)		 
+#' @param reduced_tol_infeas_abs reduced absolute infeasibility tolerance (primal and dual) (`5e-12`)
 #' @param reduced_tol_infeas_rel reduced relative infeasibility tolerance (primal and dual) (`5e-5`)		 
 #' @param reduced_tol_ktratio reduced KT tolerance (`1e-4`)		 
 #' @param equilibrate_enable enable data equilibration pre-scaling (`TRUE`)		 
@@ -178,7 +178,7 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param min_terminate_step_length minimum step size allowed for symmetric cones && asymmetric cones with Dual scaling (`1e-4`)
 #' @param max_threads maximum solver threads for multithreaded KKT solvers, 0 lets the solver choose for itself (`0L`)
 #' @param direct_kkt_solver use a direct linear solver method (required true) (`TRUE`)		 
-#' @param direct_solve_method direct linear solver (`"qdldl"`, `"mkl"` or `"cholmod"`) (`"qdldl"`)		 
+#' @param direct_solve_method direct linear solver, either `"auto"` or `"qdldl"` (`"auto"`). This build links only the QDLDL solver, so `"auto"` resolves to `"qdldl"`; the two are equivalent here.
 #' @param static_regularization_enable enable KKT static regularization (`TRUE`)		 
 #' @param static_regularization_constant KKT static regularization parameter (`1e-8`)		 
 #' @param static_regularization_proportional additional regularization parameter w.r.t. the maximum abs diagonal term (`.Machine.double_eps^2`) 
@@ -186,19 +186,35 @@ clarabel <- function(A, b, q, P = NULL, cones, control = list(),
 #' @param dynamic_regularization_eps KKT dynamic regularization threshold (`1e-13`)		 
 #' @param dynamic_regularization_delta KKT dynamic regularization shift (`2e-7`)		 
 #' @param iterative_refinement_enable KKT solve with iterative refinement (`TRUE`)		 
-#' @param iterative_refinement_reltol iterative refinement relative tolerance (`1e-12`)		 
+#' @param iterative_refinement_reltol iterative refinement relative tolerance (`1e-13`)
 #' @param iterative_refinement_abstol iterative refinement absolute tolerance (`1e-12`)		 
 #' @param iterative_refinement_max_iter iterative refinement maximum iterations (`10L`)			 
 #' @param iterative_refinement_stop_ratio iterative refinement stalling tolerance (`5.0`)
 #' @param presolve_enable whether to enable presolvle (`TRUE`)
 #' @param input_sparse_dropzeros explicitly drop structural zeros from sparse data inputs (`FALSE`); see details
-#' @param chordal_decomposition_enable whether to enable chordal decomposition for SDPs (`FALSE`)
-#' @param chordal_decomposition_merge_method chordal decomposition merge method, one of `'none'`, `'parent_child'` or `'clique_graph'`, for SDPs (`'none'`)
-#' @param chordal_decomposition_compact a boolean flag for SDPs indicating whether to assemble decomposed system in _compact_ form for SDPs (`FALSE`)
-#' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs
+#' @param chordal_decomposition_enable whether to enable chordal decomposition for SDPs (`TRUE`)
+#' @param chordal_decomposition_merge_method chordal decomposition merge method, one of `'clique_graph'`, `'parent_child'` or `'none'`, for SDPs (`'clique_graph'`)
+#' @param chordal_decomposition_compact a boolean flag for SDPs indicating whether to assemble decomposed system in _compact_ form for SDPs (`TRUE`)
+#' @param chordal_decomposition_complete_dual a boolean flag indicating complete PSD dual variables after decomposition for SDPs (`TRUE`)
 #' @return a list containing the control parameters.
 #' @details
 #' Setting `input_sparse_dropzeros` to `TRUE` will disable parametric updating functionality. See documentation of 'dropzeros' in Rust `struct CscMatrix` for dropping structural zeros before passing to the solver.
+#'
+#' These defaults track the Rust solver (Clarabel.rs 0.11.1) exactly. The only
+#' departure is the set of values accepted for `direct_solve_method`, which is
+#' limited by the features this package is built with.
+#'
+#' Chordal decomposition applies only to semidefinite programs, and only when the
+#' aggregate sparsity pattern of the semidefinite constraints is decomposable. For
+#' such problems it can be dramatically faster, since it replaces one large
+#' semidefinite cone by several small ones. It has two consequences worth knowing.
+#' The reported dual variables for semidefinite constraints are not in general the
+#' same as those obtained without decomposition, because the decomposition is
+#' reversed and the dual completed, and a positive semidefinite completion is not
+#' unique. It also blocks the data updates used for warm starts, but only when a
+#' decomposition actually took place: linear, quadratic and second-order cone
+#' problems are unaffected, and remain updatable. See
+#' [solver_is_update_allowed()] to check a particular solver instance.
 #' @examples
 #' # Default control parameters
 #' ctrl <- clarabel_control()
@@ -223,7 +239,7 @@ clarabel_control <- function(
                              reduced_tol_gap_abs = 5e-5,
                              reduced_tol_gap_rel = 5e-5,
                              reduced_tol_feas = 1e-4,
-                             reduced_tol_infeas_abs = 5e-5,
+                             reduced_tol_infeas_abs = 5e-12,
                              reduced_tol_infeas_rel = 5e-5,
                              reduced_tol_ktratio = 1e-4,
                              ## data equilibration settings
@@ -240,7 +256,7 @@ clarabel_control <- function(
                              max_threads = 0L,
                              ## Linear solver settings
                              direct_kkt_solver = TRUE,
-                             direct_solve_method = c("qdldl", "mkl", "cholmod"),
+                             direct_solve_method = c("auto", "qdldl"),
                              ## static regularization parameters
                              static_regularization_enable = TRUE,
                              static_regularization_constant = 1e-8,
@@ -256,10 +272,10 @@ clarabel_control <- function(
                              iterative_refinement_stop_ratio = 5.0,
                              presolve_enable = TRUE,
                              input_sparse_dropzeros = FALSE,
-                             chordal_decomposition_enable = FALSE,
-                             chordal_decomposition_merge_method = c('none', 'parent_child', 'clique_graph'),
-                             chordal_decomposition_compact = FALSE,
-                             chordal_decomposition_complete_dual = FALSE
+                             chordal_decomposition_enable = TRUE,
+                             chordal_decomposition_merge_method = c('clique_graph', 'parent_child', 'none'),
+                             chordal_decomposition_compact = TRUE,
+                             chordal_decomposition_complete_dual = TRUE
                              ) {
 
   params <- as.list(environment())
