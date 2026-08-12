@@ -151,17 +151,27 @@ Benchmark: linear matrix inequality `F0 + sum_i x_i Fi >= 0`, all `Fi` banded
 with half-bandwidth 2 (so the aggregate pattern is banded, hence chordal), 5
 variables. Script in this repo's scratchpad; regenerate with `bench_chordal.R`.
 
-| n | PSD cone length | chordal off | chordal on | speedup | obj rel. diff | max abs dz |
-|---:|---:|---:|---:|---:|---:|---:|
-| 20 | 210 | 0.016s | 0.001s | 16x | 5.0e-10 | 8.9e-06 |
-| 40 | 820 | 0.418s | 0.002s | 209x | 2.2e-08 | 6.7e-01 |
-| 60 | 1830 | 4.435s | 0.003s | 1478x | 4.4e-09 | 6.3e-04 |
-| 80 | 3240 | 30.04s | 0.005s | 6009x | 2.3e-09 | 2.3e-05 |
-| 120 | 7260 | 422.3s | 0.007s | 60332x | 7.7e-09 | 8.3e-04 |
+Re-run with the dense construction the vignette uses (`dev/bench_chordal.R`
+was the sparse first pass; `sweep.R` output below is what Section 3.2 reports):
 
-Both paths return `Solved` with objectives agreeing to ~1e-9 relative, and
+| n | PSD cone length | chordal off | chordal on | speedup | status off / on | obj abs diff | max abs dz |
+|---:|---:|---:|---:|---:|:---|---:|---:|
+| 20 | 210 | 0.013s | 0.001s | 13x | Solved / Solved | 1.8e-09 | 8.9e-06 |
+| 40 | 820 | 0.420s | 0.002s | 210x | AlmostSolved / Solved | 1.4e-07 | 6.7e-01 |
+| 60 | 1830 | 4.393s | 0.004s | 1098x | Solved / Solved | 7.2e-08 | 6.3e-04 |
+| 80 | 3240 | 29.855s | 0.004s | 7464x | Solved / Solved | 4.0e-08 | 2.3e-05 |
+| 120 | 7260 | 424.978s | 0.008s | 53122x | Solved / AlmostSolved | 1.2e-07 | 8.3e-04 |
+
 `length(z)` is identical either way (1830 at n=60), confirming that
 `decomp_reverse` reassembles at the original dimensions.
+
+Note the reduced-accuracy terminations, which fall on the undecomposed side
+at n=40 and on the decomposed side at n=120. Decomposition produces a
+genuinely different numerical problem, so neither path dominates the other on
+accuracy; a seed scan at n=40 showed the split going both ways across
+instances. This is reported as-is in the vignette rather than tuned away by
+choosing a well-behaved seed — it is the reason to check `status` instead of
+assuming `Solved`.
 
 The "off" column grows roughly like n^6; the "on" column is close to linear.
 This is not a tuning knob, it is a change of asymptotic complexity. Defaulting it

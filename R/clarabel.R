@@ -495,10 +495,15 @@ sanitize_gp_params_and_get_nvars <- function(gp) {
 #' @seealso [solver_solve()], [solver_update()],
 #'   [solver_is_update_allowed()], [clarabel()]
 #' @details
-#' For data updates to work, the solver settings must have
-#' `presolve_enable = FALSE`, `chordal_decomposition_enable = FALSE`,
-#' and `input_sparse_dropzeros = FALSE`. Use
-#' [solver_is_update_allowed()] to check after construction.
+#' Data updates are refused once the solver has altered the structure of
+#' the problem, since the stored factorization no longer corresponds to
+#' the data being updated. Three settings can cause that: `presolve_enable`,
+#' `input_sparse_dropzeros` and `chordal_decomposition_enable`. What
+#' matters is whether the transformation actually took place, not whether
+#' it was permitted: presolve rewrites the problem only if it finds
+#' something to remove, and chordal decomposition engages only for
+#' semidefinite constraints whose sparsity pattern is decomposable. Use
+#' [solver_is_update_allowed()] to check the instance you built.
 #'
 #' @examples
 #' \dontrun{
@@ -638,8 +643,10 @@ solver_update <- function(solver, P = NULL, q = NULL, A = NULL, b = NULL) {
 #' Check if data updates are allowed on a persistent solver
 #'
 #' @description
-#' Returns `FALSE` if presolve, chordal decomposition, or
-#' `input_sparse_dropzeros` is enabled, which prevents data updates.
+#' Returns `FALSE` if presolve, chordal decomposition or
+#' `input_sparse_dropzeros` has actually restructured this problem, which
+#' prevents data updates. Enabling one of those settings is not by itself
+#' enough to prevent updates; the transformation has to have taken place.
 #'
 #' @param solver a `ClarabelSolver` object created by
 #'   [clarabel_solver()]
@@ -647,7 +654,7 @@ solver_update <- function(solver, P = NULL, q = NULL, A = NULL, b = NULL) {
 #' @seealso [clarabel_solver()], [solver_update()]
 #' @examples
 #' \dontrun{
-#' solver_is_update_allowed(s)  # TRUE if presolve and chordal decomp are off
+#' solver_is_update_allowed(s)  # FALSE if the problem was restructured
 #' }
 #' @export
 solver_is_update_allowed <- function(solver) {

@@ -51,10 +51,15 @@ only the problem data changes but the sparsity pattern stays the
 same.
 }
 \details{
-For data updates to work, the solver settings must have
-\code{presolve_enable = FALSE}, \code{chordal_decomposition_enable = FALSE},
-and \code{input_sparse_dropzeros = FALSE}. Use
-\code{\link[=solver_is_update_allowed]{solver_is_update_allowed()}} to check after construction.
+Data updates are refused once the solver has altered the structure of
+the problem, since the stored factorization no longer corresponds to
+the data being updated. Three settings can cause that: \code{presolve_enable},
+\code{input_sparse_dropzeros} and \code{chordal_decomposition_enable}. What
+matters is whether the transformation actually took place, not whether
+it was permitted: presolve rewrites the problem only if it finds
+something to remove, and chordal decomposition engages only for
+semidefinite constraints whose sparsity pattern is decomposable. Use
+\code{\link[=solver_is_update_allowed]{solver_is_update_allowed()}} to check the instance you built.
 }
 \examples{
 \dontrun{

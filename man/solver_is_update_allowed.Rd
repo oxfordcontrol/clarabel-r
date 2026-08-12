@@ -14,12 +14,14 @@ solver_is_update_allowed(solver)
 logical scalar
 }
 \description{
-Returns \code{FALSE} if presolve, chordal decomposition, or
-\code{input_sparse_dropzeros} is enabled, which prevents data updates.
+Returns \code{FALSE} if presolve, chordal decomposition or
+\code{input_sparse_dropzeros} has actually restructured this problem, which
+prevents data updates. Enabling one of those settings is not by itself
+enough to prevent updates; the transformation has to have taken place.
 }
 \examples{
 \dontrun{
-solver_is_update_allowed(s)  # TRUE if presolve and chordal decomp are off
+solver_is_update_allowed(s)  # FALSE if the problem was restructured
 }
 }
 \seealso{

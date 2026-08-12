@@ -355,6 +355,90 @@ cat(sprintf("Solution status, description: = (%d, %s)\n",
 cat(sprintf("Solution (x1, x2, x3) = (%f, %f, %f)\n", s$x[1], s$x[2], s$x[3]))
 ```
 
+### 3.2. Chordal Decomposition of Sparse Semidefinite Programs
+
+The cost of a semidefinite program grows very quickly with the side
+length of its semidefinite cones. When the aggregate sparsity pattern of
+those constraints is *chordal*, however, a large cone can be replaced by
+several small ones that overlap only on their shared entries, and the
+solver works with the small ones instead. This is enabled by default
+through `chordal_decomposition_enable`.
+
+The following builds a linear matrix inequality
+$F_0 + \sum_i x_i F_i \succeq 0$ in which every data matrix is banded
+with half-bandwidth 2. A banded pattern is chordal, with cliques of size
+3, so an $n \times n$ cone decomposes into roughly $n$ tiny ones.
+
+```{r}
+banded_sdp <- function(n, w = 2, m = 5, seed = 7) {
+  band_sym <- function(s) {
+    set.seed(s)
+    M <- matrix(0, n, n)
+    for (i in seq_len(n))
+      for (j in i:min(i + w, n)) M[i, j] <- M[j, i] <- rnorm(1)
+    M
+  }
+  Fs <- lapply(seq_len(m), function(k) band_sym(1000 * seed + k))
+  F0 <- band_sym(1000 * seed + m + 1)
+  ## shift F0 so that x = 0 is strictly feasible
+  F0 <- F0 + diag(n) * (abs(min(eigen(F0, only.values = TRUE)$values)) + 1)
+  list(A = -do.call(cbind, lapply(Fs, vec)),
+       b = vec(F0),
+       q = vapply(Fs, function(Fi) sum(diag(Fi)), numeric(1)),
+       cones = list(s = as.integer(n)))
+}
+
+solve_timed <- function(p, chordal) {
+  ctrl <- clarabel_control(verbose = FALSE,
+                           chordal_decomposition_enable = chordal)
+  elapsed <- system.time(
+    s <- clarabel(A = p$A, b = p$b, q = p$q, cones = p$cones, control = ctrl)
+  )[["elapsed"]]
+  data.frame(chordal = chordal,
+             seconds = unname(elapsed),
+             status = names(solver_status_descriptions())[s$status],
+             objective = s$obj_val)
+}
+
+p40 <- banded_sdp(n = 40)
+rbind(solve_timed(p40, FALSE), solve_timed(p40, TRUE))
+```
+
+Two things are worth reading off that comparison. The decomposed solve is
+faster by more than two orders of magnitude, and the two solves do not
+terminate at the same accuracy: on this instance the undecomposed solve
+stops at `AlmostSolved` while the decomposed one reaches `Solved`. That is
+not a general rule — which side stops early depends on the instance, and
+it goes both ways — but it is a reminder that decomposition produces a
+genuinely different numerical problem, and that the status is worth
+checking rather than assuming.
+
+The gap widens sharply with the size of the cone. Measured separately,
+since the larger rows are too slow to run while this vignette is built:
+
+| $n$ | cone length | decomposition off | on | speedup | status (off / on) |
+|----:|------------:|------------------:|---:|--------:|:------------------|
+| 20 | 210 | 0.013s | 0.001s | 13x | Solved / Solved |
+| 40 | 820 | 0.420s | 0.002s | 210x | AlmostSolved / Solved |
+| 60 | 1830 | 4.393s | 0.004s | 1098x | Solved / Solved |
+| 80 | 3240 | 29.855s | 0.004s | 7464x | Solved / Solved |
+| 120 | 7260 | 424.978s | 0.008s | 53122x | Solved / AlmostSolved |
+
+The undecomposed column grows roughly like $n^6$; the decomposed one is
+close to linear in $n$. Seven minutes becomes eight milliseconds. Note
+also that the reduced-accuracy termination lands on the decomposed side
+at $n = 120$ and on the undecomposed side at $n = 40$, which is what is
+meant above by it going both ways.
+
+Two consequences are worth knowing. Dual variables reported for
+semidefinite constraints are not in general the same as those obtained
+without decomposition, because the decomposition is reversed and the dual
+completed afterwards, and a positive semidefinite completion is not
+unique. And a problem that was actually decomposed cannot have its data
+updated in place, which matters for the warm starts described next. Pass
+`chordal_decomposition_enable = FALSE` to recover the previous behavior in
+either case.
+
 ## 4. Updating Problem Data (Warm Starts)
 
 When solving a sequence of related problems that share the same
@@ -362,10 +446,24 @@ sparsity structure, it is more efficient to create a persistent solver
 and update only the data that changes between solves. This avoids
 rebuilding the solver's internal data structures each time.
 
-To enable updates, certain settings must be disabled:
-`presolve_enable = FALSE`, `chordal_decomposition_enable = FALSE`, and
-`input_sparse_dropzeros = FALSE`. Use `solver_is_update_allowed()` to
-verify after construction.
+Updates are refused when the solver has altered the structure of the
+problem, since the stored factorization no longer corresponds to the
+data you would be updating. Three settings can do that: `presolve_enable`,
+`input_sparse_dropzeros`, and `chordal_decomposition_enable`.
+
+What matters is whether the transformation *actually happened*, not
+whether it was permitted. Presolve only rewrites the problem if it finds
+something to remove, and chordal decomposition only engages for
+semidefinite constraints whose sparsity pattern is decomposable. Linear,
+quadratic and second-order cone problems are never chordally decomposed,
+so leaving `chordal_decomposition_enable` at its default costs them
+nothing. The example below is a semidefinite program, but its two blocks
+are small and dense, hence not decomposable, so its updates are allowed
+even with chordal decomposition enabled.
+
+Rather than reasoning about which transformation might apply, ask the
+solver: `solver_is_update_allowed()` reports whether the instance you
+actually built can be updated.
 
 ### 4.1. Example: SDP with a changed constraint
 
