@@ -211,31 +211,10 @@ We have a single constraint on the 2-norm of a vector, so we rewrite</p>
 <div class="section level2">
 <h2 id="semidefinite-cone-programming">3. Semidefinite Cone Programming<a class="anchor" aria-label="anchor" href="#semidefinite-cone-programming"></a>
 </h2>
-<p>Semidefinite problems are the only ones here that need dense linear
-algebra, and this package does not bundle its own: it is built against
-whichever BLAS and LAPACK your R installation uses. That choice affects
-both the speed and the numerical results of everything in this section,
-so it is worth knowing which one you have. <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code>
-reports it.</p>
-<p>On macOS, the CRAN binary ships both R’s own reference BLAS and a
-vecLib (Accelerate) build, and defaults to the reference one. The <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
-macOS FAQ</a> describes vecLib as fast but outside the R project’s
-control and possibly delivering inaccurate results, and recommends the
-default R BLAS for precision. Switching is a symlink:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib: faster</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
-<p>The difference is not small in either direction. On speed, <em>R
-Installation and Administration</em> reports that with OpenBLAS on an M1
-Pro “we saw a 9x speedup over the reference BLAS on a large SVD (which
-was slightly faster than Accelerate)”. On accuracy, the same manual
-notes that “[a]ll versions of Accelerate show differences from the
-reference BLAS (and most others) in the use of NA vs NaN and a
-substantial number of R packages fail their checks”.</p>
-<p>So an optimized BLAS can make large semidefinite problems
-considerably faster, at some risk to the results. Which trade you want
-depends on the problem; the point is that it is a trade, and that it is
-made outside this package.</p>
+<p>Semidefinite problems are the only ones here that use dense linear
+algebra, which they get from your R installation’s BLAS and LAPACK
+rather than from this package. That affects both their speed and their
+results; see Section 3.3.</p>
 <p>Semidefinite cones have to be specified in a particular form. We
 borrow from the <a href="https://www.cvxgrp.org/scs/api/cones.html#sdcone" class="external-link">documentation
 for the SCS solver</a> which has similar calling conventions.</p>
@@ -321,7 +300,7 @@ s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots &amp; s_{k(
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">vec</mtext><annotation encoding="application/x-tex">\text{vec}</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">mat</mtext><annotation encoding="application/x-tex">\text{mat}</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Return an vectorization of symmetric matrix using the upper triangular part,</span></span>
 <span><span class="co">#' still in column order.</span></span>
 <span><span class="co">#' @param S a symmetric matrix</span></span>
@@ -421,7 +400,7 @@ Clarabel, we simply use
 <p>We have two such constraints and will therefore construct the vectors
 for both cones in order and specify the appropriate dimensions, 2 and 3,
 respectively.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># objective: x_1 - x2 + x_3</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -465,7 +444,7 @@ pattern is chordal, with cliques of size 3, so an
 cone decomposes into roughly
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
 tiny ones.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">banded_sdp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">w</span> <span class="op">=</span> <span class="fl">2</span>, <span class="va">m</span> <span class="op">=</span> <span class="fl">5</span>, <span class="va">seed</span> <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">band_sym</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
@@ -499,7 +478,7 @@ tiny ones.</p>
 <span><span class="va">p40</span> <span class="op">&lt;-</span> <span class="fu">banded_sdp</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   chordal seconds       status objective</span></span>
-<span><span class="co">#&gt; 1   FALSE   0.432 AlmostSolved -6.603129</span></span>
+<span><span class="co">#&gt; 1   FALSE   0.430 AlmostSolved -6.603129</span></span>
 <span><span class="co">#&gt; 2    TRUE   0.002       Solved -6.603129</span></span></code></pre></div>
 <p>Two things are worth reading off that comparison. The decomposed
 solve is faster by more than two orders of magnitude, and the two solves
@@ -511,8 +490,7 @@ reminder that decomposition produces a genuinely different numerical
 problem, and that the status is worth checking rather than assuming.</p>
 <p>The gap widens sharply with the size of the cone. Measured
 separately, since the larger rows are too slow to run while this
-vignette is built, on R’s own reference BLAS (see the note at the start
-of this section):</p>
+vignette is built, on R’s reference BLAS (Section 3.3):</p>
 <table class="table">
 <colgroup>
 <col width="7%">
@@ -583,10 +561,6 @@ reduced-accuracy termination lands on the decomposed side at
 and on the undecomposed side at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">n = 40</annotation></semantics></math>,
 which is what is meant above by it going both ways.</p>
-<p>An optimized BLAS would shrink these ratios, since it is the
-undecomposed column that spends its time in dense linear algebra, but it
-does not change the shape of the comparison: decomposition removes the
-large dense cone altogether rather than computing with it faster.</p>
 <p>Two consequences are worth knowing. Dual variables reported for
 semidefinite constraints are not in general the same as those obtained
 without decomposition, because the decomposition is reversed and the
@@ -595,6 +569,28 @@ unique. And a problem that was actually decomposed cannot have its data
 updated in place, which matters for the warm starts described next. Pass
 <code>chordal_decomposition_enable = FALSE</code> to recover the
 previous behavior in either case.</p>
+</div>
+<div class="section level3">
+<h3 id="a-note-on-blas-and-lapack">3.3. A Note on BLAS and LAPACK<a class="anchor" aria-label="anchor" href="#a-note-on-blas-and-lapack"></a>
+</h3>
+<p>This package does not bundle its own dense linear algebra; it links
+whatever BLAS and LAPACK your R installation uses, so the choice is made
+outside this package and affects both speed and results.
+<code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> reports which one is active.</p>
+<p>On macOS the CRAN binary ships both R’s reference BLAS and a vecLib
+(Accelerate) build, and defaults to the reference one. vecLib is
+considerably faster on large dense problems, but the R project does not
+control it and does not recommend it where precision matters; see the <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
+macOS FAQ</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html" class="external-link">R
+Installation and Administration</a>, which documents both the speedup
+and the discrepancies. Switching is a symlink:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib: faster</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
+<p>The timings in Section 3.2 were measured on the reference BLAS. A
+faster BLAS shrinks those ratios without changing the shape of the
+comparison, since decomposition removes the large dense cone rather than
+computing with it faster.</p>
 </div>
 </div>
 <div class="section level2">
