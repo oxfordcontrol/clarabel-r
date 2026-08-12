@@ -64,11 +64,16 @@ a `ClarabelSolver` environment object with methods
 
 ## Details
 
-For data updates to work, the solver settings must have
-`presolve_enable = FALSE`, `chordal_decomposition_enable = FALSE`, and
-`input_sparse_dropzeros = FALSE`. Use
+Data updates are refused once the solver has altered the structure of
+the problem, since the stored factorization no longer corresponds to the
+data being updated. Three settings can cause that: `presolve_enable`,
+`input_sparse_dropzeros` and `chordal_decomposition_enable`. What
+matters is whether the transformation actually took place, not whether
+it was permitted: presolve rewrites the problem only if it finds
+something to remove, and chordal decomposition engages only for
+semidefinite constraints whose sparsity pattern is decomposable. Use
 [`solver_is_update_allowed()`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_is_update_allowed.md)
-to check after construction.
+to check the instance you built.
 
 ## See also
 

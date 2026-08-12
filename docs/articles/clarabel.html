@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Clarabel Solver Examples">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">clarabel</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -211,6 +211,31 @@ We have a single constraint on the 2-norm of a vector, so we rewrite</p>
 <div class="section level2">
 <h2 id="semidefinite-cone-programming">3. Semidefinite Cone Programming<a class="anchor" aria-label="anchor" href="#semidefinite-cone-programming"></a>
 </h2>
+<p>Semidefinite problems are the only ones here that need dense linear
+algebra, and this package does not bundle its own: it is built against
+whichever BLAS and LAPACK your R installation uses. That choice affects
+both the speed and the numerical results of everything in this section,
+so it is worth knowing which one you have. <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code>
+reports it.</p>
+<p>On macOS, the CRAN binary ships both R’s own reference BLAS and a
+vecLib (Accelerate) build, and defaults to the reference one. The <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
+macOS FAQ</a> describes vecLib as fast but outside the R project’s
+control and possibly delivering inaccurate results, and recommends the
+default R BLAS for precision. Switching is a symlink:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib: faster</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
+<p>The difference is not small in either direction. On speed, <em>R
+Installation and Administration</em> reports that with OpenBLAS on an M1
+Pro “we saw a 9x speedup over the reference BLAS on a large SVD (which
+was slightly faster than Accelerate)”. On accuracy, the same manual
+notes that “[a]ll versions of Accelerate show differences from the
+reference BLAS (and most others) in the use of NA vs NaN and a
+substantial number of R packages fail their checks”.</p>
+<p>So an optimized BLAS can make large semidefinite problems
+considerably faster, at some risk to the results. Which trade you want
+depends on the problem; the point is that it is a trade, and that it is
+made outside this package.</p>
 <p>Semidefinite cones have to be specified in a particular form. We
 borrow from the <a href="https://www.cvxgrp.org/scs/api/cones.html#sdcone" class="external-link">documentation
 for the SCS solver</a> which has similar calling conventions.</p>
@@ -296,7 +321,7 @@ s_{k(k-1)/2-1} / \sqrt{2} &amp; s_{k(k-1)/2} / \sqrt{2} &amp; \ldots &amp; s_{k(
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">vec</mtext><annotation encoding="application/x-tex">\text{vec}</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">mat</mtext><annotation encoding="application/x-tex">\text{mat}</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Return an vectorization of symmetric matrix using the upper triangular part,</span></span>
 <span><span class="co">#' still in column order.</span></span>
 <span><span class="co">#' @param S a symmetric matrix</span></span>
@@ -396,7 +421,7 @@ Clarabel, we simply use
 <p>We have two such constraints and will therefore construct the vectors
 for both cones in order and specify the appropriate dimensions, 2 and 3,
 respectively.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># objective: x_1 - x2 + x_3</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -422,6 +447,155 @@ respectively.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Solution (x1, x2, x3) = (%f, %f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="chordal-decomposition-of-sparse-semidefinite-programs">3.2. Chordal Decomposition of Sparse Semidefinite Programs<a class="anchor" aria-label="anchor" href="#chordal-decomposition-of-sparse-semidefinite-programs"></a>
+</h3>
+<p>The cost of a semidefinite program grows very quickly with the side
+length of its semidefinite cones. When the aggregate sparsity pattern of
+those constraints is <em>chordal</em>, however, a large cone can be
+replaced by several small ones that overlap only on their shared
+entries, and the solver works with the small ones instead. This is
+enabled by default through
+<code>chordal_decomposition_enable</code>.</p>
+<p>The following builds a linear matrix inequality
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>0</mn></msub><mo>+</mo><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub><msub><mi>F</mi><mi>i</mi></msub><mo>≽</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">F_0 + \sum_i x_i F_i \succeq 0</annotation></semantics></math>
+in which every data matrix is banded with half-bandwidth 2. A banded
+pattern is chordal, with cliques of size 3, so an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \times n</annotation></semantics></math>
+cone decomposes into roughly
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+tiny ones.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">banded_sdp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span>, <span class="va">w</span> <span class="op">=</span> <span class="fl">2</span>, <span class="va">m</span> <span class="op">=</span> <span class="fl">5</span>, <span class="va">seed</span> <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">band_sym</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span>    <span class="va">M</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n</span>, <span class="va">n</span><span class="op">)</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="va">i</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">i</span> <span class="op">+</span> <span class="va">w</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="va">M</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">M</span><span class="op">[</span><span class="va">j</span>, <span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="va">M</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">Fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="fu">band_sym</span><span class="op">(</span><span class="fl">1000</span> <span class="op">*</span> <span class="va">seed</span> <span class="op">+</span> <span class="va">k</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">F0</span> <span class="op">&lt;-</span> <span class="fu">band_sym</span><span class="op">(</span><span class="fl">1000</span> <span class="op">*</span> <span class="va">seed</span> <span class="op">+</span> <span class="va">m</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="co">## shift F0 so that x = 0 is strictly feasible</span></span>
+<span>  <span class="va">F0</span> <span class="op">&lt;-</span> <span class="va">F0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/eigen.html" class="external-link">eigen</a></span><span class="op">(</span><span class="va">F0</span>, only.values <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span><span class="va">values</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">cbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">Fs</span>, <span class="va">vec</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>       b <span class="op">=</span> <span class="fu">vec</span><span class="op">(</span><span class="va">F0</span><span class="op">)</span>,</span>
+<span>       q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">Fs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">Fi</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Fi</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>       cones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">solve_timed</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span>, <span class="va">chordal</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ctrl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel_control.html">clarabel_control</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                           chordal_decomposition_enable <span class="op">=</span> <span class="va">chordal</span><span class="op">)</span></span>
+<span>  <span class="va">elapsed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clarabel.html">clarabel</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">A</span>, b <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">b</span>, q <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">q</span>, cones <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">cones</span>, control <span class="op">=</span> <span class="va">ctrl</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">[[</span><span class="st">"elapsed"</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>chordal <span class="op">=</span> <span class="va">chordal</span>,</span>
+<span>             seconds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">elapsed</span><span class="op">)</span>,</span>
+<span>             status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/solver_status_descriptions.html">solver_status_descriptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">]</span>,</span>
+<span>             objective <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">obj_val</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">p40</span> <span class="op">&lt;-</span> <span class="fu">banded_sdp</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   chordal seconds       status objective</span></span>
+<span><span class="co">#&gt; 1   FALSE   0.432 AlmostSolved -6.603129</span></span>
+<span><span class="co">#&gt; 2    TRUE   0.002       Solved -6.603129</span></span></code></pre></div>
+<p>Two things are worth reading off that comparison. The decomposed
+solve is faster by more than two orders of magnitude, and the two solves
+do not terminate at the same accuracy: on this instance the undecomposed
+solve stops at <code>AlmostSolved</code> while the decomposed one
+reaches <code>Solved</code>. That is not a general rule — which side
+stops early depends on the instance, and it goes both ways — but it is a
+reminder that decomposition produces a genuinely different numerical
+problem, and that the status is worth checking rather than assuming.</p>
+<p>The gap widens sharply with the size of the cone. Measured
+separately, since the larger rows are too slow to run while this
+vignette is built, on R’s own reference BLAS (see the note at the start
+of this section):</p>
+<table class="table">
+<colgroup>
+<col width="7%">
+<col width="18%">
+<col width="27%">
+<col width="5%">
+<col width="13%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th align="right"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></th>
+<th align="right">cone length</th>
+<th align="right">decomposition off</th>
+<th align="right">on</th>
+<th align="right">speedup</th>
+<th align="left">status (off / on)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">20</td>
+<td align="right">210</td>
+<td align="right">0.013s</td>
+<td align="right">0.001s</td>
+<td align="right">13x</td>
+<td align="left">Solved / Solved</td>
+</tr>
+<tr class="even">
+<td align="right">40</td>
+<td align="right">820</td>
+<td align="right">0.420s</td>
+<td align="right">0.002s</td>
+<td align="right">210x</td>
+<td align="left">AlmostSolved / Solved</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="right">1830</td>
+<td align="right">4.393s</td>
+<td align="right">0.004s</td>
+<td align="right">1098x</td>
+<td align="left">Solved / Solved</td>
+</tr>
+<tr class="even">
+<td align="right">80</td>
+<td align="right">3240</td>
+<td align="right">29.855s</td>
+<td align="right">0.004s</td>
+<td align="right">7464x</td>
+<td align="left">Solved / Solved</td>
+</tr>
+<tr class="odd">
+<td align="right">120</td>
+<td align="right">7260</td>
+<td align="right">424.978s</td>
+<td align="right">0.008s</td>
+<td align="right">53122x</td>
+<td align="left">Solved / AlmostSolved</td>
+</tr>
+</tbody>
+</table>
+<p>The undecomposed column grows roughly like
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>n</mi><mn>6</mn></msup><annotation encoding="application/x-tex">n^6</annotation></semantics></math>;
+the decomposed one is close to linear in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>.
+Seven minutes becomes eight milliseconds. Note also that the
+reduced-accuracy termination lands on the decomposed side at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>120</mn></mrow><annotation encoding="application/x-tex">n = 120</annotation></semantics></math>
+and on the undecomposed side at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">n = 40</annotation></semantics></math>,
+which is what is meant above by it going both ways.</p>
+<p>An optimized BLAS would shrink these ratios, since it is the
+undecomposed column that spends its time in dense linear algebra, but it
+does not change the shape of the comparison: decomposition removes the
+large dense cone altogether rather than computing with it faster.</p>
+<p>Two consequences are worth knowing. Dual variables reported for
+semidefinite constraints are not in general the same as those obtained
+without decomposition, because the decomposition is reversed and the
+dual completed afterwards, and a positive semidefinite completion is not
+unique. And a problem that was actually decomposed cannot have its data
+updated in place, which matters for the warm starts described next. Pass
+<code>chordal_decomposition_enable = FALSE</code> to recover the
+previous behavior in either case.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="updating-problem-data-warm-starts">4. Updating Problem Data (Warm Starts)<a class="anchor" aria-label="anchor" href="#updating-problem-data-warm-starts"></a>
@@ -430,12 +604,24 @@ respectively.</p>
 sparsity structure, it is more efficient to create a persistent solver
 and update only the data that changes between solves. This avoids
 rebuilding the solver’s internal data structures each time.</p>
-<p>To enable updates, certain settings must be disabled:
-<code>presolve_enable = FALSE</code>,
-<code>chordal_decomposition_enable = FALSE</code>, and
-<code>input_sparse_dropzeros = FALSE</code>. Use
-<code><a href="../reference/solver_is_update_allowed.html">solver_is_update_allowed()</a></code> to verify after
-construction.</p>
+<p>Updates are refused when the solver has altered the structure of the
+problem, since the stored factorization no longer corresponds to the
+data you would be updating. Three settings can do that:
+<code>presolve_enable</code>, <code>input_sparse_dropzeros</code>, and
+<code>chordal_decomposition_enable</code>.</p>
+<p>What matters is whether the transformation <em>actually
+happened</em>, not whether it was permitted. Presolve only rewrites the
+problem if it finds something to remove, and chordal decomposition only
+engages for semidefinite constraints whose sparsity pattern is
+decomposable. Linear, quadratic and second-order cone problems are never
+chordally decomposed, so leaving
+<code>chordal_decomposition_enable</code> at its default costs them
+nothing. The example below is a semidefinite program, but its two blocks
+are small and dense, hence not decomposable, so its updates are allowed
+even with chordal decomposition enabled.</p>
+<p>Rather than reasoning about which transformation might apply, ask the
+solver: <code><a href="../reference/solver_is_update_allowed.html">solver_is_update_allowed()</a></code> reports whether the
+instance you actually built can be updated.</p>
 <div class="section level3">
 <h3 id="example-sdp-with-a-changed-constraint">4.1. Example: SDP with a changed constraint<a class="anchor" aria-label="anchor" href="#example-sdp-with-a-changed-constraint"></a>
 </h3>
@@ -448,7 +634,7 @@ to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>40</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>12</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>12</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>30</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 40 &amp; -12 \\ -12 &amp; 30 \end{bmatrix}</annotation></semantics></math>.</p>
 <p>First, we set up and solve the original problem using a persistent
 solver.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q_sdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -480,7 +666,7 @@ solver.</p>
 <p>Now update the constraint with the new
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>B</mi><mn>1</mn></msub><annotation encoding="application/x-tex">B_1</annotation></semantics></math>
 and re-solve.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">B1_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="op">-</span><span class="fl">12</span>, <span class="op">-</span><span class="fl">12</span>, <span class="fl">30</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">b_sdp_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">B1_new</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">B2</span><span class="op">)</span><span class="op">)</span>  <span class="co"># only B1 changes</span></span>
 <span><span class="fu"><a href="../reference/solver_update.html">solver_update</a></span><span class="op">(</span><span class="va">solver</span>, b <span class="op">=</span> <span class="va">b_sdp_new</span><span class="op">)</span></span>
@@ -606,7 +792,7 @@ etc.</p>
 including verbosity, time limits, and tolerances; see help on
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code>. As an example, in the last problem, we
 can reduce the number of iterations.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>

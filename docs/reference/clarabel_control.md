@@ -19,7 +19,7 @@ clarabel_control(
   reduced_tol_gap_abs = 5e-05,
   reduced_tol_gap_rel = 5e-05,
   reduced_tol_feas = 1e-04,
-  reduced_tol_infeas_abs = 5e-05,
+  reduced_tol_infeas_abs = 5e-12,
   reduced_tol_infeas_rel = 5e-05,
   reduced_tol_ktratio = 1e-04,
   equilibrate_enable = TRUE,
@@ -31,7 +31,7 @@ clarabel_control(
   min_terminate_step_length = 1e-04,
   max_threads = 0L,
   direct_kkt_solver = TRUE,
-  direct_solve_method = c("qdldl", "mkl", "cholmod"),
+  direct_solve_method = c("auto", "qdldl"),
   static_regularization_enable = TRUE,
   static_regularization_constant = 1e-08,
   static_regularization_proportional = .Machine$double.eps * .Machine$double.eps,
@@ -45,10 +45,10 @@ clarabel_control(
   iterative_refinement_stop_ratio = 5,
   presolve_enable = TRUE,
   input_sparse_dropzeros = FALSE,
-  chordal_decomposition_enable = FALSE,
-  chordal_decomposition_merge_method = c("none", "parent_child", "clique_graph"),
-  chordal_decomposition_compact = FALSE,
-  chordal_decomposition_complete_dual = FALSE
+  chordal_decomposition_enable = TRUE,
+  chordal_decomposition_merge_method = c("clique_graph", "parent_child", "none"),
+  chordal_decomposition_compact = TRUE,
+  chordal_decomposition_complete_dual = TRUE
 )
 ```
 
@@ -92,7 +92,7 @@ clarabel_control(
 
 - tol_ktratio:
 
-  KT tolerance (`1e-7`)
+  KT tolerance (`1e-6`)
 
 - reduced_tol_gap_abs:
 
@@ -108,7 +108,7 @@ clarabel_control(
 
 - reduced_tol_infeas_abs:
 
-  reduced absolute infeasibility tolerance (primal and dual) (`5e-5`)
+  reduced absolute infeasibility tolerance (primal and dual) (`5e-12`)
 
 - reduced_tol_infeas_rel:
 
@@ -159,7 +159,9 @@ clarabel_control(
 
 - direct_solve_method:
 
-  direct linear solver (`"qdldl"`, `"mkl"` or `"cholmod"`) (`"qdldl"`)
+  direct linear solver, either `"auto"` or `"qdldl"` (`"auto"`). This
+  build links only the QDLDL solver, so `"auto"` resolves to `"qdldl"`;
+  the two are equivalent here.
 
 - static_regularization_enable:
 
@@ -192,7 +194,7 @@ clarabel_control(
 
 - iterative_refinement_reltol:
 
-  iterative refinement relative tolerance (`1e-12`)
+  iterative refinement relative tolerance (`1e-13`)
 
 - iterative_refinement_abstol:
 
@@ -217,22 +219,22 @@ clarabel_control(
 
 - chordal_decomposition_enable:
 
-  whether to enable chordal decomposition for SDPs (`FALSE`)
+  whether to enable chordal decomposition for SDPs (`TRUE`)
 
 - chordal_decomposition_merge_method:
 
-  chordal decomposition merge method, one of `'none'`, `'parent_child'`
-  or `'clique_graph'`, for SDPs (`'none'`)
+  chordal decomposition merge method, one of `'clique_graph'`,
+  `'parent_child'` or `'none'`, for SDPs (`'clique_graph'`)
 
 - chordal_decomposition_compact:
 
   a boolean flag for SDPs indicating whether to assemble decomposed
-  system in *compact* form for SDPs (`FALSE`)
+  system in *compact* form for SDPs (`TRUE`)
 
 - chordal_decomposition_complete_dual:
 
   a boolean flag indicating complete PSD dual variables after
-  decomposition for SDPs
+  decomposition for SDPs (`TRUE`)
 
 ## Value
 
@@ -244,6 +246,24 @@ Setting `input_sparse_dropzeros` to `TRUE` will disable parametric
 updating functionality. See documentation of 'dropzeros' in Rust
 `struct CscMatrix` for dropping structural zeros before passing to the
 solver.
+
+These defaults track the Rust solver (Clarabel.rs 0.11.1) exactly. The
+only departure is the set of values accepted for `direct_solve_method`,
+which is limited by the features this package is built with.
+
+Chordal decomposition applies only to semidefinite programs, and only
+when the aggregate sparsity pattern of the semidefinite constraints is
+decomposable. For such problems it can be dramatically faster, since it
+replaces one large semidefinite cone by several small ones. It has two
+consequences worth knowing. The reported dual variables for semidefinite
+constraints are not in general the same as those obtained without
+decomposition, because the decomposition is reversed and the dual
+completed, and a positive semidefinite completion is not unique. It also
+blocks the data updates used for warm starts, but only when a
+decomposition actually took place: linear, quadratic and second-order
+cone problems are unaffected, and remain updatable. See
+[`solver_is_update_allowed()`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_is_update_allowed.md)
+to check a particular solver instance.
 
 ## Examples
 

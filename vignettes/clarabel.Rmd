@@ -142,6 +142,38 @@ cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
 
 ## 3. Semidefinite Cone Programming
 
+Semidefinite problems are the only ones here that need dense linear
+algebra, and this package does not bundle its own: it is built against
+whichever BLAS and LAPACK your R installation uses. That choice affects
+both the speed and the numerical results of everything in this section,
+so it is worth knowing which one you have. `sessionInfo()` reports it.
+
+On macOS, the CRAN binary ships both R's own reference BLAS and a
+vecLib (Accelerate) build, and defaults to the reference one. The [R for
+macOS FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html)
+describes vecLib as fast but outside the R project's control and
+possibly delivering inaccurate results, and recommends the default R
+BLAS for precision. Switching is a symlink:
+
+``` sh
+cd /Library/Frameworks/R.framework/Resources/lib
+ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib: faster
+ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
+```
+
+The difference is not small in either direction. On speed, *R
+Installation and Administration* reports that with OpenBLAS on an M1
+Pro "we saw a 9x speedup over the reference BLAS on a large SVD (which
+was slightly faster than Accelerate)". On accuracy, the same manual
+notes that "[a]ll versions of Accelerate show differences from the
+reference BLAS (and most others) in the use of NA vs NaN and a
+substantial number of R packages fail their checks".
+
+So an optimized BLAS can make large semidefinite problems considerably
+faster, at some risk to the results. Which trade you want depends on the
+problem; the point is that it is a trade, and that it is made outside
+this package.
+
 Semidefinite cones have to be specified in a particular form. We
 borrow from the [documentation for the SCS
 solver](https://www.cvxgrp.org/scs/api/cones.html#sdcone) which has
@@ -414,7 +446,8 @@ genuinely different numerical problem, and that the status is worth
 checking rather than assuming.
 
 The gap widens sharply with the size of the cone. Measured separately,
-since the larger rows are too slow to run while this vignette is built:
+since the larger rows are too slow to run while this vignette is built,
+on R's own reference BLAS (see the note at the start of this section):
 
 | $n$ | cone length | decomposition off | on | speedup | status (off / on) |
 |----:|------------:|------------------:|---:|--------:|:------------------|
@@ -429,6 +462,11 @@ close to linear in $n$. Seven minutes becomes eight milliseconds. Note
 also that the reduced-accuracy termination lands on the decomposed side
 at $n = 120$ and on the undecomposed side at $n = 40$, which is what is
 meant above by it going both ways.
+
+An optimized BLAS would shrink these ratios, since it is the
+undecomposed column that spends its time in dense linear algebra, but it
+does not change the shape of the comparison: decomposition removes the
+large dense cone altogether rather than computing with it faster.
 
 Two consequences are worth knowing. Dual variables reported for
 semidefinite constraints are not in general the same as those obtained

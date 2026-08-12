@@ -7,8 +7,3 @@ A persistent Clarabel solver that can be reused across R calls.
 ``` r
 ClarabelSolver
 ```
-
-## Format
-
-An object of class `clarabel::ClarabelSolver__bundle` (inherits from
-`savvy_clarabel__sealed`) of length 1.

@@ -61,21 +61,7 @@ format for both $`P`$ and $`A`$ and will try to convert them if not so.
 
 ### 1.3. Solution
 
-``` r
-
-P <- Matrix::Matrix(2 * c(3, 0, 0, 2), nrow = 2, ncol = 2, sparse = TRUE)
-P <- as(P, "symmetricMatrix")  # P needs to be a symmetric matrix
-q <- c(-1, -4)
-A <- Matrix::Matrix(c(1, 1, 0, -1, 0, -2, 0, 1, 0, -1), ncol = 2, sparse = TRUE)
-b <- c(0, 1, 1, 1, 1)
-cones <- list(z = 1L, l = 4L)  ## 1 equality and 4 inequalities, in order
-s <- clarabel(A = A, b = b, q = q, P = P, cones = cones)
-cat(sprintf("Solution status, description: = (%d, %s)\n",
-            s$status, solver_status_descriptions()[s$status]))
-#> Solution status, description: = (2, Solver terminated with a solution.)
-cat(sprintf("Solution: (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
-#> Solution: (x1, x2) = (0.428571, 0.214286)
-```
+`P`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(``2`` ``*`` `[`c`](https://rdrr.io/r/base/c.html)`(``3``, ``0``, ``0``, ``2``)``, nrow ``=`` ``2``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``P`` ``<-`` ``as``(``P``, ``"symmetricMatrix"``)`` ``# P needs to be a symmetric matrix`` ``q`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``-``1``, ``-``4``)`` ``A`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``1``, ``0``, ``-``1``, ``0``, ``-``2``, ``0``, ``1``, ``0``, ``-``1``)``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``b`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``1``, ``1``, ``1``, ``1``)`` ``cones`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(``z ``=`` ``1L``, l ``=`` ``4L``)`` ``## 1 equality and 4 inequalities, in order`` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``A``, b ``=`` ``b``, q ``=`` ``q``, P ``=`` ``P``, cones ``=`` ``cones``)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution status, description: = (%d, %s)\n"``,`` `` ``s``$``status``, `[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``[``s``$``status``]``)``)`` ``#> Solution status, description: = (2, Solver terminated with a solution.)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution: (x1, x2) = (%f, %f)\n"``, ``s``$``x``[``1``]``, ``s``$``x``[``2``]``)``)`` ``#> Solution: (x1, x2) = (0.428571, 0.214286)`
 
 ## 2. Basic Second-order Cone Programming Example
 
@@ -116,23 +102,42 @@ which puts our constraint in the form $`b - Ax \in \mathcal{K}_{SOC}`$.
 
 ### 2.3. Solution
 
-``` r
-
-P <- Matrix::Matrix(2 * c(0, 0, 0, 1), nrow = 2, ncol = 2, sparse = TRUE)
-P <- as(P, "symmetricMatrix") # P needs to be a symmetric matrix
-q <- c(0, 0)
-A <- Matrix::Matrix(c(0, -2.0, 0, 0, 0, 1.0), nrow = 3, ncol = 2, sparse = TRUE)
-b <- c(1, -2, -2)
-cones <- list(q = 3L)
-s <- clarabel(A = A, b = b, q = q, P = P, cones = cones)
-cat(sprintf("Solution status, description: = (%d, %s)\n",
-            s$status, solver_status_descriptions()[s$status]))
-#> Solution status, description: = (2, Solver terminated with a solution.)
-cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
-#> Solution (x1, x2) = (1.000000, -1.000000)
-```
+`P`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(``2`` ``*`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``0``, ``0``, ``1``)``, nrow ``=`` ``2``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``P`` ``<-`` ``as``(``P``, ``"symmetricMatrix"``)`` ``# P needs to be a symmetric matrix`` ``q`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``0``)`` ``A`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``-``2.0``, ``0``, ``0``, ``0``, ``1.0``)``, nrow ``=`` ``3``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``b`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``-``2``, ``-``2``)`` ``cones`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(``q ``=`` ``3L``)`` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``A``, b ``=`` ``b``, q ``=`` ``q``, P ``=`` ``P``, cones ``=`` ``cones``)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution status, description: = (%d, %s)\n"``,`` `` ``s``$``status``, `[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``[``s``$``status``]``)``)`` ``#> Solution status, description: = (2, Solver terminated with a solution.)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution (x1, x2) = (%f, %f)\n"``, ``s``$``x``[``1``]``, ``s``$``x``[``2``]``)``)`` ``#> Solution (x1, x2) = (1.000000, -1.000000)`
 
 ## 3. Semidefinite Cone Programming
+
+Semidefinite problems are the only ones here that need dense linear
+algebra, and this package does not bundle its own: it is built against
+whichever BLAS and LAPACK your R installation uses. That choice affects
+both the speed and the numerical results of everything in this section,
+so it is worth knowing which one you have.
+[`sessionInfo()`](https://rdrr.io/r/utils/sessionInfo.html) reports it.
+
+On macOS, the CRAN binary ships both R’s own reference BLAS and a vecLib
+(Accelerate) build, and defaults to the reference one. The [R for macOS
+FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html) describes
+vecLib as fast but outside the R project’s control and possibly
+delivering inaccurate results, and recommends the default R BLAS for
+precision. Switching is a symlink:
+
+``` sh
+cd /Library/Frameworks/R.framework/Resources/lib
+ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib: faster
+ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
+```
+
+The difference is not small in either direction. On speed, *R
+Installation and Administration* reports that with OpenBLAS on an M1 Pro
+“we saw a 9x speedup over the reference BLAS on a large SVD (which was
+slightly faster than Accelerate)”. On accuracy, the same manual notes
+that “\[a\]ll versions of Accelerate show differences from the reference
+BLAS (and most others) in the use of NA vs NaN and a substantial number
+of R packages fail their checks”.
+
+So an optimized BLAS can make large semidefinite problems considerably
+faster, at some risk to the results. Which trade you want depends on the
+problem; the point is that it is a trade, and that it is made outside
+this package.
 
 Semidefinite cones have to be specified in a particular form. We borrow
 from the [documentation for the SCS
@@ -215,34 +220,7 @@ So the cone definition that Clarabel uses is
 Below are two functions to implement both $`\text{vec}`$ and
 $`\text{mat}`$.
 
-``` r
-
-#' Return an vectorization of symmetric matrix using the upper triangular part,
-#' still in column order.
-#' @param S a symmetric matrix
-#' @return vector of values
-vec <- function(S) {
-  n <- nrow(S)
-  sqrt2 <- sqrt(2.0)
-  upper_tri <- upper.tri(S, diag = FALSE)
-  S[upper_tri] <- S[upper_tri] * sqrt2
-  S[upper.tri(S, diag = TRUE)]
-}
-
-#' Return the symmetric matrix from the [vec] vectorization
-#' @param v a vector
-#' @return a symmetric matrix
-mat <- function(v) {
-  n <- (sqrt(8 * length(v) + 1) - 1) / 2
-  sqrt2 <- sqrt(2.0)
-  S <- matrix(0, n, n)
-  upper_tri <- upper.tri(S, diag = TRUE)
-  S[upper_tri] <- v / sqrt2
-  S <- S + t(S)
-  diag(S) <- diag(S) / sqrt(2)
-  S
-}
-```
+`#' Return an vectorization of symmetric matrix using the upper triangular part,`` ``#' still in column order.`` ``#' @param S a symmetric matrix`` ``#' @return vector of values`` ``vec`` ``<-`` ``function``(``S``)`` ``{`` `` ``n`` ``<-`` `[`nrow`](https://rdrr.io/r/base/nrow.html)`(``S``)`` `` ``sqrt2`` ``<-`` `[`sqrt`](https://rdrr.io/r/base/MathFun.html)`(``2.0``)`` `` ``upper_tri`` ``<-`` `[`upper.tri`](https://rdrr.io/r/base/lower.tri.html)`(``S``, diag ``=`` ``FALSE``)`` `` ``S``[``upper_tri``]`` ``<-`` ``S``[``upper_tri``]`` ``*`` ``sqrt2`` `` ``S``[`[`upper.tri`](https://rdrr.io/r/base/lower.tri.html)`(``S``, diag ``=`` ``TRUE``)``]`` ``}`` `` ``#' Return the symmetric matrix from the [vec] vectorization`` ``#' @param v a vector`` ``#' @return a symmetric matrix`` ``mat`` ``<-`` ``function``(``v``)`` ``{`` `` ``n`` ``<-`` ``(`[`sqrt`](https://rdrr.io/r/base/MathFun.html)`(``8`` ``*`` `[`length`](https://rdrr.io/r/base/length.html)`(``v``)`` ``+`` ``1``)`` ``-`` ``1``)`` ``/`` ``2`` `` ``sqrt2`` ``<-`` `[`sqrt`](https://rdrr.io/r/base/MathFun.html)`(``2.0``)`` `` ``S`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(``0``, ``n``, ``n``)`` `` ``upper_tri`` ``<-`` `[`upper.tri`](https://rdrr.io/r/base/lower.tri.html)`(``S``, diag ``=`` ``TRUE``)`` `` ``S``[``upper_tri``]`` ``<-`` ``v`` ``/`` ``sqrt2`` `` ``S`` ``<-`` ``S`` ``+`` `[`t`](https://rdrr.io/r/base/t.html)`(``S``)`` `` `[`diag`](https://rdrr.io/r/base/diag.html)`(``S``)`` ``<-`` `[`diag`](https://rdrr.io/r/base/diag.html)`(``S``)`` ``/`` `[`sqrt`](https://rdrr.io/r/base/MathFun.html)`(``2``)`` `` ``S`` ``}`
 
 ### 3.1. Example
 
@@ -321,33 +299,64 @@ We have two such constraints and will therefore construct the vectors
 for both cones in order and specify the appropriate dimensions, 2 and 3,
 respectively.
 
-``` r
+`q`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``-``1``, ``1``)`` ``# objective: x_1 - x2 + x_3`` ``A11`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``7``, ``-``11``, ``-``11``, ``3``)``, nrow ``=`` ``2``)`` ``A12`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``7``, ``-``18``, ``-``18``, ``8``)``, nrow ``=`` ``2``)`` ``A13`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``2``, ``-``8``, ``-``8``, ``1``)``, nrow ``=`` ``2``)`` `` ``A21`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``21``, ``-``11``, ``0``, ``-``11``, ``10``, ``8``, ``0``, ``8``, ``5``)``, nrow ``=`` ``3``)`` ``A22`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``10``, ``16``, ``10``, ``-``10``, ``-``10``, ``16``, ``-``10``, ``3``)``, nrow ``=`` ``3``)`` ``A23`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``5``, ``2``, ``-``17``, ``2``, ``-``6``, ``8``, ``-``17``, ``8``, ``6``)``, nrow ``=`` ``3``)`` `` ``B1`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``33``, ``-``9``, ``-``9``, ``26``)``, nrow ``=`` ``2``)`` ``B2`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``14``, ``9``, ``40``, ``9``, ``91``, ``10``, ``40``, ``10``, ``15``)``, nrow ``=`` ``3``)`` `` ``A`` ``<-`` `[`rbind`](https://rdrr.io/r/base/cbind.html)`(`` `` `[`cbind`](https://rdrr.io/r/base/cbind.html)`(``vec``(``A11``)``, ``vec``(``A12``)``, ``vec``(``A13``)``)``, ``# first psd constraint`` `` `[`cbind`](https://rdrr.io/r/base/cbind.html)`(``vec``(``A21``)``, ``vec``(``A22``)``, ``vec``(``A23``)``)`` ``# second psd constraint`` ``)`` ``b`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``vec``(``B1``)``, ``vec``(``B2``)``)`` ``# stack both psd constraints`` ``cones`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(``s ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``2``, ``3``)``)`` ``# cone dimensions`` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``A``, b ``=`` ``b``, q ``=`` ``q``, cones ``=`` ``cones``)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution status, description: = (%d, %s)\n"``,`` `` ``s``$``status``, `[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``[``s``$``status``]``)``)`` ``#> Solution status, description: = (2, Solver terminated with a solution.)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution (x1, x2, x3) = (%f, %f, %f)\n"``, ``s``$``x``[``1``]``, ``s``$``x``[``2``]``, ``s``$``x``[``3``]``)``)`` ``#> Solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)`
 
-q <- c(1, -1, 1) # objective: x_1 - x2 + x_3
-A11 <- matrix(c(-7, -11, -11, 3), nrow = 2)
-A12 <- matrix(c(7, -18, -18, 8), nrow = 2)
-A13 <- matrix(c(-2, -8, -8, 1), nrow = 2)
+### 3.2. Chordal Decomposition of Sparse Semidefinite Programs
 
-A21 <- matrix(c(-21, -11, 0, -11, 10, 8, 0, 8, 5), nrow = 3)
-A22 <- matrix(c(0, 10, 16, 10, -10, -10, 16, -10, 3), nrow = 3)
-A23 <- matrix(c(-5, 2, -17, 2, -6, 8, -17, 8, 6), nrow = 3)
+The cost of a semidefinite program grows very quickly with the side
+length of its semidefinite cones. When the aggregate sparsity pattern of
+those constraints is *chordal*, however, a large cone can be replaced by
+several small ones that overlap only on their shared entries, and the
+solver works with the small ones instead. This is enabled by default
+through `chordal_decomposition_enable`.
 
-B1 <- matrix(c(33, -9, -9, 26), nrow = 2)
-B2 <- matrix(c(14, 9, 40, 9, 91, 10, 40, 10, 15), nrow = 3)
+The following builds a linear matrix inequality
+$`F_0 + \sum_i x_i F_i \succeq 0`$ in which every data matrix is banded
+with half-bandwidth 2. A banded pattern is chordal, with cliques of size
+3, so an $`n \times n`$ cone decomposes into roughly $`n`$ tiny ones.
 
-A <- rbind(
-  cbind(vec(A11), vec(A12), vec(A13)), # first psd constraint
-  cbind(vec(A21), vec(A22), vec(A23))  # second psd constraint
-)
-b <- c(vec(B1), vec(B2)) # stack both psd constraints
-cones <- list(s = c(2, 3)) # cone dimensions
-s <- clarabel(A = A, b = b, q = q, cones = cones)
-cat(sprintf("Solution status, description: = (%d, %s)\n",
-            s$status, solver_status_descriptions()[s$status]))
-#> Solution status, description: = (2, Solver terminated with a solution.)
-cat(sprintf("Solution (x1, x2, x3) = (%f, %f, %f)\n", s$x[1], s$x[2], s$x[3]))
-#> Solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)
-```
+`banded_sdp`` ``<-`` ``function``(``n``, ``w`` ``=`` ``2``, ``m`` ``=`` ``5``, ``seed`` ``=`` ``7``)`` ``{`` `` ``band_sym`` ``<-`` ``function``(``s``)`` ``{`` `` `[`set.seed`](https://rdrr.io/r/base/Random.html)`(``s``)`` `` ``M`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(``0``, ``n``, ``n``)`` `` ``for`` ``(``i`` ``in`` `[`seq_len`](https://rdrr.io/r/base/seq.html)`(``n``)``)`` `` ``for`` ``(``j`` ``in`` ``i``:`[`min`](https://rdrr.io/r/base/Extremes.html)`(``i`` ``+`` ``w``, ``n``)``)`` ``M``[``i``, ``j``]`` ``<-`` ``M``[``j``, ``i``]`` ``<-`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``1``)`` `` ``M`` `` ``}`` `` ``Fs`` ``<-`` `[`lapply`](https://rdrr.io/r/base/lapply.html)`(`[`seq_len`](https://rdrr.io/r/base/seq.html)`(``m``)``, ``function``(``k``)`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``k``)``)`` `` ``F0`` ``<-`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``m`` ``+`` ``1``)`` `` ``## shift F0 so that x = 0 is strictly feasible`` `` ``F0`` ``<-`` ``F0`` ``+`` `[`diag`](https://rdrr.io/r/base/diag.html)`(``n``)`` ``*`` ``(`[`abs`](https://rdrr.io/r/base/MathFun.html)`(`[`min`](https://rdrr.io/r/base/Extremes.html)`(`[`eigen`](https://rdrr.io/r/base/eigen.html)`(``F0``, only.values ``=`` ``TRUE``)``$``values``)``)`` ``+`` ``1``)`` `` `[`list`](https://rdrr.io/r/base/list.html)`(``A ``=`` ``-`[`do.call`](https://rdrr.io/r/base/do.call.html)`(``cbind``, `[`lapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``vec``)``)``,`` `` b ``=`` ``vec``(``F0``)``,`` `` q ``=`` `[`vapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``function``(``Fi``)`` `[`sum`](https://rdrr.io/r/base/sum.html)`(`[`diag`](https://rdrr.io/r/base/diag.html)`(``Fi``)``)``, `[`numeric`](https://rdrr.io/r/base/numeric.html)`(``1``)``)``,`` `` cones ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``s ``=`` `[`as.integer`](https://rdrr.io/r/base/integer.html)`(``n``)``)``)`` ``}`` `` ``solve_timed`` ``<-`` ``function``(``p``, ``chordal``)`` ``{`` `` ``ctrl`` ``<-`` `[`clarabel_control`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.md)`(``verbose ``=`` ``FALSE``,`` `` chordal_decomposition_enable ``=`` ``chordal``)`` `` ``elapsed`` ``<-`` `[`system.time`](https://rdrr.io/r/base/system.time.html)`(`` `` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``p``$``A``, b ``=`` ``p``$``b``, q ``=`` ``p``$``q``, cones ``=`` ``p``$``cones``, control ``=`` ``ctrl``)`` `` ``)``[[``"elapsed"``]``]`` `` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``chordal ``=`` ``chordal``,`` `` seconds ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``elapsed``)``,`` `` status ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``)``[``s``$``status``]``,`` `` objective ``=`` ``s``$``obj_val``)`` ``}`` `` ``p40`` ``<-`` ``banded_sdp``(``n ``=`` ``40``)`` `[`rbind`](https://rdrr.io/r/base/cbind.html)`(``solve_timed``(``p40``, ``FALSE``)``, ``solve_timed``(``p40``, ``TRUE``)``)`` ``#> chordal seconds status objective`` ``#> 1 FALSE 0.432 AlmostSolved -6.603129`` ``#> 2 TRUE 0.002 Solved -6.603129`
+
+Two things are worth reading off that comparison. The decomposed solve
+is faster by more than two orders of magnitude, and the two solves do
+not terminate at the same accuracy: on this instance the undecomposed
+solve stops at `AlmostSolved` while the decomposed one reaches `Solved`.
+That is not a general rule — which side stops early depends on the
+instance, and it goes both ways — but it is a reminder that
+decomposition produces a genuinely different numerical problem, and that
+the status is worth checking rather than assuming.
+
+The gap widens sharply with the size of the cone. Measured separately,
+since the larger rows are too slow to run while this vignette is built,
+on R’s own reference BLAS (see the note at the start of this section):
+
+| $`n`$ | cone length | decomposition off |     on | speedup | status (off / on)     |
+|------:|------------:|------------------:|-------:|--------:|:----------------------|
+|    20 |         210 |            0.013s | 0.001s |     13x | Solved / Solved       |
+|    40 |         820 |            0.420s | 0.002s |    210x | AlmostSolved / Solved |
+|    60 |        1830 |            4.393s | 0.004s |   1098x | Solved / Solved       |
+|    80 |        3240 |           29.855s | 0.004s |   7464x | Solved / Solved       |
+|   120 |        7260 |          424.978s | 0.008s |  53122x | Solved / AlmostSolved |
+
+The undecomposed column grows roughly like $`n^6`$; the decomposed one
+is close to linear in $`n`$. Seven minutes becomes eight milliseconds.
+Note also that the reduced-accuracy termination lands on the decomposed
+side at $`n = 120`$ and on the undecomposed side at $`n = 40`$, which is
+what is meant above by it going both ways.
+
+An optimized BLAS would shrink these ratios, since it is the
+undecomposed column that spends its time in dense linear algebra, but it
+does not change the shape of the comparison: decomposition removes the
+large dense cone altogether rather than computing with it faster.
+
+Two consequences are worth knowing. Dual variables reported for
+semidefinite constraints are not in general the same as those obtained
+without decomposition, because the decomposition is reversed and the
+dual completed afterwards, and a positive semidefinite completion is not
+unique. And a problem that was actually decomposed cannot have its data
+updated in place, which matters for the warm starts described next. Pass
+`chordal_decomposition_enable = FALSE` to recover the previous behavior
+in either case.
 
 ## 4. Updating Problem Data (Warm Starts)
 
@@ -356,11 +365,26 @@ structure, it is more efficient to create a persistent solver and update
 only the data that changes between solves. This avoids rebuilding the
 solver’s internal data structures each time.
 
-To enable updates, certain settings must be disabled:
-`presolve_enable = FALSE`, `chordal_decomposition_enable = FALSE`, and
-`input_sparse_dropzeros = FALSE`. Use
+Updates are refused when the solver has altered the structure of the
+problem, since the stored factorization no longer corresponds to the
+data you would be updating. Three settings can do that:
+`presolve_enable`, `input_sparse_dropzeros`, and
+`chordal_decomposition_enable`.
+
+What matters is whether the transformation *actually happened*, not
+whether it was permitted. Presolve only rewrites the problem if it finds
+something to remove, and chordal decomposition only engages for
+semidefinite constraints whose sparsity pattern is decomposable. Linear,
+quadratic and second-order cone problems are never chordally decomposed,
+so leaving `chordal_decomposition_enable` at its default costs them
+nothing. The example below is a semidefinite program, but its two blocks
+are small and dense, hence not decomposable, so its updates are allowed
+even with chordal decomposition enabled.
+
+Rather than reasoning about which transformation might apply, ask the
+solver:
 [`solver_is_update_allowed()`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_is_update_allowed.md)
-to verify after construction.
+reports whether the instance you actually built can be updated.
 
 ### 4.1. Example: SDP with a changed constraint
 
@@ -372,50 +396,11 @@ $`\begin{bmatrix} 40 & -12 \\ -12 & 30 \end{bmatrix}`$.
 First, we set up and solve the original problem using a persistent
 solver.
 
-``` r
-
-q_sdp <- c(1, -1, 1)
-A11 <- matrix(c(-7, -11, -11, 3), nrow = 2)
-A12 <- matrix(c(7, -18, -18, 8), nrow = 2)
-A13 <- matrix(c(-2, -8, -8, 1), nrow = 2)
-
-A21 <- matrix(c(-21, -11, 0, -11, 10, 8, 0, 8, 5), nrow = 3)
-A22 <- matrix(c(0, 10, 16, 10, -10, -10, 16, -10, 3), nrow = 3)
-A23 <- matrix(c(-5, 2, -17, 2, -6, 8, -17, 8, 6), nrow = 3)
-
-B1 <- matrix(c(33, -9, -9, 26), nrow = 2)
-B2 <- matrix(c(14, 9, 40, 9, 91, 10, 40, 10, 15), nrow = 3)
-
-A_sdp <- rbind(
-  cbind(vec(A11), vec(A12), vec(A13)),
-  cbind(vec(A21), vec(A22), vec(A23))
-)
-b_sdp <- c(vec(B1), vec(B2))
-cones_sdp <- list(s = c(2, 3))
-
-## Create a persistent solver with updates enabled
-ctrl <- clarabel_control(presolve_enable = FALSE, verbose = FALSE)
-solver <- clarabel_solver(A = A_sdp, b = b_sdp, q = q_sdp, cones = cones_sdp, control = ctrl)
-solver_is_update_allowed(solver)  # should be TRUE
-#> [1] TRUE
-sol1 <- solver_solve(solver)
-cat(sprintf("Original solution (x1, x2, x3) = (%f, %f, %f)\n",
-            sol1$x[1], sol1$x[2], sol1$x[3]))
-#> Original solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)
-```
+`q_sdp`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``-``1``, ``1``)`` ``A11`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``7``, ``-``11``, ``-``11``, ``3``)``, nrow ``=`` ``2``)`` ``A12`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``7``, ``-``18``, ``-``18``, ``8``)``, nrow ``=`` ``2``)`` ``A13`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``2``, ``-``8``, ``-``8``, ``1``)``, nrow ``=`` ``2``)`` `` ``A21`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``21``, ``-``11``, ``0``, ``-``11``, ``10``, ``8``, ``0``, ``8``, ``5``)``, nrow ``=`` ``3``)`` ``A22`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``10``, ``16``, ``10``, ``-``10``, ``-``10``, ``16``, ``-``10``, ``3``)``, nrow ``=`` ``3``)`` ``A23`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``-``5``, ``2``, ``-``17``, ``2``, ``-``6``, ``8``, ``-``17``, ``8``, ``6``)``, nrow ``=`` ``3``)`` `` ``B1`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``33``, ``-``9``, ``-``9``, ``26``)``, nrow ``=`` ``2``)`` ``B2`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``14``, ``9``, ``40``, ``9``, ``91``, ``10``, ``40``, ``10``, ``15``)``, nrow ``=`` ``3``)`` `` ``A_sdp`` ``<-`` `[`rbind`](https://rdrr.io/r/base/cbind.html)`(`` `` `[`cbind`](https://rdrr.io/r/base/cbind.html)`(``vec``(``A11``)``, ``vec``(``A12``)``, ``vec``(``A13``)``)``,`` `` `[`cbind`](https://rdrr.io/r/base/cbind.html)`(``vec``(``A21``)``, ``vec``(``A22``)``, ``vec``(``A23``)``)`` ``)`` ``b_sdp`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``vec``(``B1``)``, ``vec``(``B2``)``)`` ``cones_sdp`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(``s ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``2``, ``3``)``)`` `` ``## Create a persistent solver with updates enabled`` ``ctrl`` ``<-`` `[`clarabel_control`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.md)`(``presolve_enable ``=`` ``FALSE``, verbose ``=`` ``FALSE``)`` ``solver`` ``<-`` `[`clarabel_solver`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_solver.md)`(``A ``=`` ``A_sdp``, b ``=`` ``b_sdp``, q ``=`` ``q_sdp``, cones ``=`` ``cones_sdp``, control ``=`` ``ctrl``)`` `[`solver_is_update_allowed`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_is_update_allowed.md)`(``solver``)`` ``# should be TRUE`` ``#> [1] TRUE`` ``sol1`` ``<-`` `[`solver_solve`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_solve.md)`(``solver``)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Original solution (x1, x2, x3) = (%f, %f, %f)\n"``,`` `` ``sol1``$``x``[``1``]``, ``sol1``$``x``[``2``]``, ``sol1``$``x``[``3``]``)``)`` ``#> Original solution (x1, x2, x3) = (-0.367746, 1.898333, -0.887466)`
 
 Now update the constraint with the new $`B_1`$ and re-solve.
 
-``` r
-
-B1_new <- matrix(c(40, -12, -12, 30), nrow = 2)
-b_sdp_new <- c(vec(B1_new), vec(B2))  # only B1 changes
-solver_update(solver, b = b_sdp_new)
-sol2 <- solver_solve(solver)
-cat(sprintf("Updated solution  (x1, x2, x3) = (%f, %f, %f)\n",
-            sol2$x[1], sol2$x[2], sol2$x[3]))
-#> Updated solution  (x1, x2, x3) = (-0.404810, 2.166303, -0.649288)
-```
+`B1_new`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``40``, ``-``12``, ``-``12``, ``30``)``, nrow ``=`` ``2``)`` ``b_sdp_new`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``vec``(``B1_new``)``, ``vec``(``B2``)``)`` ``# only B1 changes`` `[`solver_update`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_update.md)`(``solver``, b ``=`` ``b_sdp_new``)`` ``sol2`` ``<-`` `[`solver_solve`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_solve.md)`(``solver``)`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Updated solution (x1, x2, x3) = (%f, %f, %f)\n"``,`` `` ``sol2``$``x``[``1``]``, ``sol2``$``x``[``2``]``, ``sol2``$``x``[``3``]``)``)`` ``#> Updated solution (x1, x2, x3) = (-0.404810, 2.166303, -0.649288)`
 
 The solver reuses its internal factorization, making the second solve
 faster than constructing a new solver from scratch.
@@ -452,21 +437,6 @@ verbosity, time limits, and tolerances; see help on
 As an example, in the last problem, we can reduce the number of
 iterations.
 
-``` r
-
-P <- Matrix::Matrix(2 * c(0, 0, 0, 1), nrow = 2, ncol = 2, sparse = TRUE)
-P <- as(P, "symmetricMatrix") # P needs to be a symmetric matrix
-q <- c(0, 0)
-A <- Matrix::Matrix(c(0, -2.0, 0, 0, 0, 1.0), nrow = 3, ncol = 2, sparse = TRUE)
-b <- c(1, -2, -2)
-cones <- list(q = 3L)
-s <- clarabel(A = A, b = b, q = q, P = P, cones = cones,
-              control = list(max_iter = 3)) ## Reduced number of iterations
-cat(sprintf("Solution status, description: = (%d, %s)\n",
-            s$status, solver_status_descriptions()[s$status]))
-#> Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))
-cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
-#> Solution (x1, x2) = (1.000000, -0.999998)
-```
+`P`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(``2`` ``*`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``0``, ``0``, ``1``)``, nrow ``=`` ``2``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``P`` ``<-`` ``as``(``P``, ``"symmetricMatrix"``)`` ``# P needs to be a symmetric matrix`` ``q`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``0``)`` ``A`` ``<-`` ``Matrix``::`[`Matrix`](https://rdrr.io/pkg/Matrix/man/Matrix.html)`(`[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``-``2.0``, ``0``, ``0``, ``0``, ``1.0``)``, nrow ``=`` ``3``, ncol ``=`` ``2``, sparse ``=`` ``TRUE``)`` ``b`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``1``, ``-``2``, ``-``2``)`` ``cones`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(``q ``=`` ``3L``)`` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``A``, b ``=`` ``b``, q ``=`` ``q``, P ``=`` ``P``, cones ``=`` ``cones``,`` `` control ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``max_iter ``=`` ``3``)``)`` ``## Reduced number of iterations`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution status, description: = (%d, %s)\n"``,`` `` ``s``$``status``, `[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``[``s``$``status``]``)``)`` ``#> Solution status, description: = (5, Solver terminated with a solution (reduced accuracy))`` `[`cat`](https://rdrr.io/r/base/cat.html)`(`[`sprintf`](https://rdrr.io/r/base/sprintf.html)`(``"Solution (x1, x2) = (%f, %f)\n"``, ``s``$``x``[``1``]``, ``s``$``x``[``2``]``)``)`` ``#> Solution (x1, x2) = (1.000000, -0.999998)`
 
 Note the different status, which should always be checked in code.
