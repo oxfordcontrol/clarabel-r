@@ -1,5 +1,3 @@
-if (at_home()) {
-
 ## test_mixed_conic_feasible
 ## solves a problem with a mix of symmetric and asymmetric
 ## cones.   This exercises the barrier methods and unit
@@ -22,6 +20,3 @@ b <- numeric(5 * n)
 solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones)
 expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
 expect_true(abs(solution$info$cost_primal - 0.) <= 1e-8)
-
-} ## end at_home()
-

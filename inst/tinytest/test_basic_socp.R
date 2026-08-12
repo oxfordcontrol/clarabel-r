@@ -1,6 +1,5 @@
 #source("inst/tinytest/preamble.R")
 
-if (at_home()) {
 
 basic_socp_data <- function() {
   ## P matrix data taken from corresponding Julia unit test.
@@ -64,5 +63,3 @@ expect_equal(sol$status, 2L)
 expect_equal(sol$x,
              c(1, -1),
              tolerance = 1e-7)
-
-} ## end at_home()

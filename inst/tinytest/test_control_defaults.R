@@ -1,5 +1,3 @@
-if (at_home()) {
-
 ## clarabel_control() hard-codes its defaults in the function signature so that
 ## they appear in the help page. That copy can silently fall out of step with
 ## the Rust solver: reduced_tol_infeas_abs was changed upstream in Clarabel.rs
@@ -44,5 +42,3 @@ expect_equal(ctrl$chordal_decomposition_merge_method, "clique_graph")
 ## the Rust side, where they would fail at solver construction.
 expect_error(clarabel_control(direct_solve_method = "cholmod"))
 expect_error(clarabel_control(direct_solve_method = "mkl"))
-
-} ## end at_home()

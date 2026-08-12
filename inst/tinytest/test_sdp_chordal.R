@@ -1,5 +1,3 @@
-if (at_home()) {
-
 SQRT_2 <- sqrt(2.0)
 
 sdp_chordal_data <- function() {
@@ -86,5 +84,3 @@ for (compact in c(FALSE, TRUE)) {
     }
   }
 }
-
-} ## end at_home()

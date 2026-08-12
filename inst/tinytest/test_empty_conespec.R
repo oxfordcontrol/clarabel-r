@@ -1,5 +1,3 @@
-if (at_home()) {
-
 ##                                                                                                                                      ## Minimal reproducer: R clarabel rejects empty cone spec.
 ##                                                                                                                                      ## Problem: minimize -x1 - x2  (no constraints)           
 ## This is unbounded. Python clarabel returns DualInfeasible.                                                                           ## R clarabel crashes with:                                                                                                             ##   "sanitize_cone_spec: no cone parameters specified"
@@ -30,5 +28,3 @@ cones <- list()                  # empty cone spec — triggers the bug
 ##   Error: sanitize_cone_spec: no cone parameters specified
 sol <- clarabel(A = A, b = b, q = q, P = P, cones = cones)
 expect_equal(status_codes[[sol$status]], status_codes[["DualInfeasible"]])
-
-} ## end at_home()

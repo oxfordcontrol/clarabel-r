@@ -1,5 +1,3 @@
-if (at_home()) {
-
 ## This is not the complete suite since we don't expose the solver object!
 ## TBD
 presolve_test_data <- function() {
@@ -34,6 +32,3 @@ problem_data$b <- rep(1e30, length(problem_data$b))
 solution <- do.call(clarabel, problem_data)
 expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
 expect_true(l2_dist(solution$x, -problem_data$q) <= 1e-6)
-
-} ## end at_home()
-

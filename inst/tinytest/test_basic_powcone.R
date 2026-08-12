@@ -1,7 +1,5 @@
-
 #source("inst/tinytest/preamble.R")
 
-if (at_home()) {
 
 ## test_powcone
 ## solve the following power cone problem
@@ -38,5 +36,3 @@ solution <- clarabel(P = P, q = q, A = A, b = b, cones = cones, strict_cone_orde
 expect_equal(status_codes[[solution$status]], status_codes[["Solved"]])
 refobj <- -1.8458;
 expect_true(abs(solution$info$cost_primal - refobj) <= 1e-3)
-
-} ## end at_home()
