@@ -453,25 +453,42 @@ outside this package and affects both speed and results.
 `sessionInfo()` reports which one is active.
 
 On macOS the CRAN binary ships both R's reference BLAS and a vecLib
-(Accelerate) build, and defaults to the reference one. vecLib is
-considerably faster on large dense problems, but the R project does not
-control it and does not recommend it where precision matters; see the [R
-for macOS FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html)
-and [R Installation and
-Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html),
-which documents both the speedup and the discrepancies. Switching is a
+(Accelerate) build, and defaults to the reference one. Switching is a
 symlink:
 
 ``` sh
 cd /Library/Frameworks/R.framework/Resources/lib
-ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib: faster
+ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib
 ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
 ```
 
-The timings in Section 3.2 were measured on the reference BLAS. A faster
-BLAS shrinks those ratios without changing the shape of the comparison,
-since decomposition removes the large dense cone rather than computing
-with it faster.
+Repeating the Section 3.2 sweep under both libraries moved solve times
+by under 1% at every size, in both directions:
+
+| $n$ | reference, off | vecLib, off | reference, on | vecLib, on |
+|----:|---------------:|------------:|--------------:|-----------:|
+| 20 | 0.015s | 0.016s | 0.001s | 0.002s |
+| 40 | 0.429s | 0.444s | 0.003s | 0.003s |
+| 60 | 4.475s | 4.576s | 0.003s | 0.004s |
+| 80 | 30.078s | 30.535s | 0.005s | 0.005s |
+| 120 | 426.752s | 429.727s | 0.008s | 0.009s |
+
+The substitution does take effect: the solver calls BLAS and LAPACK
+(`dgemm`, `dsyrk`, `dpotrf`, `dsyevr`), and R's LAPACK is itself linked
+against the BLAS being swapped. For these problems the time is not spent
+there. The dense operations act on the $n \times n$ cone, while the cost
+is dominated by factorizing a KKT system whose size follows the
+vectorized cone length $n(n+1)/2$, which is 7260 rows at $n = 120$.
+
+The results do differ between the two libraries. At $n = 40$ the
+decomposed dual differed by $1.3 \times 10^{-1}$ and the termination
+status moved from `Solved` to `AlmostSolved`. See the [R for macOS
+FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html) and [R
+Installation and
+Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html)
+on how Accelerate differs from the reference BLAS.
+
+The Section 3.2 timings were measured on the reference BLAS.
 
 ## 4. Updating Problem Data (Warm Starts)
 

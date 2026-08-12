@@ -478,8 +478,8 @@ tiny ones.</p>
 <span><span class="va">p40</span> <span class="op">&lt;-</span> <span class="fu">banded_sdp</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   chordal seconds       status objective</span></span>
-<span><span class="co">#&gt; 1   FALSE   0.430 AlmostSolved -6.603129</span></span>
-<span><span class="co">#&gt; 2    TRUE   0.002       Solved -6.603129</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   FALSE   0.437 AlmostSolved -6.603129</span></span>
+<span><span class="co">#&gt; 2    TRUE   0.003       Solved -6.603129</span></span></code></pre></div>
 <p>Two things are worth reading off that comparison. The decomposed
 solve is faster by more than two orders of magnitude, and the two solves
 do not terminate at the same accuracy: on this instance the undecomposed
@@ -578,19 +578,80 @@ whatever BLAS and LAPACK your R installation uses, so the choice is made
 outside this package and affects both speed and results.
 <code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> reports which one is active.</p>
 <p>On macOS the CRAN binary ships both R’s reference BLAS and a vecLib
-(Accelerate) build, and defaults to the reference one. vecLib is
-considerably faster on large dense problems, but the R project does not
-control it and does not recommend it where precision matters; see the <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
-macOS FAQ</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html" class="external-link">R
-Installation and Administration</a>, which documents both the speedup
-and the discrepancies. Switching is a symlink:</p>
+(Accelerate) build, and defaults to the reference one. Switching is a
+symlink:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib: faster</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
-<p>The timings in Section 3.2 were measured on the reference BLAS. A
-faster BLAS shrinks those ratios without changing the shape of the
-comparison, since decomposition removes the large dense cone rather than
-computing with it faster.</p>
+<p>Repeating the Section 3.2 sweep under both libraries moved solve
+times by under 1% at every size, in both directions:</p>
+<table class="table">
+<thead><tr class="header">
+<th align="right"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></th>
+<th align="right">reference, off</th>
+<th align="right">vecLib, off</th>
+<th align="right">reference, on</th>
+<th align="right">vecLib, on</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">20</td>
+<td align="right">0.015s</td>
+<td align="right">0.016s</td>
+<td align="right">0.001s</td>
+<td align="right">0.002s</td>
+</tr>
+<tr class="even">
+<td align="right">40</td>
+<td align="right">0.429s</td>
+<td align="right">0.444s</td>
+<td align="right">0.003s</td>
+<td align="right">0.003s</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="right">4.475s</td>
+<td align="right">4.576s</td>
+<td align="right">0.003s</td>
+<td align="right">0.004s</td>
+</tr>
+<tr class="even">
+<td align="right">80</td>
+<td align="right">30.078s</td>
+<td align="right">30.535s</td>
+<td align="right">0.005s</td>
+<td align="right">0.005s</td>
+</tr>
+<tr class="odd">
+<td align="right">120</td>
+<td align="right">426.752s</td>
+<td align="right">429.727s</td>
+<td align="right">0.008s</td>
+<td align="right">0.009s</td>
+</tr>
+</tbody>
+</table>
+<p>The substitution does take effect: the solver calls BLAS and LAPACK
+(<code>dgemm</code>, <code>dsyrk</code>, <code>dpotrf</code>,
+<code>dsyevr</code>), and R’s LAPACK is itself linked against the BLAS
+being swapped. For these problems the time is not spent there. The dense
+operations act on the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \times n</annotation></semantics></math>
+cone, while the cost is dominated by factorizing a KKT system whose size
+follows the vectorized cone length
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n(n+1)/2</annotation></semantics></math>,
+which is 7260 rows at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>120</mn></mrow><annotation encoding="application/x-tex">n = 120</annotation></semantics></math>.</p>
+<p>The results do differ between the two libraries. At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">n = 40</annotation></semantics></math>
+the decomposed dual differed by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.3</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">1.3 \times 10^{-1}</annotation></semantics></math>
+and the termination status moved from <code>Solved</code> to
+<code>AlmostSolved</code>. See the <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
+macOS FAQ</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html" class="external-link">R
+Installation and Administration</a> on how Accelerate differs from the
+reference BLAS.</p>
+<p>The Section 3.2 timings were measured on the reference BLAS.</p>
 </div>
 </div>
 <div class="section level2">
@@ -816,7 +877,7 @@ code.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

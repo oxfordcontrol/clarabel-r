@@ -198,6 +198,43 @@ only remaining departure is the *set of accepted values* for
 `direct_solve_method`, which is constrained by the Cargo features this package
 builds with, not a choice.
 
+## BLAS: reference vs vecLib
+
+Semidefinite support is built with the `sdp-r` feature, so `clarabel.so` links
+`libRblas`/`libRlapack` and the dense linear algebra comes from R. Ran the
+Section 3.2 sweep under both macOS BLAS libraries by swapping the
+`libRblas.dylib` symlink (`dev/blas_compare.R`, driven by a script that
+restores the reference BLAS on any exit path).
+
+| n | reference off | vecLib off | reference on | vecLib on |
+|---:|---:|---:|---:|---:|
+| 20 | 0.015s | 0.016s | 0.001s | 0.002s |
+| 40 | 0.429s | 0.444s | 0.003s | 0.003s |
+| 60 | 4.475s | 4.576s | 0.003s | 0.004s |
+| 80 | 30.078s | 30.535s | 0.005s | 0.005s |
+| 120 | 426.752s | 429.727s | 0.008s | 0.009s |
+
+**No speed difference** — every ratio is 0.94x to 1.00x, i.e. vecLib is
+marginally slower, within run-to-run noise. This contradicts what the vignette
+originally asserted, which was that an optimized BLAS would shrink the chordal
+speedup ratios. That was written as a plausible inference without measuring it.
+
+The swap was verified to take effect: `extSoftVersion()` reported
+Accelerate's `libBLAS.dylib` during the second run, `libRlapack.dylib` links
+`libRblas.dylib` dynamically, and `clarabel.so` has undefined symbols for
+`dgemm`, `dsyrk`, `dpotrf` and `dsyevr`. The dense work is on the n x n cone;
+the cost is the KKT factorization, which scales with the vectorized length
+n(n+1)/2 (7260 rows at n=120).
+
+**Results do differ.** Objectives agree to ~1e-8, but duals move by up to
+1.27e-01 (n=40, decomposed), and the n=40 decomposed solve changed status from
+`Solved` under the reference BLAS to `AlmostSolved` under vecLib. Iteration
+counts were identical except n=60 decomposed (16 vs 15).
+
+Relevant to the CRAN thread-count question below: Accelerate threads via Grand
+Central Dispatch, so a user on vecLib could exceed two cores where the
+reference BLAS would not.
+
 ## Still to verify
 
 1. CVXR's `test-clarabel-warm-start.R` and SDP-touching tests against this build.

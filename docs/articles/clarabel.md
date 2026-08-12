@@ -287,7 +287,7 @@ $`F_0 + \sum_i x_i F_i \succeq 0`$ in which every data matrix is banded
 with half-bandwidth 2. A banded pattern is chordal, with cliques of size
 3, so an $`n \times n`$ cone decomposes into roughly $`n`$ tiny ones.
 
-`banded_sdp`` ``<-`` ``function``(``n``, ``w`` ``=`` ``2``, ``m`` ``=`` ``5``, ``seed`` ``=`` ``7``)`` ``{`` `` ``band_sym`` ``<-`` ``function``(``s``)`` ``{`` `` `[`set.seed`](https://rdrr.io/r/base/Random.html)`(``s``)`` `` ``M`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(``0``, ``n``, ``n``)`` `` ``for`` ``(``i`` ``in`` `[`seq_len`](https://rdrr.io/r/base/seq.html)`(``n``)``)`` `` ``for`` ``(``j`` ``in`` ``i``:`[`min`](https://rdrr.io/r/base/Extremes.html)`(``i`` ``+`` ``w``, ``n``)``)`` ``M``[``i``, ``j``]`` ``<-`` ``M``[``j``, ``i``]`` ``<-`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``1``)`` `` ``M`` `` ``}`` `` ``Fs`` ``<-`` `[`lapply`](https://rdrr.io/r/base/lapply.html)`(`[`seq_len`](https://rdrr.io/r/base/seq.html)`(``m``)``, ``function``(``k``)`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``k``)``)`` `` ``F0`` ``<-`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``m`` ``+`` ``1``)`` `` ``## shift F0 so that x = 0 is strictly feasible`` `` ``F0`` ``<-`` ``F0`` ``+`` `[`diag`](https://rdrr.io/r/base/diag.html)`(``n``)`` ``*`` ``(`[`abs`](https://rdrr.io/r/base/MathFun.html)`(`[`min`](https://rdrr.io/r/base/Extremes.html)`(`[`eigen`](https://rdrr.io/r/base/eigen.html)`(``F0``, only.values ``=`` ``TRUE``)``$``values``)``)`` ``+`` ``1``)`` `` `[`list`](https://rdrr.io/r/base/list.html)`(``A ``=`` ``-`[`do.call`](https://rdrr.io/r/base/do.call.html)`(``cbind``, `[`lapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``vec``)``)``,`` `` b ``=`` ``vec``(``F0``)``,`` `` q ``=`` `[`vapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``function``(``Fi``)`` `[`sum`](https://rdrr.io/r/base/sum.html)`(`[`diag`](https://rdrr.io/r/base/diag.html)`(``Fi``)``)``, `[`numeric`](https://rdrr.io/r/base/numeric.html)`(``1``)``)``,`` `` cones ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``s ``=`` `[`as.integer`](https://rdrr.io/r/base/integer.html)`(``n``)``)``)`` ``}`` `` ``solve_timed`` ``<-`` ``function``(``p``, ``chordal``)`` ``{`` `` ``ctrl`` ``<-`` `[`clarabel_control`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.md)`(``verbose ``=`` ``FALSE``,`` `` chordal_decomposition_enable ``=`` ``chordal``)`` `` ``elapsed`` ``<-`` `[`system.time`](https://rdrr.io/r/base/system.time.html)`(`` `` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``p``$``A``, b ``=`` ``p``$``b``, q ``=`` ``p``$``q``, cones ``=`` ``p``$``cones``, control ``=`` ``ctrl``)`` `` ``)``[[``"elapsed"``]``]`` `` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``chordal ``=`` ``chordal``,`` `` seconds ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``elapsed``)``,`` `` status ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``)``[``s``$``status``]``,`` `` objective ``=`` ``s``$``obj_val``)`` ``}`` `` ``p40`` ``<-`` ``banded_sdp``(``n ``=`` ``40``)`` `[`rbind`](https://rdrr.io/r/base/cbind.html)`(``solve_timed``(``p40``, ``FALSE``)``, ``solve_timed``(``p40``, ``TRUE``)``)`` ``#> chordal seconds status objective`` ``#> 1 FALSE 0.430 AlmostSolved -6.603129`` ``#> 2 TRUE 0.002 Solved -6.603129`
+`banded_sdp`` ``<-`` ``function``(``n``, ``w`` ``=`` ``2``, ``m`` ``=`` ``5``, ``seed`` ``=`` ``7``)`` ``{`` `` ``band_sym`` ``<-`` ``function``(``s``)`` ``{`` `` `[`set.seed`](https://rdrr.io/r/base/Random.html)`(``s``)`` `` ``M`` ``<-`` `[`matrix`](https://rdrr.io/r/base/matrix.html)`(``0``, ``n``, ``n``)`` `` ``for`` ``(``i`` ``in`` `[`seq_len`](https://rdrr.io/r/base/seq.html)`(``n``)``)`` `` ``for`` ``(``j`` ``in`` ``i``:`[`min`](https://rdrr.io/r/base/Extremes.html)`(``i`` ``+`` ``w``, ``n``)``)`` ``M``[``i``, ``j``]`` ``<-`` ``M``[``j``, ``i``]`` ``<-`` `[`rnorm`](https://rdrr.io/r/stats/Normal.html)`(``1``)`` `` ``M`` `` ``}`` `` ``Fs`` ``<-`` `[`lapply`](https://rdrr.io/r/base/lapply.html)`(`[`seq_len`](https://rdrr.io/r/base/seq.html)`(``m``)``, ``function``(``k``)`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``k``)``)`` `` ``F0`` ``<-`` ``band_sym``(``1000`` ``*`` ``seed`` ``+`` ``m`` ``+`` ``1``)`` `` ``## shift F0 so that x = 0 is strictly feasible`` `` ``F0`` ``<-`` ``F0`` ``+`` `[`diag`](https://rdrr.io/r/base/diag.html)`(``n``)`` ``*`` ``(`[`abs`](https://rdrr.io/r/base/MathFun.html)`(`[`min`](https://rdrr.io/r/base/Extremes.html)`(`[`eigen`](https://rdrr.io/r/base/eigen.html)`(``F0``, only.values ``=`` ``TRUE``)``$``values``)``)`` ``+`` ``1``)`` `` `[`list`](https://rdrr.io/r/base/list.html)`(``A ``=`` ``-`[`do.call`](https://rdrr.io/r/base/do.call.html)`(``cbind``, `[`lapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``vec``)``)``,`` `` b ``=`` ``vec``(``F0``)``,`` `` q ``=`` `[`vapply`](https://rdrr.io/r/base/lapply.html)`(``Fs``, ``function``(``Fi``)`` `[`sum`](https://rdrr.io/r/base/sum.html)`(`[`diag`](https://rdrr.io/r/base/diag.html)`(``Fi``)``)``, `[`numeric`](https://rdrr.io/r/base/numeric.html)`(``1``)``)``,`` `` cones ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``s ``=`` `[`as.integer`](https://rdrr.io/r/base/integer.html)`(``n``)``)``)`` ``}`` `` ``solve_timed`` ``<-`` ``function``(``p``, ``chordal``)`` ``{`` `` ``ctrl`` ``<-`` `[`clarabel_control`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.md)`(``verbose ``=`` ``FALSE``,`` `` chordal_decomposition_enable ``=`` ``chordal``)`` `` ``elapsed`` ``<-`` `[`system.time`](https://rdrr.io/r/base/system.time.html)`(`` `` ``s`` ``<-`` `[`clarabel`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel.md)`(``A ``=`` ``p``$``A``, b ``=`` ``p``$``b``, q ``=`` ``p``$``q``, cones ``=`` ``p``$``cones``, control ``=`` ``ctrl``)`` `` ``)``[[``"elapsed"``]``]`` `` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(``chordal ``=`` ``chordal``,`` `` seconds ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``elapsed``)``,`` `` status ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`solver_status_descriptions`](https://oxfordcontrol.github.io/clarabel-r/reference/solver_status_descriptions.md)`(``)``)``[``s``$``status``]``,`` `` objective ``=`` ``s``$``obj_val``)`` ``}`` `` ``p40`` ``<-`` ``banded_sdp``(``n ``=`` ``40``)`` `[`rbind`](https://rdrr.io/r/base/cbind.html)`(``solve_timed``(``p40``, ``FALSE``)``, ``solve_timed``(``p40``, ``TRUE``)``)`` ``#> chordal seconds status objective`` ``#> 1 FALSE 0.437 AlmostSolved -6.603129`` ``#> 2 TRUE 0.003 Solved -6.603129`
 
 Two things are worth reading off that comparison. The decomposed solve
 is faster by more than two orders of magnitude, and the two solves do
@@ -334,25 +334,42 @@ outside this package and affects both speed and results.
 which one is active.
 
 On macOS the CRAN binary ships both R’s reference BLAS and a vecLib
-(Accelerate) build, and defaults to the reference one. vecLib is
-considerably faster on large dense problems, but the R project does not
-control it and does not recommend it where precision matters; see the [R
-for macOS FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html)
-and [R Installation and
-Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html),
-which documents both the speedup and the discrepancies. Switching is a
+(Accelerate) build, and defaults to the reference one. Switching is a
 symlink:
 
 ``` sh
 cd /Library/Frameworks/R.framework/Resources/lib
-ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib: faster
+ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib
 ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
 ```
 
-The timings in Section 3.2 were measured on the reference BLAS. A faster
-BLAS shrinks those ratios without changing the shape of the comparison,
-since decomposition removes the large dense cone rather than computing
-with it faster.
+Repeating the Section 3.2 sweep under both libraries moved solve times
+by under 1% at every size, in both directions:
+
+| $`n`$ | reference, off | vecLib, off | reference, on | vecLib, on |
+|------:|---------------:|------------:|--------------:|-----------:|
+|    20 |         0.015s |      0.016s |        0.001s |     0.002s |
+|    40 |         0.429s |      0.444s |        0.003s |     0.003s |
+|    60 |         4.475s |      4.576s |        0.003s |     0.004s |
+|    80 |        30.078s |     30.535s |        0.005s |     0.005s |
+|   120 |       426.752s |    429.727s |        0.008s |     0.009s |
+
+The substitution does take effect: the solver calls BLAS and LAPACK
+(`dgemm`, `dsyrk`, `dpotrf`, `dsyevr`), and R’s LAPACK is itself linked
+against the BLAS being swapped. For these problems the time is not spent
+there. The dense operations act on the $`n \times n`$ cone, while the
+cost is dominated by factorizing a KKT system whose size follows the
+vectorized cone length $`n(n+1)/2`$, which is 7260 rows at $`n = 120`$.
+
+The results do differ between the two libraries. At $`n = 40`$ the
+decomposed dual differed by $`1.3 \times 10^{-1}`$ and the termination
+status moved from `Solved` to `AlmostSolved`. See the [R for macOS
+FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html) and [R
+Installation and
+Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html)
+on how Accelerate differs from the reference BLAS.
+
+The Section 3.2 timings were measured on the reference BLAS.
 
 ## 4. Updating Problem Data (Warm Starts)
 
