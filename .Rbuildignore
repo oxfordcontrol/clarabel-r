@@ -21,3 +21,4 @@
 ^src/rust/\.cargo$
 ^\.claude$
 ^CLAUDE\.md$
+^dev$
