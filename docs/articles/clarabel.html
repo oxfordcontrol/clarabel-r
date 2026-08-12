@@ -213,8 +213,8 @@ We have a single constraint on the 2-norm of a vector, so we rewrite</p>
 </h2>
 <p>Semidefinite problems are the only ones here that use dense linear
 algebra, which they get from your R installation’s BLAS and LAPACK
-rather than from this package. That affects both their speed and their
-results; see Section 3.3.</p>
+rather than from this package. That could affect both speed and results;
+see Section 7.</p>
 <p>Semidefinite cones have to be specified in a particular form. We
 borrow from the <a href="https://www.cvxgrp.org/scs/api/cones.html#sdcone" class="external-link">documentation
 for the SCS solver</a> which has similar calling conventions.</p>
@@ -478,8 +478,8 @@ tiny ones.</p>
 <span><span class="va">p40</span> <span class="op">&lt;-</span> <span class="fu">banded_sdp</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   chordal seconds       status objective</span></span>
-<span><span class="co">#&gt; 1   FALSE   0.437 AlmostSolved -6.603129</span></span>
-<span><span class="co">#&gt; 2    TRUE   0.003       Solved -6.603129</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   FALSE   0.434 AlmostSolved -6.603129</span></span>
+<span><span class="co">#&gt; 2    TRUE   0.002       Solved -6.603129</span></span></code></pre></div>
 <p>Two things are worth reading off that comparison. The decomposed
 solve is faster by more than two orders of magnitude, and the two solves
 do not terminate at the same accuracy: on this instance the undecomposed
@@ -490,7 +490,7 @@ reminder that decomposition produces a genuinely different numerical
 problem, and that the status is worth checking rather than assuming.</p>
 <p>The gap widens sharply with the size of the cone. Measured
 separately, since the larger rows are too slow to run while this
-vignette is built, on R’s reference BLAS (Section 3.3):</p>
+vignette is built, on R’s reference BLAS (Section 7):</p>
 <table class="table">
 <colgroup>
 <col width="7%">
@@ -570,89 +570,6 @@ updated in place, which matters for the warm starts described next. Pass
 <code>chordal_decomposition_enable = FALSE</code> to recover the
 previous behavior in either case.</p>
 </div>
-<div class="section level3">
-<h3 id="a-note-on-blas-and-lapack">3.3. A Note on BLAS and LAPACK<a class="anchor" aria-label="anchor" href="#a-note-on-blas-and-lapack"></a>
-</h3>
-<p>This package does not bundle its own dense linear algebra; it links
-whatever BLAS and LAPACK your R installation uses, so the choice is made
-outside this package and affects both speed and results.
-<code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> reports which one is active.</p>
-<p>On macOS the CRAN binary ships both R’s reference BLAS and a vecLib
-(Accelerate) build, and defaults to the reference one. Switching is a
-symlink:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
-<p>Repeating the Section 3.2 sweep under both libraries moved solve
-times by under 1% at every size, in both directions:</p>
-<table class="table">
-<thead><tr class="header">
-<th align="right"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></th>
-<th align="right">reference, off</th>
-<th align="right">vecLib, off</th>
-<th align="right">reference, on</th>
-<th align="right">vecLib, on</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">20</td>
-<td align="right">0.015s</td>
-<td align="right">0.016s</td>
-<td align="right">0.001s</td>
-<td align="right">0.002s</td>
-</tr>
-<tr class="even">
-<td align="right">40</td>
-<td align="right">0.429s</td>
-<td align="right">0.444s</td>
-<td align="right">0.003s</td>
-<td align="right">0.003s</td>
-</tr>
-<tr class="odd">
-<td align="right">60</td>
-<td align="right">4.475s</td>
-<td align="right">4.576s</td>
-<td align="right">0.003s</td>
-<td align="right">0.004s</td>
-</tr>
-<tr class="even">
-<td align="right">80</td>
-<td align="right">30.078s</td>
-<td align="right">30.535s</td>
-<td align="right">0.005s</td>
-<td align="right">0.005s</td>
-</tr>
-<tr class="odd">
-<td align="right">120</td>
-<td align="right">426.752s</td>
-<td align="right">429.727s</td>
-<td align="right">0.008s</td>
-<td align="right">0.009s</td>
-</tr>
-</tbody>
-</table>
-<p>The substitution does take effect: the solver calls BLAS and LAPACK
-(<code>dgemm</code>, <code>dsyrk</code>, <code>dpotrf</code>,
-<code>dsyevr</code>), and R’s LAPACK is itself linked against the BLAS
-being swapped. For these problems the time is not spent there. The dense
-operations act on the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \times n</annotation></semantics></math>
-cone, while the cost is dominated by factorizing a KKT system whose size
-follows the vectorized cone length
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n(n+1)/2</annotation></semantics></math>,
-which is 7260 rows at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>120</mn></mrow><annotation encoding="application/x-tex">n = 120</annotation></semantics></math>.</p>
-<p>The results do differ between the two libraries. At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">n = 40</annotation></semantics></math>
-the decomposed dual differed by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.3</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">1.3 \times 10^{-1}</annotation></semantics></math>
-and the termination status moved from <code>Solved</code> to
-<code>AlmostSolved</code>. See the <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
-macOS FAQ</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html" class="external-link">R
-Installation and Administration</a> on how Accelerate differs from the
-reference BLAS.</p>
-<p>The Section 3.2 timings were measured on the reference BLAS.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="updating-problem-data-warm-starts">4. Updating Problem Data (Warm Starts)<a class="anchor" aria-label="anchor" href="#updating-problem-data-warm-starts"></a>
@@ -691,7 +608,7 @@ to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>40</mn></mtd><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>12</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>−</mi><mn>12</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>30</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\begin{bmatrix} 40 &amp; -12 \\ -12 &amp; 30 \end{bmatrix}</annotation></semantics></math>.</p>
 <p>First, we set up and solve the original problem using a persistent
 solver.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q_sdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">A11</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">11</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">A12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="op">-</span><span class="fl">18</span>, <span class="op">-</span><span class="fl">18</span>, <span class="fl">8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -723,7 +640,7 @@ solver.</p>
 <p>Now update the constraint with the new
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>B</mi><mn>1</mn></msub><annotation encoding="application/x-tex">B_1</annotation></semantics></math>
 and re-solve.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">B1_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="op">-</span><span class="fl">12</span>, <span class="op">-</span><span class="fl">12</span>, <span class="fl">30</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">b_sdp_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">vec</span><span class="op">(</span><span class="va">B1_new</span><span class="op">)</span>, <span class="fu">vec</span><span class="op">(</span><span class="va">B2</span><span class="op">)</span><span class="op">)</span>  <span class="co"># only B1 changes</span></span>
 <span><span class="fu"><a href="../reference/solver_update.html">solver_update</a></span><span class="op">(</span><span class="va">solver</span>, b <span class="op">=</span> <span class="va">b_sdp_new</span><span class="op">)</span></span>
@@ -849,7 +766,7 @@ etc.</p>
 including verbosity, time limits, and tolerances; see help on
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code>. As an example, in the last problem, we
 can reduce the number of iterations.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"symmetricMatrix"</span><span class="op">)</span> <span class="co"># P needs to be a symmetric matrix</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
@@ -865,6 +782,85 @@ can reduce the number of iterations.</p>
 <span><span class="co">#&gt; Solution (x1, x2) = (1.000000, -0.999998)</span></span></code></pre></div>
 <p>Note the different status, which should always be checked in
 code.</p>
+</div>
+<div class="section level2">
+<h2 id="a-note-on-blas-and-lapack">7. A Note on BLAS and LAPACK<a class="anchor" aria-label="anchor" href="#a-note-on-blas-and-lapack"></a>
+</h2>
+<p>This package links whatever BLAS and LAPACK your R installation uses;
+<code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code> reports which one is active.</p>
+<p>On macOS the CRAN binary ships both R’s reference BLAS and a vecLib
+(Accelerate) build, and defaults to the reference one. Switching is a
+symlink:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="bu">cd</span> /Library/Frameworks/R.framework/Resources/lib</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.vecLib.dylib libRblas.dylib   <span class="co"># vecLib</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">ln</span> <span class="at">-sf</span> libRblas.0.dylib      libRblas.dylib   <span class="co"># reference: the default</span></span></code></pre></div>
+<p>Repeating the Section 3.2 sweep under both libraries on a ARM Mac,
+moved solve times by under 1% at every size, in both directions:</p>
+<table class="table">
+<thead><tr class="header">
+<th align="right"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></th>
+<th align="right">reference, off</th>
+<th align="right">vecLib, off</th>
+<th align="right">reference, on</th>
+<th align="right">vecLib, on</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">20</td>
+<td align="right">0.015s</td>
+<td align="right">0.016s</td>
+<td align="right">0.001s</td>
+<td align="right">0.002s</td>
+</tr>
+<tr class="even">
+<td align="right">40</td>
+<td align="right">0.429s</td>
+<td align="right">0.444s</td>
+<td align="right">0.003s</td>
+<td align="right">0.003s</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="right">4.475s</td>
+<td align="right">4.576s</td>
+<td align="right">0.003s</td>
+<td align="right">0.004s</td>
+</tr>
+<tr class="even">
+<td align="right">80</td>
+<td align="right">30.078s</td>
+<td align="right">30.535s</td>
+<td align="right">0.005s</td>
+<td align="right">0.005s</td>
+</tr>
+<tr class="odd">
+<td align="right">120</td>
+<td align="right">426.752s</td>
+<td align="right">429.727s</td>
+<td align="right">0.008s</td>
+<td align="right">0.009s</td>
+</tr>
+</tbody>
+</table>
+<p>For these problems not much time is not spent in the BLAS and LAPACK
+(<code>dgemm</code>, <code>dsyrk</code>, <code>dpotrf</code>,
+<code>dsyevr</code>) routines: the dense operations act on the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">n \times n</annotation></semantics></math>
+cone, while the cost is dominated by factorizing a KKT system whose size
+follows the vectorized cone length
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n(n+1)/2</annotation></semantics></math>,
+which is 7260 rows at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>120</mn></mrow><annotation encoding="application/x-tex">n = 120</annotation></semantics></math>.</p>
+<p>The results do differ between the two libraries. At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">n = 40</annotation></semantics></math>
+the decomposed dual differed by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.3</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">1.3 \times 10^{-1}</annotation></semantics></math>
+and the termination status moved from <code>Solved</code> to
+<code>AlmostSolved</code>. (See the <a href="https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html" class="external-link">R for
+macOS FAQ</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html" class="external-link">R
+Installation and Administration</a> on how Accelerate differs from the
+reference BLAS.)</p>
+<p>The Section 3.2 timings were measured on the reference BLAS.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

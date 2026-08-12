@@ -144,8 +144,8 @@ cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
 
 Semidefinite problems are the only ones here that use dense linear
 algebra, which they get from your R installation's BLAS and LAPACK
-rather than from this package. That affects both their speed and their
-results; see Section 3.3.
+rather than from this package. That could affect both speed and
+results; see Section 7.
 
 Semidefinite cones have to be specified in a particular form. We
 borrow from the [documentation for the SCS
@@ -420,7 +420,7 @@ checking rather than assuming.
 
 The gap widens sharply with the size of the cone. Measured separately,
 since the larger rows are too slow to run while this vignette is built,
-on R's reference BLAS (Section 3.3):
+on R's reference BLAS (Section 7):
 
 | $n$ | cone length | decomposition off | on | speedup | status (off / on) |
 |----:|------------:|------------------:|---:|--------:|:------------------|
@@ -444,51 +444,6 @@ unique. And a problem that was actually decomposed cannot have its data
 updated in place, which matters for the warm starts described next. Pass
 `chordal_decomposition_enable = FALSE` to recover the previous behavior in
 either case.
-
-### 3.3. A Note on BLAS and LAPACK
-
-This package does not bundle its own dense linear algebra; it links
-whatever BLAS and LAPACK your R installation uses, so the choice is made
-outside this package and affects both speed and results.
-`sessionInfo()` reports which one is active.
-
-On macOS the CRAN binary ships both R's reference BLAS and a vecLib
-(Accelerate) build, and defaults to the reference one. Switching is a
-symlink:
-
-``` sh
-cd /Library/Frameworks/R.framework/Resources/lib
-ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib
-ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
-```
-
-Repeating the Section 3.2 sweep under both libraries moved solve times
-by under 1% at every size, in both directions:
-
-| $n$ | reference, off | vecLib, off | reference, on | vecLib, on |
-|----:|---------------:|------------:|--------------:|-----------:|
-| 20 | 0.015s | 0.016s | 0.001s | 0.002s |
-| 40 | 0.429s | 0.444s | 0.003s | 0.003s |
-| 60 | 4.475s | 4.576s | 0.003s | 0.004s |
-| 80 | 30.078s | 30.535s | 0.005s | 0.005s |
-| 120 | 426.752s | 429.727s | 0.008s | 0.009s |
-
-The substitution does take effect: the solver calls BLAS and LAPACK
-(`dgemm`, `dsyrk`, `dpotrf`, `dsyevr`), and R's LAPACK is itself linked
-against the BLAS being swapped. For these problems the time is not spent
-there. The dense operations act on the $n \times n$ cone, while the cost
-is dominated by factorizing a KKT system whose size follows the
-vectorized cone length $n(n+1)/2$, which is 7260 rows at $n = 120$.
-
-The results do differ between the two libraries. At $n = 40$ the
-decomposed dual differed by $1.3 \times 10^{-1}$ and the termination
-status moved from `Solved` to `AlmostSolved`. See the [R for macOS
-FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html) and [R
-Installation and
-Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html)
-on how Accelerate differs from the reference BLAS.
-
-The Section 3.2 timings were measured on the reference BLAS.
 
 ## 4. Updating Problem Data (Warm Starts)
 
@@ -630,5 +585,48 @@ cat(sprintf("Solution (x1, x2) = (%f, %f)\n", s$x[1], s$x[2]))
 ```
 
 Note the different status, which should always be checked in code. 
+
+## 7. A Note on BLAS and LAPACK
+
+This package links whatever BLAS and LAPACK your R installation uses;
+`sessionInfo()` reports which one is active.
+
+On macOS the CRAN binary ships both R's reference BLAS and a vecLib
+(Accelerate) build, and defaults to the reference one. Switching is a
+symlink:
+
+``` sh
+cd /Library/Frameworks/R.framework/Resources/lib
+ln -sf libRblas.vecLib.dylib libRblas.dylib   # vecLib
+ln -sf libRblas.0.dylib      libRblas.dylib   # reference: the default
+```
+
+Repeating the Section 3.2 sweep under both libraries on a ARM Mac,
+moved solve times by under 1% at every size, in both directions:
+
+| $n$ | reference, off | vecLib, off | reference, on | vecLib, on |
+|----:|---------------:|------------:|--------------:|-----------:|
+| 20 | 0.015s | 0.016s | 0.001s | 0.002s |
+| 40 | 0.429s | 0.444s | 0.003s | 0.003s |
+| 60 | 4.475s | 4.576s | 0.003s | 0.004s |
+| 80 | 30.078s | 30.535s | 0.005s | 0.005s |
+| 120 | 426.752s | 429.727s | 0.008s | 0.009s |
+
+For these problems not much time is not spent in the BLAS and LAPACK
+(`dgemm`, `dsyrk`, `dpotrf`, `dsyevr`) routines: the dense
+operations act on the $n \times n$ cone, while the cost is dominated
+by factorizing a KKT system whose size follows the vectorized cone
+length $n(n+1)/2$, which is 7260 rows at $n = 120$.
+
+The results do differ between the two libraries. At $n = 40$ the
+decomposed dual differed by $1.3 \times 10^{-1}$ and the termination
+status moved from `Solved` to `AlmostSolved`. (See the [R for macOS
+FAQ](https://cran.r-project.org/bin/macosx/RMacOSX-FAQ.html) and [R
+Installation and
+Administration](https://cran.r-project.org/doc/manuals/r-release/R-admin.html)
+on how Accelerate differs from the reference BLAS.)
+
+The Section 3.2 timings were measured on the reference BLAS.
+
 
 
