@@ -33,7 +33,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.11.3" id="clarabel-0113">clarabel 0.11.3<a class="anchor" aria-label="anchor" href="#clarabel-0113"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.11.3" id="clarabel-0113">clarabel 0.11.3<a class="anchor" aria-label="anchor" href="#clarabel-0113"></a></h2><p class="text-muted">CRAN release: 2026-08-23</p>
 <ul><li>
 <code><a href="../reference/clarabel_control.html">clarabel_control()</a></code> defaults now match <code>Clarabel.rs</code> exactly. Several had fallen behind upstream:
 <ul><li>Chordal decomposition is now <strong>enabled by default</strong> for semidefinite programs: <code>chordal_decomposition_enable</code>, <code>chordal_decomposition_compact</code> and <code>chordal_decomposition_complete_dual</code> are <code>TRUE</code>, and <code>chordal_decomposition_merge_method</code> is <code>"clique_graph"</code>. On a semidefinite program with a decomposable sparsity pattern this is dramatically faster — on a banded example with a 120x120 semidefinite cone, 0.007 seconds against 422 seconds. Two consequences: the dual variables reported for semidefinite constraints are not in general the same as before, and data updates are blocked when a decomposition actually takes place. Linear, quadratic and second-order cone problems are unaffected and remain updatable. Pass <code>chordal_decomposition_enable = FALSE</code> for the previous behavior.</li>

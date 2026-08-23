@@ -478,8 +478,8 @@ tiny ones.</p>
 <span><span class="va">p40</span> <span class="op">&lt;-</span> <span class="fu">banded_sdp</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu">solve_timed</span><span class="op">(</span><span class="va">p40</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   chordal seconds       status objective</span></span>
-<span><span class="co">#&gt; 1   FALSE   0.434 AlmostSolved -6.603129</span></span>
-<span><span class="co">#&gt; 2    TRUE   0.002       Solved -6.603129</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   FALSE   0.473 AlmostSolved -6.603129</span></span>
+<span><span class="co">#&gt; 2    TRUE   0.003       Solved -6.603129</span></span></code></pre></div>
 <p>Two things are worth reading off that comparison. The decomposed
 solve is faster by more than two orders of magnitude, and the two solves
 do not terminate at the same accuracy: on this instance the undecomposed

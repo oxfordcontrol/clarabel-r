@@ -2,6 +2,8 @@
 
 ## clarabel 0.11.3
 
+CRAN release: 2026-08-23
+
 - [`clarabel_control()`](https://oxfordcontrol.github.io/clarabel-r/reference/clarabel_control.md)
   defaults now match `Clarabel.rs` exactly. Several had fallen behind
   upstream:

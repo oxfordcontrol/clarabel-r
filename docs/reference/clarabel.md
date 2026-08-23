@@ -150,7 +150,7 @@ clarabel(A = A, b = b, q = obj, cones = cone, control = control)
 #> [1] 2
 #> 
 #> $solve_time
-#> [1] 0.000113458
+#> [1] 0.000155875
 #> 
 #> $iterations
 #> [1] 0
@@ -199,7 +199,7 @@ clarabel(A = A, b = b, q = obj, cones = cone, control = control)
 #> [1] 1
 #> 
 #> $info$solve_time
-#> [1] 0.000113458
+#> [1] 0.000155875
 #> 
 #> $info$iterations
 #> [1] 0
